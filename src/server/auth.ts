@@ -1,8 +1,7 @@
 import NextAuth, { type DefaultSession, type NextAuthConfig, type NextAuthResult } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import DiscordProvider from "@auth/core/providers/discord";
+import Passkey from "@auth/core/providers/passkey";
 
-import { env } from "@cryptalbum/env";
 import { db } from "@cryptalbum/server/db";
 
 /**
@@ -43,10 +42,7 @@ export const authOptions: NextAuthConfig = {
   },
   adapter: PrismaAdapter(db),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
+    Passkey({}),
     /**
      * ...add more providers here.
      *
@@ -57,6 +53,9 @@ export const authOptions: NextAuthConfig = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
+  experimental: {
+    enableWebAuthn: true,
+  }
 };
 
 /**

@@ -62,6 +62,7 @@ model User {
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+    Authenticator Authenticator[]
 }
 
 model VerificationToken {
@@ -70,4 +71,17 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Authenticator {
+  providerAccountId    String
+  counter              Int
+  credentialID         String   @id @default(cuid())
+  credentialPublicKey  String
+  credentialBackedUp   Boolean
+  credentialDeviceType String
+  transports           String
+  userId               String
+
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
