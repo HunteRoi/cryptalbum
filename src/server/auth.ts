@@ -1,11 +1,6 @@
+import NextAuth, { type DefaultSession, type NextAuthConfig, type NextAuthResult } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import {
-  getServerSession,
-  type DefaultSession,
-  type NextAuthOptions,
-} from "next-auth";
-import { type Adapter } from "next-auth/adapters";
-import DiscordProvider from "next-auth/providers/discord";
+import DiscordProvider from "@auth/core/providers/discord";
 
 import { env } from "@cryptalbum/env";
 import { db } from "@cryptalbum/server/db";
@@ -16,7 +11,7 @@ import { db } from "@cryptalbum/server/db";
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
-declare module "next-auth" {
+declare module "@auth/core" {
   interface Session extends DefaultSession {
     user: {
       id: string;
@@ -36,7 +31,7 @@ declare module "next-auth" {
  *
  * @see https://next-auth.js.org/configuration/options
  */
-export const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthConfig = {
   callbacks: {
     session: ({ session, user }) => ({
       ...session,
@@ -46,7 +41,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
-  adapter: PrismaAdapter(db) as Adapter,
+  adapter: PrismaAdapter(db),
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
@@ -69,4 +64,7 @@ export const authOptions: NextAuthOptions = {
  *
  * @see https://next-auth.js.org/configuration/nextjs
  */
-export const getServerAuthSession = () => getServerSession(authOptions);
+export const {
+  handlers: { GET, POST },
+  auth
+}: NextAuthResult = NextAuth(authOptions);
