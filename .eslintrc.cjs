@@ -13,6 +13,9 @@ const config = {
     "plugin:@typescript-eslint/stylistic-type-checked"
   ],
   "rules": {
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/unsafe-assignment": "off",
     "@typescript-eslint/unsafe-call": "off",
     "@typescript-eslint/unsafe-member-access": "off",

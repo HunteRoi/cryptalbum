@@ -1,0 +1,45 @@
+# .gitlab-ci.yml
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+stages:
+  - test-n-coverage
+  - deploy-coverage
+
+image: node:lts
+
+before_script:
+  - yarn install --frozen-lockfile
+  - echo -ne 'DATABASE_URL="postgresql://postgres:dummypwd@localhost:5432/cryptalbum"\nNEXTAUTH_SECRET="mysupersecretthingy"\nNEXTAUTH_URL="http://localhost:3000"' > .env
+  - yarn build
+
+test_job:
+  stage: test-n-coverage
+  allow_failure: false
+  script:
+    - yarn test:cov
+  artifacts:
+    when: always
+    paths:
+      - coverage/html
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cov-cobertura.xml
+
+pages:
+  stage: deploy-coverage
+  dependencies:
+    - test_job
+  script:
+    - mkdir .public
+    - cp -r coverage/html/* .public
+    - mv .public public
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
