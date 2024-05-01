@@ -38,7 +38,7 @@ export default function FileUploadForm() {
 	const { toast } = useToast();
 	const { data } = useSession();
 
-	const uploadMutation = api.picture.upload.useMutation();
+	// const uploadMutation = api.picture.upload.useMutation();
 	const userDevicesQuery = api.user.userDevice.useQuery(undefined, {
 		//Disable query if user is not logged in
 		enabled: !!data,
@@ -100,20 +100,21 @@ export default function FileUploadForm() {
 					key: encryptedKey,
 				});
 			}
-			await uploadMutation.mutateAsync(
-				{
-					file: fileData,
-					keys_user_device: userDeviceKey,
-				},
-				{
-					onSuccess: () => {
-						void utils_trpc.invalidate(undefined, {
-							refetchType: "all",
-							queryKey: ["pictures.getAll"],
-						});
-					},
-				},
-			);
+			// TODO: Uncomment this when the upload mutation is implemented
+			// await uploadMutation.mutateAsync(
+			// 	{
+			// 		file: fileData,
+			// 		keys_user_device: userDeviceKey,
+			// 	},
+			// 	{
+			// 		onSuccess: () => {
+			// 			void utils_trpc.invalidate(undefined, {
+			// 				refetchType: "all",
+			// 				queryKey: ["pictures.getAll"],
+			// 			});
+			// 		},
+			// 	},
+			// );
 			setFile(null);
 			form.reset();
 			toast({
