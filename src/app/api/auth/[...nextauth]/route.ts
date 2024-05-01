@@ -1,3 +1,7 @@
-import { GET, POST } from "@cryptalbum/server/auth";
+import NextAuth from "next-auth";
 
-export { GET, POST };
+import { authOptions } from "@cryptalbum/server/auth";
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };

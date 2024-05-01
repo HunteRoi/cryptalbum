@@ -7,11 +7,11 @@
  * need to use are documented accordingly near the end.
  */
 
-import { initTRPC, TRPCError } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { auth } from "@cryptalbum/server/auth";
+import { getServerAuthSession } from "@cryptalbum/server/auth";
 import { db } from "@cryptalbum/server/db";
 
 /**
@@ -27,13 +27,13 @@ import { db } from "@cryptalbum/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const session = await auth();
+	const session = await getServerAuthSession();
 
-  return {
-    db,
-    session,
-    ...opts,
-  };
+	return {
+		db,
+		session,
+		...opts,
+	};
 };
 
 /**
@@ -44,17 +44,17 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
  * errors on the backend.
  */
 const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    };
-  },
+	transformer: superjson,
+	errorFormatter({ shape, error }) {
+		return {
+			...shape,
+			data: {
+				...shape.data,
+				zodError:
+					error.cause instanceof ZodError ? error.cause.flatten() : null,
+			},
+		};
+	},
 });
 
 /**
@@ -95,14 +95,35 @@ export const publicProcedure = t.procedure;
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session?.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
+export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
+	if (!ctx.session || !ctx.session.user) {
+		console.error("Unauthorized request to protected procedure");
+		throw new TRPCError({ code: "UNAUTHORIZED" });
+	}
+	console.log(ctx.session.user.id, "Protected Procedure user id");
+	const userDevice = await ctx.db.userDevice.findFirst({
+		where: { id: ctx.session.user.id },
+	});
+
+	if (!userDevice) {
+		console.error(`No user device found for user ${ctx.session.user.id}`);
+		throw new TRPCError({ code: "BAD_REQUEST" });
+	}
+	if (!userDevice.isTrusted) {
+		console.error(
+			`Request from untrusted device ${userDevice.id} for user ${ctx.session.user.id}`,
+		);
+		throw new TRPCError({ code: "UNAUTHORIZED" });
+	}
+
+	return next({
+		ctx: {
+			// infers the `session` as non-nullable
+			session: {
+				...ctx.session,
+				user: ctx.session.user,
+				userId: userDevice.userId,
+			},
+		},
+	});
 });
