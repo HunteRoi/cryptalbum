@@ -17,6 +17,7 @@ NEXTAUTH_URL="http://localhost:3000"
 MINIO_ROOT_USER=root
 MINIO_ROOT_PASSWORD=supersecretpassword
 ```
+As mentionned in the minio's example .env file, the policy requires *a minimum of 9 characters, including an uppercase and numbers*.
   - `.postgres.env` (the values are extracted from the database URL in the `.env` file)
 ```bash
 POSTGRES_USER=postgres
