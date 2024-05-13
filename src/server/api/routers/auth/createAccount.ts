@@ -18,7 +18,9 @@ export const createAccount = publicProcedure
 			input: { email, publicKey, deviceName, name, symmetricalKey },
 			ctx,
 		}) => {
-			console.info(`Creating account for ${email}`);
+			const logger = ctx.logWrapper.enrichWithAction('CREATE_ACCOUNT').create();
+
+			logger.info('Creating account for {email}', email);
 			try {
 				const userExists = await ctx.db.user.findUnique({
 					where: { email },
@@ -42,13 +44,9 @@ export const createAccount = publicProcedure
 						},
 					},
 				});
-				console.info(`Account created for ${email} with id ${user.id}`);
+				logger.info('Account created for {email} with id {userId}', user.email, user.id);
 			} catch (error) {
-				console.error(
-					`Failed to create account for ${email} with error: ${JSON.stringify(
-						error,
-					)}`,
-				);
+				logger.error('Failed to create account for {email} with error: {error}', email, error);
 				throw new TRPCError({
 					code: "INTERNAL_SERVER_ERROR",
 					message: "Failed to create account",

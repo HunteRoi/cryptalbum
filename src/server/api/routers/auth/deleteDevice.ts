@@ -10,7 +10,9 @@ export const deleteDevice = protectedProcedure
 		}),
 	)
 	.mutation(async ({ input: { deviceId }, ctx }) => {
-		console.info(`Deleting device ${deviceId}`);
+		const logger = ctx.logWrapper.enrichWithAction("DELETE_DEVICE").create();
+
+		logger.info('Deleting device {deviceId}', deviceId);
 		const device = await ctx.db.userDevice.findUnique({
 			where: { id: deviceId },
 		});
@@ -29,5 +31,5 @@ export const deleteDevice = protectedProcedure
 		await ctx.db.userDevice.delete({
 			where: { id: deviceId },
 		});
-		console.info(`Device ${deviceId} deleted`);
+		logger.info('Device {deviceId} deleted', deviceId);
 	});

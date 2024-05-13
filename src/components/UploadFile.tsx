@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { z } from "zod";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -23,7 +22,6 @@ import {
 	encryptFormValue,
 	exportSymmetricalKey,
 	generateSymmetricalKey,
-	importRsaPublicKey,
 	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
@@ -32,7 +30,7 @@ import { arrayBufferToHex, fileSchemaFront } from "@cryptalbum/utils/file";
 import FileSkeleton from "./FileSkeleton";
 import { ToastAction } from "./ui/toast";
 import { useToast } from "./ui/use-toast";
-import { useUserData, UserData } from "./providers/UserDataProvider";
+import { useUserData } from "./providers/UserDataProvider";
 
 const formSchema = z.object({
 	file: fileSchemaFront,
@@ -158,8 +156,8 @@ export default function FileUploadForm() {
 									onChange={(e) => setFile(e.target.files?.item(0) ?? null)}
 								/>
 							</FormControl>
-							{preview 
-								? <img src={preview} alt="preview" height={240} width={360} lassName="mx-auto rounded-xl" />
+							{preview
+								? <img src={preview} alt="preview" height={240} width={360} className="mx-auto rounded-xl" />
 								: <FileSkeleton />
 							}
 							<FormMessage />

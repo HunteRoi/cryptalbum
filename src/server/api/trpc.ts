@@ -13,6 +13,7 @@ import { ZodError } from "zod";
 
 import { getServerAuthSession } from "@cryptalbum/server/auth";
 import { db } from "@cryptalbum/server/db";
+import { unconfiguredLogger } from "@cryptalbum/server/logger";
 
 /**
  * 1. CONTEXT
@@ -28,8 +29,14 @@ import { db } from "@cryptalbum/server/db";
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
 	const session = await getServerAuthSession();
+	const logWrapper = unconfiguredLogger.enrichWithAction("UNKNOWN");
+
+	if (session) {
+		logWrapper.enrichWithUserId(session.user.id);
+	}
 
 	return {
+		logWrapper,
 		db,
 		session,
 		...opts,
@@ -96,23 +103,25 @@ export const publicProcedure = t.procedure;
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
+	const defaultLogger = ctx.logWrapper.create();
+
 	if (!ctx.session || !ctx.session.user) {
-		console.error("Unauthorized request to protected procedure");
+		defaultLogger.error("Unauthorized request to protected procedure");
 		throw new TRPCError({ code: "UNAUTHORIZED" });
 	}
-	console.log(ctx.session.user.id, "Protected Procedure user id");
+
+	defaultLogger.verbose("Load Protected Procedure");
+
 	const userDevice = await ctx.db.userDevice.findFirst({
 		where: { id: ctx.session.user.id },
 	});
 
 	if (!userDevice) {
-		console.error(`No user device found for user ${ctx.session.user.id}`);
+		defaultLogger.error('No user device found');
 		throw new TRPCError({ code: "BAD_REQUEST" });
 	}
 	if (!userDevice.symmetricalKey) {
-		console.error(
-			`Request from untrusted device ${userDevice.id} for user ${ctx.session.user.id}`,
-		);
+		defaultLogger.error('Request from untrusted device {deviceId}', userDevice.id);
 		throw new TRPCError({ code: "UNAUTHORIZED" });
 	}
 
@@ -124,6 +133,8 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
 				user: ctx.session.user,
 				userId: userDevice.userId,
 			},
+			// provides a logger with the current user
+			defaultLogger
 		},
 	});
 });

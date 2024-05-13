@@ -11,17 +11,20 @@ export const createDevice = publicProcedure
 		}),
 	)
 	.mutation(async ({ input: { email, publicKey }, ctx }) => {
-		console.info(`Creating device for ${email}`);
-		const user = await ctx.db.user.findUnique({
-			where: { email },
-		});
-		if (!user) {
-			throw new TRPCError({
-				code: "NOT_FOUND",
-				message: "User not found",
-			});
-		}
+		const logger = ctx.logWrapper.enrichWithAction('CREATE_DEVICE').create();
+
+		logger.info('Creating device for {email}', email);
 		try {
+			const user = await ctx.db.user.findUnique({
+				where: { email },
+			});
+			if (!user) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "User not found",
+				});
+			}
+
 			const userDevice = await ctx.db.userDevice.create({
 				data: {
 					symmetricalKey: undefined,
@@ -33,15 +36,12 @@ export const createDevice = publicProcedure
 					},
 				},
 			});
-			console.info(`Device created for ${email} with id ${userDevice.id}`);
+
+			ctx.logWrapper.enrichWithUserId(user.id).create().info('Device created for {email} with id {deviceId}', email, userDevice.id);
 
 			return userDevice.id;
 		} catch (error) {
-			console.error(
-				`Failed to create device for ${email} with error: ${JSON.stringify(
-					error,
-				)}`,
-			);
+			logger.error('Failed to create device for {email} with error: {error}', email, error);
 			throw new TRPCError({
 				code: "INTERNAL_SERVER_ERROR",
 				message: "Failed to create device",

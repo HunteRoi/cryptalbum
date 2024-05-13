@@ -24,9 +24,9 @@ export const imageRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ ctx, input: { payload, metadata } }) => {
+			const logger = ctx.logWrapper.enrichWithAction("UPLOAD_IMAGE").create();
+			logger.info('Uploading image');
 			try {
-				console.info(`Uploading image for user ${ctx.session.userId}`);
-
 				await ctx.db.$transaction(async (database) => {
 					const { id } = await database.picture.create({
 						data: {
@@ -40,7 +40,7 @@ export const imageRouter = createTRPCRouter({
 							},
 						},
 					});
-					
+
 					const minioClient = new MinioClient({
 						endPoint: env.MINIO_ENDPOINT,
 						port: env.MINIO_PORT,
@@ -49,7 +49,7 @@ export const imageRouter = createTRPCRouter({
 						secretKey: env.MINIO_SECRET_KEY,
 						region: env.MINIO_REGION,
 					});
-					
+
 					const bucketExists = await minioClient.bucketExists(env.MINIO_BUCKET);
 					if (!bucketExists) {
 						await minioClient.makeBucket(env.MINIO_BUCKET, env.MINIO_REGION);
@@ -57,11 +57,7 @@ export const imageRouter = createTRPCRouter({
 					await minioClient.putObject(env.MINIO_BUCKET, id, payload.image);
 				});
 			} catch (error) {
-				console.error(
-					`Failed to upload image for user ${
-						ctx.session.userId
-					} with error: ${JSON.stringify(error)}`,
-				);
+				logger.error('Failed to upload image with error {error}', error);
 				throw new TRPCError({
 					code: "INTERNAL_SERVER_ERROR",
 					message: "Failed to upload image",

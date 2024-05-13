@@ -52,7 +52,8 @@ model User {
   devices       UserDevice[]
   albums        Album[]
   pictures      Picture[]
-  SharedKey     SharedKey[]
+  sharedKeys     SharedKey[]
+  logs          Log[]
 }
 
 model VerificationToken {
@@ -121,4 +122,16 @@ model Album {
   owner     User      @relation(fields: [userId], references: [id])
   pictures  Picture[]
   // needs a key
+}
+model Log {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    action    String
+    message   String
+    args      Json?
+    level     String
+
+    userId    String?
+    user      User?     @relation(fields: [userId], references: [id])
 }

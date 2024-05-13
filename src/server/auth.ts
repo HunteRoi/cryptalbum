@@ -8,6 +8,7 @@ import type { Adapter } from "next-auth/adapters";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { db } from "@cryptalbum/server/db";
+import { unconfiguredLogger } from "./logger";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -84,12 +85,15 @@ export const authOptions: NextAuthOptions = {
 				challengeId: { type: "text" },
 			},
 			async authorize(credentials) {
+				const defaultWrapper = unconfiguredLogger.enrichWithAction("AUTHENTICATE");
+				const defaultLogger = defaultWrapper.create();
+
 				if (!credentials) {
-					console.error("No credentials provided");
+					defaultLogger.error("No credentials provided");
 					return null;
 				}
 				if (!credentials.challengeId || !credentials.challenge) {
-					console.error("No challengeId or challenge provided");
+					defaultLogger.error("No challengeId or challenge provided");
 					return null;
 				}
 				const challenge = await db.userDeviceChallenge.findFirst({
@@ -105,8 +109,11 @@ export const authOptions: NextAuthOptions = {
 						},
 					},
 				});
-				console.info(
-					`Logging attempt from deviceId ${challenge?.userDevice.id} with challengeId ${credentials.challengeId} and challenge ${credentials.challenge}`,
+				defaultLogger.info(
+					"Logging attempt to {email} from deviceId {deviceId} with challengeId {challengeId}",
+					credentials.email,
+					challenge?.userDevice.id,
+					challenge?.id
 				);
 				if (
 					!challenge ||
@@ -118,6 +125,9 @@ export const authOptions: NextAuthOptions = {
 				if (challenge.userDevice.user.email !== credentials.email) {
 					return null;
 				}
+
+				const logger = defaultWrapper.enrichWithUserId(challenge.userDevice.user.id).create();
+
 				await db.userDeviceChallenge.update({
 					where: {
 						id: credentials.challengeId,
@@ -127,12 +137,13 @@ export const authOptions: NextAuthOptions = {
 					},
 				});
 				if (!challenge) {
-					console.error(`No challenge found for ${credentials.email}`);
+					logger.error('No challenge found for {email}', credentials.email);
 					return null;
 				}
 				if (!challenge.userDevice.symmetricalKey) {
-					console.error(
-						`Device ${challenge.userDevice.id} is not trusted for user ${challenge.userDevice.user.email}`,
+					logger.error(
+						'Device {deviceId} is not trusted for user {email}',
+						challenge.userDevice.id, challenge.userDevice.user.email
 					);
 					return null;
 				}
@@ -144,10 +155,8 @@ export const authOptions: NextAuthOptions = {
 						lastLogin: new Date(),
 					},
 				});
-				console.info(
-					`User ${challenge.userDevice.user.email} logged in with device ${challenge.userDevice.id}`,
-				);
-				console.log(challenge.userDevice.id, "Authorized");
+
+				logger.info('User {email} logged in with device {deviceId}', challenge.userDevice.user.email, challenge.userDevice.id);
 				return {
 					id: challenge.userDevice.id,
 					email: credentials.email,

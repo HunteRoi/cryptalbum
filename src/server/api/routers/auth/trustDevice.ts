@@ -13,7 +13,9 @@ export const trustDevice = protectedProcedure
 	)
 	.mutation(
 		async ({ input: { deviceId, symmetricalKey, deviceName }, ctx }) => {
-			console.info(`Trusting device ${deviceId}`);
+			const logger = ctx.logWrapper.enrichWithAction("TRUST_DEVICE").create();
+
+			logger.info('Trusting device {deviceId}', deviceId);
 			const device = await ctx.db.userDevice.findUnique({
 				where: { id: deviceId },
 			});
@@ -33,6 +35,6 @@ export const trustDevice = protectedProcedure
 				where: { id: deviceId },
 				data: { symmetricalKey, name: deviceName },
 			});
-			console.info(`Device ${deviceId} is now trusted`);
+			logger.info('Device {deviceId} is now trusted', deviceId);
 		},
 	);

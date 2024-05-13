@@ -12,19 +12,21 @@ export const generateChallenge = publicProcedure
 		}),
 	)
 	.mutation(async ({ input: { publicKey }, ctx }) => {
-		console.info(`Creating challenge for device ${publicKey}`);
+		const logger = ctx.logWrapper.enrichWithAction("GENERATE_CHALLENGE").create();
+
+		logger.info('Creating challenge for device {publicKey}', publicKey);
 		const userDevice = await ctx.db.userDevice.findUnique({
 			where: { publicKey },
 		});
 		if (!userDevice) {
-			console.error(`Device not found for public key ${publicKey}`);
+			logger.error('Device not found for public key {publicKey}', publicKey);
 			throw new TRPCError({
 				code: "NOT_FOUND",
 				message: "Device not found",
 			});
 		}
 		if (!userDevice.symmetricalKey) {
-			console.error(`Device ${userDevice.id} is not trusted`);
+			logger.error('Device {deviceId} is not trusted', userDevice.id);
 			throw new TRPCError({
 				code: "UNAUTHORIZED",
 				message: "Device is not trusted",
@@ -49,7 +51,7 @@ export const generateChallenge = publicProcedure
 				},
 			});
 
-			console.info(`Challenge created for deviceId ${userDevice.id}`);
+			logger.info('Challenge created for deviceId {deviceId}', userDevice.id);
 			return {
 				challengerId: deviceChallenge.id,
 				challenge: encryptedChallenge,
