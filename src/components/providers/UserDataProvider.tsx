@@ -1,6 +1,6 @@
 "use client";
 
-import { decrypt, loadKeyPair } from "@cryptalbum/crypto";
+import { decrypt, importSymmetricalKey, loadKeyPair } from "@cryptalbum/crypto";
 
 import { useSession } from "next-auth/react";
 import {
@@ -12,17 +12,20 @@ import {
 	useState,
 } from "react";
 
-type UserData = {
+export type UserData = {
 	id: string;
 	email: string;
 	name: string;
 	deviceName: string;
+	symmetricalKey: CryptoKey;
 };
 
 const UserDataContext = createContext<UserData | null>(null);
 
-export function useUserData() {
-	return useContext(UserDataContext);
+export function useUserData(): UserData | null {
+	const context = useContext(UserDataContext);
+        if (!context) throw new Error('useUserData cannot be used outside a UserDataProvider');
+        return context;
 }
 
 export default function UserDataProvider({
@@ -35,16 +38,29 @@ export default function UserDataProvider({
 		const keyPair = await loadKeyPair();
 
 		if (keyPair && session) {
-			const { id, email, ...encryptedValues } = session.user;
+			const { id, email, symmetricalKey, ...encryptedValues } = session.user;
+
+			const decipheredSymmetricalKey = (await decrypt(
+				keyPair.privateKey,
+				Buffer.from(atob(symmetricalKey), "hex"),
+			)) as string;
+
+			const importedSymmetricalKey = (await importSymmetricalKey(
+				decipheredSymmetricalKey,
+			)) as CryptoKey;
 
 			const decipheredValues = await Promise.all(
-				Object.entries(encryptedValues).map(async ([key, value]) => {
-					const decipheredValue = await decrypt(
-						keyPair.privateKey,
-						Buffer.from(value, "hex"),
+				Object.entries(encryptedValues).map(async ([key, base64Value]) => {
+					const value = atob(base64Value);
+					const iv = new Uint8Array(
+						Array.from(value.slice(0, 12)).map((ch) => ch.charCodeAt(0)),
 					);
-					// biome-ignore lint/style/noNonNullAssertion: We know that the value will be a string as we are decrypting it from the pubkey-encrypted value
-					return [key, decipheredValue!.toString()];
+					const decipheredValue = (await decrypt(
+						importedSymmetricalKey,
+						Buffer.from(value.slice(12), "hex"),
+						iv,
+					)) as string;
+					return [key, decipheredValue];
 				}),
 			);
 
@@ -54,6 +70,7 @@ export default function UserDataProvider({
 				name: decipheredValues.find(([key]) => key === "name")?.[1] ?? "",
 				deviceName:
 					decipheredValues.find(([key]) => key === "deviceName")?.[1] ?? "",
+				symmetricalKey: importedSymmetricalKey,
 			});
 		}
 	}, [session]);

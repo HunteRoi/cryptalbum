@@ -1,5 +1,6 @@
 "use client";
 
+import DeviceLinkingRequestForm from "@cryptalbum/app/auth/link/_components/DeviceLinkingRequestForm";
 import RedirectionLink from "@cryptalbum/components/RedirectionLink";
 import {
 	Card,
@@ -9,26 +10,24 @@ import {
 	CardTitle,
 } from "@cryptalbum/components/ui/card";
 
-import LinkingRequestForm from "@cryptalbum/app/auth/register/_components/LinkingRequestForm";
-
-export default function Register() {
+export default function LinkDevice() {
 	return (
 		<Card className="mx-auto max-w-sm">
 			<CardHeader>
-				<CardTitle>Register</CardTitle>
+				<CardTitle>Add a new device</CardTitle>
 				<CardDescription>
-					Enter your email and name below to register your account
+					Link a new device to your account using your email
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<LinkingRequestForm />
+				<DeviceLinkingRequestForm />
 				<RedirectionLink
 					link={{ href: "/auth/login", text: "Login" }}
 					contents="Already have an account?"
 				/>
 				<RedirectionLink
-					link={{ href: "/auth/link", text: "Create a linking request" }}
-					contents="New device?"
+					link={{ href: "/auth/register", text: "Sign up" }}
+					contents="Don't have an account?"
 				/>
 			</CardContent>
 		</Card>

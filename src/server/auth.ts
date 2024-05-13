@@ -23,6 +23,7 @@ declare module "next-auth" {
 			email: string;
 			deviceName: string;
 			name: string;
+			symmetricalKey: string;
 		};
 	}
 
@@ -54,10 +55,13 @@ export const authOptions: NextAuthOptions = {
 			});
 
 			if (user) {
+				// biome-ignore lint/style/noNonNullAssertion: If the user exists, a device will also exist
+				const { name: deviceName, symmetricalKey } = userDevice!;
+
 				session.user = user;
 				session.user.id = data.token.id;
-				// biome-ignore lint/style/noNonNullAssertion: If the user exists, a device will also exist
-				session.user.deviceName = userDevice!.name;
+				session.user.deviceName = deviceName as string;
+				session.user.symmetricalKey = symmetricalKey as string;
 			}
 
 			return session;
@@ -102,7 +106,7 @@ export const authOptions: NextAuthOptions = {
 					},
 				});
 				console.info(
-					`Logging attemps from deviceId ${challenge?.userDevice.id} with challengeId ${credentials.challengeId} and challenge ${credentials.challenge}`,
+					`Logging attempt from deviceId ${challenge?.userDevice.id} with challengeId ${credentials.challengeId} and challenge ${credentials.challenge}`,
 				);
 				if (
 					!challenge ||
@@ -126,7 +130,7 @@ export const authOptions: NextAuthOptions = {
 					console.error(`No challenge found for ${credentials.email}`);
 					return null;
 				}
-				if (!challenge.userDevice.isTrusted) {
+				if (!challenge.userDevice.symmetricalKey) {
 					console.error(
 						`Device ${challenge.userDevice.id} is not trusted for user ${challenge.userDevice.user.email}`,
 					);

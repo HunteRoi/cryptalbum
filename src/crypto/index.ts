@@ -74,26 +74,34 @@ export async function importRsaPublicKey(
 }
 
 export async function encrypt(
-	publicKey: CryptoKey,
+	key: CryptoKey,
 	data: string,
+	iv?: Uint8Array,
 ): Promise<string> {
 	const encoded = new TextEncoder().encode(data);
 	const encrypted = await crypto.encrypt(
-		{ name: "RSA-OAEP" },
-		publicKey,
+		{
+			name: key.algorithm.name,
+			iv,
+		},
+		key,
 		encoded,
 	);
 	return Buffer.from(encrypted).toString("hex");
 }
 
 export async function decrypt(
-	privateKey: CryptoKey,
+	key: CryptoKey,
 	data: ArrayBuffer,
+	iv?: Uint8Array,
 ): Promise<string | undefined> {
 	try {
 		const decrypted = await crypto.decrypt(
-			{ name: "RSA-OAEP" },
-			privateKey,
+			{
+				name: key.algorithm.name,
+				iv,
+			},
+			key,
 			data,
 		);
 		return new TextDecoder().decode(decrypted);
@@ -151,4 +159,17 @@ export async function decryptFileSymmetrical(
 		key,
 		file,
 	);
+}
+
+export async function encryptFormValue(
+	value: string,
+	key: CryptoKey,
+	iv: Uint8Array,
+) {
+	const ivString = Array.from(iv)
+		.map((b) => String.fromCharCode(b))
+		.join("");
+	const encryptedValue = await encrypt(key, value, iv);
+
+	return btoa(`${ivString}${encryptedValue}`);
 }

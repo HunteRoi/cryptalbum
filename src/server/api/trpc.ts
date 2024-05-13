@@ -109,7 +109,7 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
 		console.error(`No user device found for user ${ctx.session.user.id}`);
 		throw new TRPCError({ code: "BAD_REQUEST" });
 	}
-	if (!userDevice.isTrusted) {
+	if (!userDevice.symmetricalKey) {
 		console.error(
 			`Request from untrusted device ${userDevice.id} for user ${ctx.session.user.id}`,
 		);
