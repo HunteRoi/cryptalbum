@@ -76,7 +76,7 @@ export async function importRsaPublicKey(
 export async function encrypt(
 	key: CryptoKey,
 	data: string,
-	iv?: Uint8Array,
+	iv: Uint8Array = new Uint8Array(12),
 ): Promise<string> {
 	const encoded = new TextEncoder().encode(data);
 	const encrypted = await crypto.encrypt(
@@ -93,7 +93,7 @@ export async function encrypt(
 export async function decrypt(
 	key: CryptoKey,
 	data: ArrayBuffer,
-	iv?: Uint8Array,
+	iv: Uint8Array = new Uint8Array(12),
 ): Promise<string | undefined> {
 	try {
 		const decrypted = await crypto.decrypt(

@@ -6,7 +6,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { UserDevice } from "@cryptalbum/app/profile/manageDevices/page";
+import type { UserDevice } from "./UntrustedDevicesTable";
 import {
 	type UserData,
 	useUserData,

@@ -52,6 +52,7 @@ model User {
   devices       UserDevice[]
   albums        Album[]
   pictures      Picture[]
+  SharedKey     SharedKey[]
 }
 
 model VerificationToken {
@@ -73,7 +74,7 @@ model UserDevice {
   updatedAt      DateTime              @updatedAt
   user           User                  @relation(fields: [userId], references: [id])
   challenges     UserDeviceChallenge[]
-  shareds        Shared[]
+  shareds        SharedKey[]
 }
 
 model UserDeviceChallenge {
@@ -88,24 +89,27 @@ model UserDeviceChallenge {
 }
 
 model Picture {
-  id          String        @id @default(cuid())
-  userId      String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  shareds     Shared[]
-  albums      Album[]
-  owner       User          @relation(fields: [userId], references: [id])
+  id        String      @id @default(cuid())
+  userId    String
+  metadata  Json
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  shareds   SharedKey[]
+  albums    Album[]
+  owner     User        @relation(fields: [userId], references: [id])
 }
 
-model Shared {
-  id          String     @id @default(cuid())
-  userId      String
-  photoId     String
-  key         String
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  user_device UserDevice @relation(fields: [userId], references: [id])
-  picture     Picture    @relation(fields: [photoId], references: [id])
+model SharedKey {
+  id           String      @id @default(cuid())
+  userId       String
+  photoId      String
+  key          String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  user         User        @relation(fields: [userId], references: [id])
+  picture      Picture     @relation(fields: [photoId], references: [id])
+  UserDevice   UserDevice? @relation(fields: [userDeviceId], references: [id])
+  userDeviceId String?
 }
 
 model Album {
@@ -118,4 +122,3 @@ model Album {
   pictures  Picture[]
   // needs a key
 }
-

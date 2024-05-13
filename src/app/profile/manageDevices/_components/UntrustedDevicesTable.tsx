@@ -2,7 +2,6 @@
 
 import React from "react";
 
-import type { UserDevice } from "@cryptalbum/app/profile/manageDevices/page";
 import {
 	Table,
 	TableBody,
@@ -15,6 +14,17 @@ import {
 } from "@cryptalbum/components/ui/table";
 import { api } from "@cryptalbum/trpc/react";
 import UntrustedDevicesTableRow from "./UntrustedDevicesTableRow";
+
+export type UserDevice = {
+	id: string;
+	userId: string;
+	publicKey: string;
+	symmetricalKey: string | null;
+	name: string | null;
+	lastLogin: Date | null;
+	createdAt: Date;
+	updatedAt: Date;
+};
 
 export default function UntrustedDevicesTable() {
 	const untrustedDevicesQuery = api.auth.listUntrustedDevices.useQuery();

@@ -23,9 +23,7 @@ export type UserData = {
 const UserDataContext = createContext<UserData | null>(null);
 
 export function useUserData(): UserData | null {
-	const context = useContext(UserDataContext);
-        if (!context) throw new Error('useUserData cannot be used outside a UserDataProvider');
-        return context;
+	return useContext(UserDataContext);
 }
 
 export default function UserDataProvider({
@@ -75,10 +73,9 @@ export default function UserDataProvider({
 		}
 	}, [session]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		void decipherSession();
-	}, [session]);
+	}, [decipherSession]);
 
 	return (
 		<UserDataContext.Provider value={userData}>

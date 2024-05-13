@@ -1,4 +1,5 @@
 import { authRouter } from "@cryptalbum/server/api/routers/auth";
+import { imageRouter } from "@cryptalbum/server/api/routers/image";
 import {
 	createCallerFactory,
 	createTRPCRouter,
@@ -11,6 +12,7 @@ import {
  */
 export const appRouter = createTRPCRouter({
 	auth: authRouter,
+	image: imageRouter,
 });
 
 // export type definition of API

@@ -1,5 +1,12 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { z } from "zod";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+
 import { Button } from "@cryptalbum/components/ui/button";
 import {
 	Form,
@@ -13,6 +20,7 @@ import { Input } from "@cryptalbum/components/ui/input";
 import {
 	encrypt,
 	encryptFileSymmetrical,
+	encryptFormValue,
 	exportSymmetricalKey,
 	generateSymmetricalKey,
 	importRsaPublicKey,
@@ -21,39 +29,45 @@ import {
 import { api } from "@cryptalbum/trpc/react";
 import { arrayBufferToHex, fileSchemaFront } from "@cryptalbum/utils/file";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import FileSkeleton from "./FileSkeleton";
 import { ToastAction } from "./ui/toast";
 import { useToast } from "./ui/use-toast";
+import { useUserData, UserData } from "./providers/UserDataProvider";
 
 const formSchema = z.object({
 	file: fileSchemaFront,
+	fileName: z.string(),
 });
 
 export default function FileUploadForm() {
 	const { toast } = useToast();
-	const { data } = useSession();
+	const userData = useUserData();
 
-	// const uploadMutation = api.picture.upload.useMutation();
-	const userDevicesQuery = api.user.userDevice.useQuery(undefined, {
-		//Disable query if user is not logged in
-		enabled: !!data,
-	});
+	const uploadMutation = api.image.upload.useMutation();
 
 	const [file, setFile] = useState<File | null>(null);
 	const [preview, setPreview] = useState<string | null>(null);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
+		defaultValues: {
+			file: null,
+			fileName: "",
+		},
 	});
-	const utils_trpc = api.useUtils();
+
 	const fileRef = form.register("file");
 
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
+		if (!userData) {
+			toast({
+				title: "Failed to upload file",
+				description: "You need to be logged in to be able to upload files",
+				variant: "destructive",
+				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+			});
+			return;
+		}
 		if (!data.file) {
 			form.setError("file", {
 				type: "manual",
@@ -68,15 +82,6 @@ export default function FileUploadForm() {
 			return;
 		}
 		try {
-			if (!userDevicesQuery.data) {
-				toast({
-					title: "Failed to upload file",
-					description: "No devices found",
-					variant: "destructive",
-					action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
-				});
-				return;
-			}
 			const keyPair = await loadKeyPair();
 			if (!keyPair) {
 				toast({
@@ -87,34 +92,29 @@ export default function FileUploadForm() {
 				});
 				return;
 			}
+
 			const cryptoKey = await generateSymmetricalKey();
-			const encrypted = await encryptFileSymmetrical(data.file, cryptoKey);
-			const fileData = arrayBufferToHex(encrypted);
+			const encryptedFile = await encryptFileSymmetrical(data.file, cryptoKey);
+			const fileData = arrayBufferToHex(encryptedFile);
 			const exportedKey = await exportSymmetricalKey(cryptoKey);
-			const userDeviceKey: { device_id: string; key: string }[] = [];
-			for (const userDevice of userDevicesQuery.data) {
-				const publicKey = await importRsaPublicKey(userDevice.publicKey);
-				const encryptedKey = await encrypt(publicKey, exportedKey);
-				userDeviceKey.push({
-					device_id: userDevice.id,
-					key: encryptedKey,
-				});
-			}
-			// TODO: Uncomment this when the upload mutation is implemented
-			// await uploadMutation.mutateAsync(
-			// 	{
-			// 		file: fileData,
-			// 		keys_user_device: userDeviceKey,
-			// 	},
-			// 	{
-			// 		onSuccess: () => {
-			// 			void utils_trpc.invalidate(undefined, {
-			// 				refetchType: "all",
-			// 				queryKey: ["pictures.getAll"],
-			// 			});
-			// 		},
-			// 	},
-			// );
+			const encryptedKey = await encrypt(userData.symmetricalKey, exportedKey);
+			const encryptedFileName = await encryptFormValue(
+				data.fileName,
+				cryptoKey,
+				window.crypto.getRandomValues(new Uint8Array(12)),
+			);
+			const payload = {
+				image: fileData,
+				symmetricalKey: encryptedKey,
+				imageName: encryptedFileName,
+				requestDate: new Date(),
+			};
+			await uploadMutation.mutateAsync({
+				metadata: {
+					requestSize: JSON.stringify(payload).length,
+				},
+				payload,
+			});
 			setFile(null);
 			form.reset();
 			toast({
@@ -147,33 +147,37 @@ export default function FileUploadForm() {
 				<FormField
 					control={form.control}
 					name="file"
-					render={() => {
-						return (
-							<FormItem>
-								<FormLabel>File</FormLabel>
-								<FormControl>
-									<Input
-										type="file"
-										placeholder="shadcn"
-										{...fileRef}
-										onChange={(e) => setFile(e.target.files?.item(0) ?? null)}
-									/>
-								</FormControl>
-								{preview ? (
-									<img
-										src={preview}
-										alt="preview"
-										height={240}
-										width={360}
-										className="mx-auto rounded-xl"
-									/>
-								) : (
-									<FileSkeleton />
-								)}
-								<FormMessage />
-							</FormItem>
-						);
-					}}
+					render={() => (
+						<FormItem>
+							<FormLabel>File</FormLabel>
+							<FormControl>
+								<Input
+									type="file"
+									placeholder="shadcn"
+									{...fileRef}
+									onChange={(e) => setFile(e.target.files?.item(0) ?? null)}
+								/>
+							</FormControl>
+							{preview 
+								? <img src={preview} alt="preview" height={240} width={360} lassName="mx-auto rounded-xl" />
+								: <FileSkeleton />
+							}
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="fileName"
+					render={(input) => (
+						<FormItem>
+							<FormLabel>File name</FormLabel>
+							<FormControl>
+								<Input type="text" placeholder="My awesome picture" {...input}/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
 				/>
 				<div className="flex pt-4">
 					<Button type="submit" className="mx-auto">

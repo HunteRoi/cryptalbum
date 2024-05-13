@@ -32,6 +32,13 @@ export const env = createEnv({
 			process.env.VERCEL ? z.string() : z.string().url(),
 		),
 		MAX_FILE_SIZE_MB: z.number().default(50),
+		MINIO_ACCESS_KEY: z.string().min(1),
+		MINIO_SECRET_KEY: z.string().min(1),
+		MINIO_ENDPOINT: z.string(),
+		MINIO_PORT: z.number().default(9000),
+		MINIO_BUCKET: z.string().default("cryptalbum"),
+		MINIO_REGION: z.string().default("eu-west-1"),
+		MINIO_SECURE: z.boolean().default(false),
 	},
 
 	/**
@@ -57,6 +64,13 @@ export const env = createEnv({
 			process.env.MAX_FILE_SIZE_MB ?? "50",
 			10,
 		),
+		MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
+		MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
+		MINIO_ENDPOINT: process.env.MINIO_ENDPOINT,
+		MINIO_PORT: Number.parseInt(process.env.MINIO_PORT ?? "9000", 10),
+		MINIO_BUCKET: process.env.MINIO_BUCKET,
+		MINIO_REGION: process.env.MINIO_REGION,
+		MINIO_SECURE: Boolean(process.env.MINIO_SECURE),
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

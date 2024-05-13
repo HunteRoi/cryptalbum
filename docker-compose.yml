@@ -1,0 +1,80 @@
+version: "3.9"
+
+services:
+  minio:
+    image: quay.io/minio/minio
+    env_file:
+      - .minio.env
+    container_name: minio
+    command: server /data --console-address ":9001"
+    environment:
+      - "MINIO_SITE_REGION=eu-west-1"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./data/minio:/data
+    depends_on:
+      seqgelf:
+        condition: service_started
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "minio"
+
+  postgres:
+    image: postgres:16
+    container_name: cryptalbum_postgres
+    env_file:
+      - .postgres.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    depends_on:
+      seqgelf:
+        condition: service_started
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "postgres"
+
+  valkey:
+    image: valkey/valkey:7.2
+    container_name: valkey_7.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/valkey:/data
+    depends_on:
+      seqgelf:
+        condition: service_started
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "valkey"
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    ports:
+      - "5341:5341"
+      - "8081:80"
+    environment:
+      ACCEPT_EULA: Y
+    volumes:
+      - ./data/seq:/data
+
+  seqgelf:
+    image: datalust/seq-input-gelf
+    container_name: seq_forwarder
+    environment:
+      SEQ_ADDRESS: "http://seq:5341"
+    ports:
+      - "12201:12201/udp"
+    depends_on:
+      seq:
+        condition: service_started

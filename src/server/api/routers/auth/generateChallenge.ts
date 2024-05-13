@@ -1,7 +1,7 @@
 import { encrypt, importRsaPublicKey } from "@cryptalbum/crypto";
 import { publicProcedure } from "@cryptalbum/server/api/trpc";
 
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
