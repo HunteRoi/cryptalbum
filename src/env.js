@@ -39,6 +39,8 @@ export const env = createEnv({
 		MINIO_BUCKET: z.string().default("cryptalbum"),
 		MINIO_REGION: z.string().default("eu-west-1"),
 		MINIO_SECURE: z.boolean().default(false),
+		SEQ_URL: z.string().url(),
+		SEQ_API_KEY: z.string().min(1),
 	},
 
 	/**
@@ -71,6 +73,8 @@ export const env = createEnv({
 		MINIO_BUCKET: process.env.MINIO_BUCKET,
 		MINIO_REGION: process.env.MINIO_REGION,
 		MINIO_SECURE: Boolean(process.env.MINIO_SECURE),
+		SEQ_URL: process.env.SEQ_URL,
+		SEQ_API_KEY: process.env.SEQ_API_KEY,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

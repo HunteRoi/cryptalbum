@@ -1,7 +1,8 @@
-import { LoggerConfiguration, ConsoleSink, type Logger } from 'serilogger';
+import { LoggerConfiguration, ConsoleSink, type Logger, SeqSink } from 'serilogger';
 
-import { DatabaseSink } from './custom-sinks/DatabaseSink';
+import { env } from "@cryptalbum/env";
 import { db } from '../db';
+import { DatabaseSink } from './custom-sinks/DatabaseSink';
 import type { Action } from './actions';
 
 /**
@@ -29,7 +30,8 @@ export default class LogWrapper {
         this.#config = new LoggerConfiguration()
             .writeTo(new ConsoleSink({ includeTimestamps: true, includeProperties: false }))
             .enrich({ action, userId })
-            .writeTo(new DatabaseSink(db));
+            .writeTo(new DatabaseSink(db))
+            .writeTo(new SeqSink({ url: env.SEQ_URL, apiKey: env.SEQ_API_KEY }));
 
         return this;
     }
