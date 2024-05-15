@@ -71,7 +71,7 @@ export default function LinkingRequestForm() {
 						window.crypto.getRandomValues(new Uint8Array(12)),
 					),
 					encryptFormValue(
-						values.name,
+						values.deviceName,
 						symmetricalKey,
 						window.crypto.getRandomValues(new Uint8Array(12)),
 					),
@@ -99,7 +99,7 @@ export default function LinkingRequestForm() {
 		} catch (error) {
 			console.error("An error occurred. Please try again.", error);
 		}
-	}
+	};
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: The function has to run once on mount
 	useEffect(() => {

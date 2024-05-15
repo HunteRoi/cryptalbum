@@ -119,6 +119,7 @@ function NavigationCommandGroup({ setOpen }: NavigationCommandGroupProps) {
 				Gallery
 			</CommandItem>
 		</CommandGroup>
+		
 	);
 }
 

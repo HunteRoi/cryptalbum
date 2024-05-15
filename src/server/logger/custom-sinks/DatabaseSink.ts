@@ -2,6 +2,7 @@ import { type Sink, type LogEvent, LogEventLevel } from 'serilogger';
 import type { Prisma } from '@prisma/client';
 
 import type { DatabaseType } from '@cryptalbum/server/db';
+import { hasNonNullProp, isNonNull } from '@cryptalbum/utils/types';
 
 export class DatabaseSink implements Sink {
     private readonly database: DatabaseType;
@@ -20,24 +21,12 @@ export class DatabaseSink implements Sink {
         return Promise.resolve();
     }
 
-    private hasProp(obj: object, prop: string): obj is Record<string, string> {
-        return prop in obj;
-    }
-
-    private hasNonNullProp(obj: object, prop: string): obj is Record<string, NonNullable<string>> {
-        return this.hasProp(obj, prop) && this.isNonNull(obj[prop]);
-    }
-
-    private isNonNull<T>(value: T): value is NonNullable<T> {
-        return value !== null && value !== undefined;
-    }
-
     protected async writeToDatabase(event: LogEvent): Promise<void> {
         let userId: string | null = null;
-        if (this.hasNonNullProp(event.properties, 'userId') && this.isNonNull(event.properties.userId)) {
+        if (hasNonNullProp<object, string>(event.properties, 'userId') && isNonNull<string>(event.properties.userId)) {
             userId = event.properties.userId;
         }
-        const action: string = this.hasNonNullProp(event.properties, 'action') && this.isNonNull(event.properties.action) ? event.properties.action : 'UNKNOWN';
+        const action: string = hasNonNullProp<object, string>(event.properties, 'action') && isNonNull<string>(event.properties.action) ? event.properties.action : 'UNKNOWN';
         const message = event.messageTemplate.render(event.properties ?? {});
         const parameters = toJsonData(event.properties ?? {});
 

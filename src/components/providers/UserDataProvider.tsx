@@ -38,10 +38,10 @@ export default function UserDataProvider({
 		if (keyPair && session) {
 			const { id, email, symmetricalKey, ...encryptedValues } = session.user;
 
-			const decipheredSymmetricalKey = (await decrypt(
+			const decipheredSymmetricalKey = await decrypt(
 				keyPair.privateKey,
 				Buffer.from(atob(symmetricalKey), "hex"),
-			)) as string;
+			);
 
 			const importedSymmetricalKey = (await importSymmetricalKey(
 				decipheredSymmetricalKey,
@@ -53,11 +53,11 @@ export default function UserDataProvider({
 					const iv = new Uint8Array(
 						Array.from(value.slice(0, 12)).map((ch) => ch.charCodeAt(0)),
 					);
-					const decipheredValue = (await decrypt(
+					const decipheredValue = await decrypt(
 						importedSymmetricalKey,
 						Buffer.from(value.slice(12), "hex"),
 						iv,
-					)) as string;
+					);
 					return [key, decipheredValue];
 				}),
 			);

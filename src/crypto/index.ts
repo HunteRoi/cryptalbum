@@ -1,4 +1,4 @@
-// biome-ignore lint/style/useNodejsImportProtocol:
+// biome-ignore lint/style/useNodejsImportProtocol: webpack error on node:crypto
 import * as crypto_backend from "crypto";
 
 const crypto =
@@ -94,20 +94,16 @@ export async function decrypt(
 	key: CryptoKey,
 	data: ArrayBuffer,
 	iv: Uint8Array = new Uint8Array(12),
-): Promise<string | undefined> {
-	try {
-		const decrypted = await crypto.decrypt(
-			{
-				name: key.algorithm.name,
-				iv,
-			},
-			key,
-			data,
-		);
-		return new TextDecoder().decode(decrypted);
-	} catch (e) {
-		console.log(e);
-	}
+): Promise<string> {
+	const decrypted = await crypto.decrypt(
+		{
+			name: key.algorithm.name,
+			iv,
+		},
+		key,
+		data,
+	);
+	return new TextDecoder().decode(decrypted);
 }
 
 export function clearKeyPair() {
@@ -126,9 +122,7 @@ export async function exportSymmetricalKey(key: CryptoKey): Promise<string> {
 	return JSON.stringify(await crypto.exportKey("jwk", key));
 }
 
-export async function importSymmetricalKey(
-	key: string,
-): Promise<CryptoKey | null> {
+export async function importSymmetricalKey(key: string): Promise<CryptoKey> {
 	return await crypto.importKey(
 		"jwk",
 		JSON.parse(key) as JsonWebKey,
@@ -172,4 +166,13 @@ export async function encryptFormValue(
 	const encryptedValue = await encrypt(key, value, iv);
 
 	return btoa(`${ivString}${encryptedValue}`);
+}
+
+export async function decryptFormValue(value: string, key: CryptoKey) {
+	const decoded = atob(value);
+	const ivString = decoded.slice(0, 12);
+	const encryptedValue = decoded.slice(12);
+	const iv = Array.from(ivString).map((c) => c.charCodeAt(0));
+
+	return decrypt(key, Buffer.from(encryptedValue, "hex"), new Uint8Array(iv));
 }

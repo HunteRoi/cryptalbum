@@ -55,9 +55,8 @@ export const authOptions: NextAuthOptions = {
 				where: { id: data.token.id },
 			});
 
-			if (user) {
-				// biome-ignore lint/style/noNonNullAssertion: If the user exists, a device will also exist
-				const { name: deviceName, symmetricalKey } = userDevice!;
+			if (user && userDevice) {
+				const { name: deviceName, symmetricalKey } = userDevice;
 
 				session.user = user;
 				session.user.id = data.token.id;
@@ -85,7 +84,8 @@ export const authOptions: NextAuthOptions = {
 				challengeId: { type: "text" },
 			},
 			async authorize(credentials) {
-				const defaultWrapper = unconfiguredLogger.enrichWithAction("AUTHENTICATE");
+				const defaultWrapper =
+					unconfiguredLogger.enrichWithAction("AUTHENTICATE");
 				const defaultLogger = defaultWrapper.create();
 
 				if (!credentials) {
@@ -113,7 +113,7 @@ export const authOptions: NextAuthOptions = {
 					"Logging attempt to {email} from deviceId {deviceId} with challengeId {challengeId}",
 					credentials.email,
 					challenge?.userDevice.id,
-					challenge?.id
+					challenge?.id,
 				);
 				if (
 					!challenge ||
@@ -126,7 +126,9 @@ export const authOptions: NextAuthOptions = {
 					return null;
 				}
 
-				const logger = defaultWrapper.enrichWithUserId(challenge.userDevice.user.id).create();
+				const logger = defaultWrapper
+					.enrichWithUserId(challenge.userDevice.user.id)
+					.create();
 
 				await db.userDeviceChallenge.update({
 					where: {
@@ -137,13 +139,14 @@ export const authOptions: NextAuthOptions = {
 					},
 				});
 				if (!challenge) {
-					logger.error('No challenge found for {email}', credentials.email);
+					logger.error("No challenge found for {email}", credentials.email);
 					return null;
 				}
 				if (!challenge.userDevice.symmetricalKey) {
 					logger.error(
-						'Device {deviceId} is not trusted for user {email}',
-						challenge.userDevice.id, challenge.userDevice.user.email
+						"Device {deviceId} is not trusted for user {email}",
+						challenge.userDevice.id,
+						challenge.userDevice.user.email,
 					);
 					return null;
 				}
@@ -156,7 +159,11 @@ export const authOptions: NextAuthOptions = {
 					},
 				});
 
-				logger.info('User {email} logged in with device {deviceId}', challenge.userDevice.user.email, challenge.userDevice.id);
+				logger.info(
+					"User {email} logged in with device {deviceId}",
+					challenge.userDevice.user.email,
+					challenge.userDevice.id,
+				);
 				return {
 					id: challenge.userDevice.id,
 					email: credentials.email,

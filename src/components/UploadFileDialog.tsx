@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@cryptalbum/components/ui/button";
 import {
 	Dialog,
@@ -13,7 +15,9 @@ export function UploadFileDialog() {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button variant="outline">Upload file</Button>
+				<Button size="sm" className="ml-auto gap-1">
+					Upload file
+				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>

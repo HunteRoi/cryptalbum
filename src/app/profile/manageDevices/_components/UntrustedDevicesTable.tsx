@@ -27,10 +27,12 @@ export type UserDevice = {
 };
 
 export default function UntrustedDevicesTable() {
-	const untrustedDevicesQuery = api.auth.listUntrustedDevices.useQuery();
-
-	const untrustedDevices: Array<UserDevice> | undefined =
-		untrustedDevicesQuery.data;
+	const {
+		data: untrustedDevices,
+		isLoading,
+		isError,
+		isSuccess,
+	} = api.auth.listUntrustedDevices.useQuery();
 
 	return (
 		<Table>
@@ -50,14 +52,12 @@ export default function UntrustedDevicesTable() {
 			<TableFooter>
 				<TableRow>
 					<TableCell colSpan={3} className="text-center">
-						{untrustedDevicesQuery.isLoading ? "Loading..." : null}
-						{untrustedDevicesQuery.isError
-							? "An error occurred while fetching your devices"
-							: null}
-						{untrustedDevicesQuery.isSuccess && untrustedDevices?.length === 0
+						{isLoading ? "Loading..." : null}
+						{isError ? "An error occurred while fetching your devices" : null}
+						{isSuccess && untrustedDevices?.length === 0
 							? "No device request found."
 							: null}
-						{untrustedDevicesQuery.isSuccess &&
+						{isSuccess &&
 						untrustedDevices?.length &&
 						untrustedDevices?.length > 0
 							? `${untrustedDevices?.length} device request(s) found.`

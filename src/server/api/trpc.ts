@@ -10,9 +10,11 @@
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { Client as MinioClient } from "minio";
 
 import { getServerAuthSession } from "@cryptalbum/server/auth";
 import { db } from "@cryptalbum/server/db";
+import { env } from "@cryptalbum/env";
 import { unconfiguredLogger } from "@cryptalbum/server/logger";
 
 /**
@@ -125,6 +127,15 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
 		throw new TRPCError({ code: "UNAUTHORIZED" });
 	}
 
+	const minioClient = new MinioClient({
+        endPoint: env.MINIO_ENDPOINT,
+        port: env.MINIO_PORT,
+        useSSL: false,
+        accessKey: env.MINIO_ACCESS_KEY,
+        secretKey: env.MINIO_SECRET_KEY,
+        region: env.MINIO_REGION,
+    });
+
 	return next({
 		ctx: {
 			// infers the `session` as non-nullable
@@ -133,6 +144,7 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
 				user: ctx.session.user,
 				userId: userDevice.userId,
 			},
+			minio: minioClient,
 			// provides a logger with the current user
 			defaultLogger
 		},
