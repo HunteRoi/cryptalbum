@@ -1,29 +1,98 @@
 # CryptAlbum
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+<!-- PROJECT LOGO -->
+<a href="https://sonarcloud.io/summary/new_code?id=HunteRoi_cryptalbum">
+    <img src="https://sonarcloud.io/api/project_badges/measure?project=HunteRoi_cryptalbum&metric=alert_status" alt="Quality Gate Status"/>
+</a>
+<a href="https://snyk.io/test/github/hunteroi/cryptalbum">
+    <img src="https://snyk.io/test/github/hunteroi/cryptalbum/badge.svg" alt="Known Vulnerabilities" />
+</a>
+<a href="https://codescene.io/projects/51876">
+    <img src="https://codescene.io/projects/51876/status-badges/code-health" alt="CodeScene Health" />
+</a>
 
-## What's next? How do I make an app with this?
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+<!-- TABLE OF CONTENTS -->
+## Table of Contents
+[TOC]
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Overview
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+CryptAlbum is an end-to-end encrypted gallery of photos. You can access it from any device you want and store your photos safely to share to your friends and family.
 
-## Learn More
+![overview gif][./docs/assets/overview.gif]
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## How it works
+It is recommended to read the [documentation](./docs/) for more insight on the topic.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## Getting Started
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### Prerequisites
+The first step is basically to clone the repository (`git clone`). Once this is done, you have a few configuration steps to achieve.
 
-## How do I deploy this?
+1. Install and start Docker (you can use [Docker Desktop](https://www.docker.com/products/docker-desktop/) if you are on Windows).
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+2. Type `cp .minio.env.example .minio.env` to create a `.minio.env` file from the [example](.env.minio.example) available on the repo **and update the keys accordingly**:
+   - `MINIO_ROOT_USER` is the account's name ;
+   - `MINIO_ROOT_PASSWORD` is the account's password.
+
+1. Type `cp .postgres.env.example .postgres.env` to create a `.postgres.env` file from the [example](.env.postgres.example) available on the repo **and update the keys accordingly**:
+   - `POSTGRES_USER` is the database user name ;
+   - `POSTGRES_PASSWORD` is the database user's password ;
+   - `POSTGRES_DB` is the database name.
+
+2. Type `cp .env.example .env` to create a `.env` file from the [example](.env.example) available on the repository **and update the keys accordingly**.
+
+3. Run the [docker-compose](./docker-compose.yml) script to build all the containers needed for the application to run.
+
+#### Development
+In a development phase, you will need to set the following keys:
+<!-- TABLE -->
+
+|        **Key**        	|                     **Default Value**                    	|                                                                                                             **Description**                                                                                                            	|
+|:---------------------:	|:--------------------------------------------------------:	|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:	|
+| DATABASE_URL          	| postgresql://postgres:password@localhost:5432/cryptalbum 	| You will need to change the "password" bit to comply with security measures.                                                                                                                                                           	|
+| NEXTAUTH_SECRET       	|                                                          	| You can generate a secret using OpenSSL : `openssl rand -base64 32`                                                                                                                                                                    	|
+| NEXTAUTH_URL          	| http://localhost:3000                                    	|                                                                                                                                                                                                                                        	|
+| MINIO_ACCESS_KEY      	|                                                          	| You can generate then copy paste this value from the Minio portal of your container, at [this link](http://localhost:9001/access-keys)                                                                                                             	|
+| MINIO_SECRET_KEY      	|                                                          	| You can generate then copy paste this value from the Minio portal of your container, at [this link](http://localhost:9001/access-keys)                                                                                                             	|
+| MINIO_ENDPOINT        	| localhost                                                	|                                                                                                                                                                                                                                        	|
+| MINIO_PORT            	| 9000                                                     	|                                                                                                                                                                                                                                        	|
+| MINIO_BUCKET          	| cryptalbum                                               	|                                                                                                                                                                                                                                        	|
+| MINIO_REGION          	| eu-west-1                                                	|                                                                                                                                                                                                                                        	|
+| MINIO_SECURE          	| false                                                    	|                                                                                                                                                                                                                                        	|
+| SEQ_API_KEY           	|                                                          	| You can generate then copy paste this value from the Seq portal of your container, at [this link](http://localhost:8081/#/settings/api-keys).<br/> *⚠️ You might not be able to access this portal from a Firefox browser. Use Chrome or Edge if that's the case.* 	|
+| SEQ_URL               	| https://localhost:5341                                   	|                                                                                                                                                                                                                                        	|
+| SERVER_LOG_SECRET_KEY 	|                                                          	| You can generate a secret using OpenSSL : `openssl rand -base64 64`                                                                                                                                                                    	|
+
+<!-- END TABLE -->
+
+You will then need to execute the following steps:
+1. Push the database schema with `yarn db:push`.
+
+2. Run the project startup script with `yarn dev`.
+
+### Contributing
+We welcome contributions to this project!
+If you have ideas, suggestions, or bug reports, please open an issue or submit a pull request. Follow these steps to contribute:
+
+- Fork the repository.
+- Create a new branch for your feature or bugfix.
+- Make your changes and commit them with clear and concise messages.
+- Open a pull request to the main repository.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+## Acknowledgement
+CryptAlbum has been created with [T3 Stack](https://create.t3.gg/).
+
+The contributors to this project are:
+- [ALBANESE Matteo](https://gitlab.com/CaiiTa7)
+- [ARTS Loïck](https://github.com/MRGoose70)
+- [BELTUS Lucas](https://gitlab.com/Lucas.Beltus)
+- [BERNARD Christophe](https://github.com/drakexorn)
+- [BOLLE Emilien](https://github.com/Bollemii)
+- [DEVRESSE Tinaël](https://github.com/hunteroi)
+
+A special thank you to [Steven Sermeus](https://github.com/StevenSermeus) for the tips on some questions we had during the development phase.
