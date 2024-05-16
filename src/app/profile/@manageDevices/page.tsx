@@ -1,3 +1,3 @@
-export default function ManageDevicespage() {
+export default function ManageDevicesPage() {
     return <></>;
 }

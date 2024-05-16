@@ -8,14 +8,14 @@ import {
 import type { PropsWithChildren, ReactNode } from "react";
 
 type ProfileLayoutProps = PropsWithChildren<{
-	changeKeyPair: ReactNode;
 	manageDevices: ReactNode;
+	manageAccount: ReactNode;
 }>;
 
 export default function ProfileLayout({
 	children,
-	changeKeyPair,
 	manageDevices,
+	manageAccount,
 }: ProfileLayoutProps) {
 	return (
 		<main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -25,9 +25,9 @@ export default function ProfileLayout({
 						<CardTitle>Profile</CardTitle>
 						<CardDescription>Manage your account settings</CardDescription>
 					</CardHeader>
-					<CardContent className="flex flex-row gap-4 ">
+					<CardContent className="flex flex-col gap-4 ">
 						{children}
-						{changeKeyPair}
+						{manageAccount}
 						{manageDevices}
 					</CardContent>
 				</Card>

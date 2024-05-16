@@ -43,14 +43,13 @@ export default function UserDataProvider({
 		if (keyPair && session) {
 			const { id, email, symmetricalKey, ...encryptedValues } = session.user;
 
-			const decipheredSymmetricalKey = await decrypt(
+			const decipheredSymmetricalKey = await decryptFormValue(
+				symmetricalKey,
 				keyPair.privateKey,
-				Buffer.from(atob(symmetricalKey), "hex"),
 			);
-
-			const importedSymmetricalKey = (await importSymmetricalKey(
-				decipheredSymmetricalKey,
-			)) as CryptoKey;
+			const importedSymmetricalKey = await importSymmetricalKey(
+				decipheredSymmetricalKey
+			);
 
 			const decipheredValues = await Promise.all(
 				Object.entries(encryptedValues).map(async ([key, value]) => {

@@ -39,14 +39,14 @@ export async function loadKeyPair(): Promise<CryptoKeyPair | null> {
 		JSON.parse(publicKeyString) as JsonWebKey,
 		{ name: "RSA-OAEP", hash: "SHA-256" },
 		true,
-		["encrypt"],
+		["encrypt"]
 	);
 	const privateKey = await crypto.importKey(
 		"jwk",
 		JSON.parse(privateKeyString) as JsonWebKey,
 		{ name: "RSA-OAEP", hash: "SHA-256" },
 		true,
-		["decrypt"],
+		["decrypt"]
 	);
 	return { publicKey, privateKey };
 }

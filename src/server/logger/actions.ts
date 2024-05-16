@@ -12,8 +12,9 @@ export const actions = [
 	"GET_USER_IMAGES",
 	"GET_IMAGE_FILE",
 	"CHANGE_DEVICE_KEY_PAIR",
-	"LIST_TRUSTED_DEVICES"
+	"LIST_TRUSTED_DEVICES",
 	"CREATE_ALBUM",
+	"DELETE_USER",
 ] as const;
 
 export type Action = (typeof actions)[number];

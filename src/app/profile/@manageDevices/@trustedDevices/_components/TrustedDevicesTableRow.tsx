@@ -63,8 +63,9 @@ export default function TrustedDevicesTableRow({
 					<Button
 						onClick={() => deleteDevice(device.id)}
 						title={`Delete ${device.id}`}
+						className="bg-red-600"
 					>
-						<Trash2 />
+						<Trash2 color="white"/>
 					</Button>
 				): <p>You can't delete current device.</p>}
 			</TableCell>

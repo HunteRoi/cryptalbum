@@ -58,7 +58,7 @@ export default function TrustedDevicesTable() {
 							? "No device request found."
 							: null}
 						{isSuccess && trustedDevices?.length && trustedDevices?.length > 0
-							? `${trustedDevices?.length} device request(s) found.`
+							? `${trustedDevices?.length} device(s) found.`
 							: null}
 					</TableCell>
 				</TableRow>

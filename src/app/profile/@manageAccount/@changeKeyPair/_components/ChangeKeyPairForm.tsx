@@ -31,7 +31,7 @@ import { signOut } from "next-auth/react";
 export default function ChangeKeyPairForm() {
 	const userData = useUserData() as UserData;
 	const { toast } = useToast();
-	const form = useForm({});
+	const form = useForm();
 	const changeDevicePublicKeyMutation =
 		api.auth.changeDevicePublicKey.useMutation();
 

@@ -1,17 +1,17 @@
 export default function Layout({
     children,
-    trustedDevices,
-    untrustedDevices,
+    changeKeyPair,
+    deleteAccount,
   }: {
     children: React.ReactNode
-    untrustedDevices: React.ReactNode
-    trustedDevices: React.ReactNode
+    changeKeyPair: React.ReactNode
+    deleteAccount: React.ReactNode
   }) {
     return (
       <div className="flex flex-row gap-2">
         {children}
-        {trustedDevices}
-        {untrustedDevices}
+        {changeKeyPair}
+        {deleteAccount}
       </div>
-    );
+    )
   }

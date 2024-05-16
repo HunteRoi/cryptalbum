@@ -53,6 +53,7 @@ export default function UntrustedDevicesTableRow({
 }: UntrustedDevicesTableRowProps) {
 	const userData = useUserData() as UserData;
 
+	const trustedDevicesQuery = api.auth.listTrustedDevices.useQuery();
 	const untrustedDevicesQuery = api.auth.listUntrustedDevices.useQuery();
 	const trustDeviceMutation = api.auth.trustDevice.useMutation();
 	const deleteDeviceMutation = api.auth.deleteDevice.useMutation();
@@ -69,19 +70,20 @@ export default function UntrustedDevicesTableRow({
 		const { symmetricalKey } = userData;
 
 		const publicKey = await importRsaPublicKey(device.publicKey);
-		const encryptedSymmetricalKey = await encrypt(
-			publicKey,
+		const encryptedSymmetricalKey = await encryptFormValue(
 			await exportSymmetricalKey(symmetricalKey),
+			publicKey,
 		);
 
 		const encryptedValue = await encryptFormValue(friendlyName, symmetricalKey);
 
 		await trustDeviceMutation.mutateAsync({
 			deviceId: device.id,
-			symmetricalKey: btoa(encryptedSymmetricalKey),
+			symmetricalKey: encryptedSymmetricalKey,
 			deviceName: encryptedValue,
 		});
 		await untrustedDevicesQuery.refetch();
+		await trustedDevicesQuery.refetch();
 	}
 
 	async function rejectDevice(deviceId: string) {
@@ -99,13 +101,14 @@ export default function UntrustedDevicesTableRow({
 				<Button
 					onClick={() => rejectDevice(device.id)}
 					title={`Reject ${device.id}`}
+					className="bg-red-600"
 				>
-					<Ban />
+					<Ban color="white"/>
 				</Button>{" "}
 				<Dialog>
 					<DialogTrigger asChild>
-						<Button title={`Accept ${device.id}`}>
-							<Check />
+						<Button title={`Accept ${device.id}`} className="bg-green-600">
+							<Check color="white"/>
 						</Button>
 					</DialogTrigger>
 					<DialogContent className="sm:max-w-[425px]">
