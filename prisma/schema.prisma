@@ -52,7 +52,7 @@ model User {
   devices       UserDevice[]
   albums        Album[]
   pictures      Picture[]
-  sharedKeys     SharedKey[]
+  sharedKeys    SharedKey[]
   logs          Log[]
 }
 
@@ -92,34 +92,39 @@ model Picture {
   id        String      @id @default(cuid())
   userId    String
   name      String
+  albumId   String?
   metadata  Json
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   shareds   SharedKey[]
-  albums    Album[]
+  album     Album?      @relation(fields: [albumId], references: [id], onDelete: Cascade)
   owner     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SharedKey {
   id           String      @id @default(cuid())
   userId       String
-  photoId      String
+  photoId      String?
+  albumId      String?
   key          String
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  picture      Picture     @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  picture      Picture?     @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  album        Album?      @relation(fields: [albumId], references: [id], onDelete: Cascade)
 }
 
 model Album {
-  id        String    @id @default(cuid())
-  userId    String
-  name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  owner     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  pictures  Picture[]
-  // needs a key
+  id          String    @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  metadata    Json
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  owner       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pictures    Picture[]
+  shareds     SharedKey[]
 }
 model Log {
     id        Int      @id @default(autoincrement())

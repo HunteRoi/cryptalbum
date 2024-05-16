@@ -22,7 +22,6 @@ import {
 	encryptFormValue,
 	exportSymmetricalKey,
 	generateSymmetricalKey,
-	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
 import { arrayBufferToHex, fileSchemaFront } from "@cryptalbum/utils/file";
@@ -80,17 +79,6 @@ export default function FileUploadForm() {
 			return;
 		}
 		try {
-			const keyPair = await loadKeyPair();
-			if (!keyPair) {
-				toast({
-					title: "Failed to upload file",
-					description: "No key pair found",
-					variant: "destructive",
-					action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
-				});
-				return;
-			}
-
 			const cryptoKey = await generateSymmetricalKey();
 			const encryptedFile = await encryptFileSymmetrical(data.file, cryptoKey);
 			const fileData = arrayBufferToHex(encryptedFile);
