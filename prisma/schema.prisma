@@ -73,7 +73,7 @@ model UserDevice {
   lastLogin      DateTime?
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
-  user           User                  @relation(fields: [userId], references: [id])
+  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   challenges     UserDeviceChallenge[]
 }
 
@@ -85,7 +85,7 @@ model UserDeviceChallenge {
   expires      DateTime
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  userDevice   UserDevice @relation(fields: [userDeviceId], references: [id])
+  userDevice   UserDevice @relation(fields: [userDeviceId], references: [id], onDelete: Cascade)
 }
 
 model Picture {
@@ -97,7 +97,7 @@ model Picture {
   updatedAt DateTime    @updatedAt
   shareds   SharedKey[]
   albums    Album[]
-  owner     User        @relation(fields: [userId], references: [id])
+  owner     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SharedKey {
@@ -107,8 +107,8 @@ model SharedKey {
   key          String
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
-  user         User        @relation(fields: [userId], references: [id])
-  picture      Picture     @relation(fields: [photoId], references: [id])
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  picture      Picture     @relation(fields: [photoId], references: [id], onDelete: Cascade)
 }
 
 model Album {
@@ -117,7 +117,7 @@ model Album {
   name      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  owner     User      @relation(fields: [userId], references: [id])
+  owner     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   pictures  Picture[]
   // needs a key
 }

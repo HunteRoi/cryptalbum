@@ -74,20 +74,16 @@ export default function UntrustedDevicesTableRow({
 			await exportSymmetricalKey(symmetricalKey),
 		);
 
-		const iv = new Uint8Array(12);
-		const ivString = Array.from(iv)
-			.map((b) => String.fromCharCode(b))
-			.join("");
 		const encryptedValue = await encryptFormValue(
 			friendlyName,
 			symmetricalKey,
-			iv,
+			new Uint8Array(12),
 		);
 
 		await trustDeviceMutation.mutateAsync({
 			deviceId: device.id,
 			symmetricalKey: btoa(encryptedSymmetricalKey),
-			deviceName: btoa(`${ivString}${encryptedValue}`),
+			deviceName: encryptedValue,
 		});
 		await untrustedDevicesQuery.refetch();
 	}
