@@ -9,7 +9,7 @@ import {
 	CardTitle,
 } from "@cryptalbum/components/ui/card";
 
-import LinkingRequestForm from "@cryptalbum/app/auth/register/_components/LinkingRequestForm";
+import RegistrationForm from "@cryptalbum/app/auth/register/_components/RegistrationForm";
 
 export default function Register() {
 	return (
@@ -21,7 +21,7 @@ export default function Register() {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<LinkingRequestForm />
+				<RegistrationForm />
 				<RedirectionLink
 					link={{ href: "/auth/login", text: "Login" }}
 					contents="Already have an account?"

@@ -17,6 +17,7 @@ import {
 	generateAsymmetricalKeyPair,
 	generateSymmetricalKey,
 	loadKeyPair,
+	storeKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
 
@@ -32,7 +33,7 @@ const formSchema = z.object({
 	name: z.string().min(3, "Name is too short"),
 });
 
-export default function LinkingRequestForm() {
+export default function RegistrationForm() {
 	const registerMutation = api.auth.createAccount.useMutation();
 	const router = useRouter();
 	const { toast } = useToast();
@@ -65,20 +66,11 @@ export default function LinkingRequestForm() {
 		try {
 			const [encryptedName, encryptedDeviceName, encryptedSymmetricalKey] =
 				await Promise.all([
-					encryptFormValue(
-						values.name,
-						symmetricalKey,
-						window.crypto.getRandomValues(new Uint8Array(12)),
-					),
-					encryptFormValue(
-						values.deviceName,
-						symmetricalKey,
-						window.crypto.getRandomValues(new Uint8Array(12)),
-					),
+					encryptFormValue(values.name, symmetricalKey),
+					encryptFormValue(values.deviceName, symmetricalKey),
 					encryptFormValue(
 						await exportSymmetricalKey(symmetricalKey),
 						keyPair.publicKey,
-						new Uint8Array(),
 					),
 				]);
 
@@ -94,6 +86,8 @@ export default function LinkingRequestForm() {
 				title: "Account created successfully",
 				description: "You can now log in with your new account",
 			});
+
+			await storeKeyPair(keyPair);
 
 			router.push("/auth/login");
 		} catch (error) {

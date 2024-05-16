@@ -6,7 +6,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { UserDevice } from "./UntrustedDevicesTable";
 import {
 	type UserData,
 	useUserData,
@@ -39,6 +38,7 @@ import {
 	importRsaPublicKey,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
+import type { UserDevice } from "./UntrustedDevicesTable";
 
 type UntrustedDevicesTableRowProps = {
 	device: UserDevice;
@@ -74,11 +74,7 @@ export default function UntrustedDevicesTableRow({
 			await exportSymmetricalKey(symmetricalKey),
 		);
 
-		const encryptedValue = await encryptFormValue(
-			friendlyName,
-			symmetricalKey,
-			new Uint8Array(12),
-		);
+		const encryptedValue = await encryptFormValue(friendlyName, symmetricalKey);
 
 		await trustDeviceMutation.mutateAsync({
 			deviceId: device.id,

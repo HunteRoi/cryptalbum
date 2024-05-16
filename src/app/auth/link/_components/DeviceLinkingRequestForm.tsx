@@ -16,6 +16,7 @@ import {
 	exportAsymmetricalKey,
 	generateAsymmetricalKeyPair,
 	loadKeyPair,
+	storeKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
 
@@ -56,6 +57,8 @@ export default function DeviceLinkingRequestForm() {
 			description: `A new device linking request has been created for ${email} with ID ${deviceId}`,
 			duration: 0,
 		});
+
+		await storeKeyPair(keyPair);
 
 		router.push("/auth/login");
 	};

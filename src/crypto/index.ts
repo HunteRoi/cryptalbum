@@ -11,12 +11,7 @@ export async function generateAsymmetricalKeyPair(): Promise<CryptoKeyPair> {
 		publicExponent: new Uint8Array([1, 0, 1]),
 		hash: "SHA-256",
 	};
-	const keyPair = await crypto.generateKey(algorithm, true, [
-		"encrypt",
-		"decrypt",
-	]);
-	await storeKeyPair(keyPair);
-	return keyPair;
+	return await crypto.generateKey(algorithm, true, ["encrypt", "decrypt"]);
 }
 
 export async function storeKeyPair(
@@ -155,11 +150,8 @@ export async function decryptFileSymmetrical(
 	);
 }
 
-export async function encryptFormValue(
-	value: string,
-	key: CryptoKey,
-	iv: Uint8Array,
-) {
+export async function encryptFormValue(value: string, key: CryptoKey) {
+	const iv = window.crypto.getRandomValues(new Uint8Array(12));
 	const ivString = Array.from(iv)
 		.map((b) => String.fromCharCode(b))
 		.join("");

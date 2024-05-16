@@ -1,6 +1,11 @@
 "use client";
 
-import { decrypt, importSymmetricalKey, loadKeyPair } from "@cryptalbum/crypto";
+import {
+	decrypt,
+	decryptFormValue,
+	importSymmetricalKey,
+	loadKeyPair,
+} from "@cryptalbum/crypto";
 
 import { useSession } from "next-auth/react";
 import {
@@ -48,15 +53,10 @@ export default function UserDataProvider({
 			)) as CryptoKey;
 
 			const decipheredValues = await Promise.all(
-				Object.entries(encryptedValues).map(async ([key, base64Value]) => {
-					const value = atob(base64Value);
-					const iv = new Uint8Array(
-						Array.from(value.slice(0, 12)).map((ch) => ch.charCodeAt(0)),
-					);
-					const decipheredValue = await decrypt(
+				Object.entries(encryptedValues).map(async ([key, value]) => {
+					const decipheredValue = await decryptFormValue(
+						value,
 						importedSymmetricalKey,
-						Buffer.from(value.slice(12), "hex"),
-						iv,
 					);
 					return [key, decipheredValue];
 				}),

@@ -87,7 +87,6 @@ export default function FileUploadForm() {
 			const encryptedFileName = await encryptFormValue(
 				data.fileName,
 				cryptoKey,
-				window.crypto.getRandomValues(new Uint8Array(12)),
 			);
 			const payload = {
 				image: fileData,

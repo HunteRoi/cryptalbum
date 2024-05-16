@@ -45,13 +45,15 @@ export function Navigation() {
 					)}
 				</NavigationMenuItem>
 
-				{userData && <NavigationMenuItem>
-					<Link href="/profile/manageDevices" legacyBehavior passHref>
-						<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-							Manage Devices
-						</NavigationMenuLink>
-					</Link>
-				</NavigationMenuItem>}
+				{userData && (
+					<NavigationMenuItem>
+						<Link href="/profile" legacyBehavior passHref>
+							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
+								Profile
+							</NavigationMenuLink>
+						</Link>
+					</NavigationMenuItem>
+				)}
 
 				<NavigationMenuItem>
 					<div className="w-full flex-1 md:w-auto md:flex-none">
