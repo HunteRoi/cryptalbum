@@ -1,3 +1,9 @@
+import { useEffect, useState } from "react";
+
+import { getCsrfToken } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import { Button } from "@cryptalbum/components/ui/button";
 import { Input } from "@cryptalbum/components/ui/input";
 import { Label } from "@cryptalbum/components/ui/label";
@@ -8,10 +14,6 @@ import {
 	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
-
-import { getCsrfToken } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 type State = {
 	csrfToken: string | undefined;
@@ -27,6 +29,13 @@ export function LoginForm() {
 	const challengeMutation = api.auth.challenge.useMutation();
 	const router = useRouter();
 	const [state, setState] = useState<State>();
+	const userData = useUserData();
+
+	useEffect(() => {
+		if(userData){
+			router.push("/gallery")
+		}
+	},[userData, router]);
 
 	async function validChallenge() {
 		const keyPair = await loadKeyPair();

@@ -11,6 +11,9 @@ import {
 	navigationMenuTriggerStyle,
 } from "@cryptalbum/components/ui/navigation-menu";
 import { CommandMenu } from "./CommandMenu";
+import { Button } from "./ui/button";
+import { LogOut } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 export function Navigation() {
 	const userData = useUserData();
@@ -20,29 +23,18 @@ export function Navigation() {
 			<NavigationMenuList>
 				<NavigationMenuItem>
 					{userData && (
-						<Link href="/" className="font-bold">
+						<Link href="/gallery" className="font-bold">
 							Welcome, {userData.name}
 						</Link>
 					)}
-					<NavigationMenuLink href="/" className="font-bold" />
+					<NavigationMenuLink href="/gallery" className="font-bold" />
 				</NavigationMenuItem>
 				<NavigationMenuItem>
-					<Link href="/" legacyBehavior passHref>
+					<Link href="/gallery" legacyBehavior passHref>
 						<NavigationMenuLink className={navigationMenuTriggerStyle()}>
 							Home
 						</NavigationMenuLink>
 					</Link>
-				</NavigationMenuItem>
-				<NavigationMenuItem>
-					{userData ? (
-						<Link href="/gallery" legacyBehavior passHref>
-							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Gallery
-							</NavigationMenuLink>
-						</Link>
-					) : (
-						<></>
-					)}
 				</NavigationMenuItem>
 
 				{userData && (
@@ -60,6 +52,18 @@ export function Navigation() {
 						<CommandMenu />
 					</div>
 				</NavigationMenuItem>
+				{userData && (
+					<NavigationMenuItem>
+						<Button
+							onClick={() => {
+								void signOut({ callbackUrl: "/auth/login" });
+							}}
+						>
+							<LogOut className="mr-2" />
+							Sign out
+						</Button>
+					</NavigationMenuItem>
+				)}
 			</NavigationMenuList>
 		</NavigationMenu>
 	);
