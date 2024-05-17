@@ -2,10 +2,13 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 
+import ImageDeletionDialog from "@cryptalbum/app/gallery/_components/ImageDeletionDialog";
+import ImageUpdateDialog from "@cryptalbum/app/gallery/_components/ImageUpdateDialog";
 import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import {
 	Card,
 	CardContent,
+	CardDescription,
 	CardHeader,
 	CardTitle,
 } from "@cryptalbum/components/ui/card";
@@ -16,21 +19,14 @@ import {
 	importSymmetricalKey,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
-
-type ImageCardProps = {
-	image: {
-		id: string;
-		name: string;
-		encryptionKey: string;
-	};
-};
+import type { ImageInProps } from "./types";
 
 type ImageCardState = {
 	name: string;
 	path: string;
 };
 
-export default function ImageCard({ image }: ImageCardProps) {
+export default function ImageCard({ image }: ImageInProps) {
 	const [imageState, setImageState] = useState<ImageCardState | null>(null);
 	const userData = useUserData();
 	const { data: encryptedImageContent } = api.image.getImageContent.useQuery(
@@ -91,6 +87,10 @@ export default function ImageCard({ image }: ImageCardProps) {
 			</CardContent>
 			<CardHeader className="grid gap-1 p-4">
 				<CardTitle>{imageState?.name}</CardTitle>
+				<CardDescription>
+					<ImageDeletionDialog image={image} name={imageState?.name} />{" "}
+					<ImageUpdateDialog image={image} name={imageState?.name} />
+				</CardDescription>
 			</CardHeader>
 		</Card>
 	);

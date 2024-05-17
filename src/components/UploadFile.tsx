@@ -111,7 +111,7 @@ export default function FileUploadForm() {
 			console.error(e);
 			toast({
 				title: "Failed to upload file",
-				description: "The server trolled us",
+				description: "An error occurred while uploading the file",
 				variant: "destructive",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
 			});
