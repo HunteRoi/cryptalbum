@@ -1,6 +1,5 @@
 export const actions = [
 	"UNKNOWN",
-
 	"AUTHENTICATE",
 	"CREATE_ACCOUNT",
 	"CREATE_DEVICE",
@@ -18,6 +17,7 @@ export const actions = [
 	"CREATE_ALBUM",
 	"GET_ALBUMS",
 	"DELETE_USER",
+	"DELETE_ALBUM",
 ] as const;
 
 export type Action = (typeof actions)[number];

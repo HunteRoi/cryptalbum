@@ -11,6 +11,7 @@ import ImageCard from "../_components/ImageCard";
 import { decrypt, decryptFormValue, importSymmetricalKey } from "@cryptalbum/crypto";
 import { Button } from "@cryptalbum/components/ui/button";
 import Link from "next/link";
+import AlbumDeletionDialog from "../_components/AlbumDeletionDialog";
 
 type AlbumState = {
 	name: string;
@@ -24,7 +25,7 @@ export default function AlbumPage() {
 	const userData = useUserData();
 	const [albumState, setAlbumState] = useState<AlbumState | null>(null);
 	const { data: album } = api.album.getAlbum.useQuery(albumId);
-	const { data: images } = api.image.getImagesAlbum.useQuery(albumId);
+	const { data: images } = api.image.getAlbumImages.useQuery(albumId);
 
 	const decipheredData = useCallback(async () => {
 		if (!userData || !album) {
@@ -77,12 +78,12 @@ export default function AlbumPage() {
 				</div>
 				<div className="ml-auto">
 					<UploadFileDialog />
+					<AlbumDeletionDialog albumId={album?.id} name={albumState?.name}/>
 				</div>
 			</CardHeader>
 			<CardContent className="flex flex-row flex-wrap">
 				{albumState && images?.map((image) => (
-					image.encryptionKey = albumState.encryptionKey,
-					<ImageCard key={image.id} image={image} />
+					<ImageCard key={image.id} image={{ ...image, encryptionKey: albumState.encryptionKey }} />
 				))}
 			</CardContent>
 			{!images?.length && <CardFooter>No images found</CardFooter>}
