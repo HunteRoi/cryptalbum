@@ -16,6 +16,7 @@ export const actions = [
 	"CHANGE_DEVICE_KEY_PAIR",
 	"LIST_TRUSTED_DEVICES",
 	"CREATE_ALBUM",
+	"GET_ALBUMS",
 	"DELETE_USER",
 ] as const;
 

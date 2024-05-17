@@ -7,7 +7,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@cryptalbum/components/ui/card";
-import ImageList from "./_components/ImageList";
+import Gallery from "./_components/Gallery";
 
 export default function GalleryPage() {
 	return (
@@ -24,8 +24,8 @@ export default function GalleryPage() {
 					<UploadFileDialog />
 				</div>
 			</CardHeader>
-			<CardContent>
-				<ImageList />
+			<CardContent className="flex flex-row flex-wrap">
+				<Gallery/>
 			</CardContent>
 		</Card>
 	);

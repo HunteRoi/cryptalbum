@@ -71,7 +71,7 @@ export default function ImageCard({ image }: ImageInProps) {
 	}, [encryptedImageContent, decipheredData]);
 
 	return (
-		<Card className="w-full max-w-sm m-2">
+		<Card className="w-full max-w-sm m-2 py-2 basis-1/5 grow">
 			<CardContent className="aspect-w-4 aspect-h-5 relative">
 				<img
 					alt={imageState?.name}
