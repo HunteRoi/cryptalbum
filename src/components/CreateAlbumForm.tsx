@@ -42,6 +42,19 @@ export default function CreateAlbumForm() {
 			});
 			return;
 		}
+		if (!data.name) {
+			form.setError("name", {
+				type: "manual",
+				message: "Album name is required",
+			});
+			toast({
+				title: "Error",
+				description: "Album name is required",
+				variant: "destructive",
+				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+			});
+			return;
+		}
 		try {
 			const cryptoKey = await generateSymmetricalKey();
 			const exportedKey = await exportSymmetricalKey(cryptoKey);
@@ -113,7 +126,7 @@ export default function CreateAlbumForm() {
 					name="description"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Album description</FormLabel>
+							<FormLabel>Album description <span className="italic">(optional)</span></FormLabel>
 							<FormControl>
 								<Input
 									type="text"

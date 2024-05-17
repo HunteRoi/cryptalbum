@@ -78,6 +78,19 @@ export default function FileUploadForm() {
 			});
 			return;
 		}
+		if (!data.fileName) {
+			form.setError("fileName", {
+				type: "manual",
+				message: "File name is required",
+			});
+			toast({
+				title: "Failed to upload file",
+				description: "File name is required",
+				variant: "destructive",
+				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+			});
+			return;
+		}
 		try {
 			const cryptoKey = await generateSymmetricalKey();
 			const encryptedFile = await encryptFileSymmetrical(data.file, cryptoKey);
