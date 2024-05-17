@@ -126,6 +126,7 @@ model Album {
   pictures    Picture[]
   shareds     SharedKey[]
 }
+
 model Log {
     id        Int      @id @default(autoincrement())
     createdAt DateTime @default(now())
@@ -137,4 +138,6 @@ model Log {
 
     userId    String?
     user      User?     @relation(fields: [userId], references: [id])
+
+    hmac      String
 }

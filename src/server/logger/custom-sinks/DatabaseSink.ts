@@ -3,6 +3,9 @@ import type { Prisma } from '@prisma/client';
 
 import type { DatabaseType } from '@cryptalbum/server/db';
 import { hasNonNullProp, isNonNull } from '@cryptalbum/utils/types';
+import { generateHmac } from '@cryptalbum/crypto';
+import { env } from '@cryptalbum/env';
+import { toJsonData } from '../utils';
 
 export class DatabaseSink implements Sink {
     private readonly database: DatabaseType;
@@ -27,6 +30,8 @@ export class DatabaseSink implements Sink {
             userId = event.properties.userId;
         }
         const action: string = hasNonNullProp<object, string>(event.properties, 'action') && isNonNull<string>(event.properties.action) ? event.properties.action : 'UNKNOWN';
+        const hmac = await generateHmac(toJsonData(event.properties), env.SERVER_LOG_SECRET_KEY)
+
         const message = event.messageTemplate.render(event.properties ?? {});
         const parameters = toJsonData(event.properties ?? {});
 
@@ -35,7 +40,8 @@ export class DatabaseSink implements Sink {
             action: action,
             message: message,
             args: parameters,
-            level: LogEventLevel[event.level]
+            level: LogEventLevel[event.level],
+            hmac
         };
 
         if (userId) {
@@ -49,8 +55,4 @@ export class DatabaseSink implements Sink {
 
         await this.database.log.create({ data });
     }
-}
-
-function toJsonData(data: object) {
-    return JSON.parse(JSON.stringify(data));
 }

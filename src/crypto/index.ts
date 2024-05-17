@@ -168,3 +168,15 @@ export async function decryptFormValue(value: string, key: CryptoKey) {
 
 	return decrypt(key, Buffer.from(encryptedValue, "hex"), new Uint8Array(iv));
 }
+
+export async function generateHmac(value: string, secretKey: string): Promise<string> {
+	const encoder = new TextEncoder();
+	const key = encoder.encode(secretKey);
+	const hmacKey = await crypto.importKey("raw", key, { name: "HMAC", hash: "SHA-512" }, false, ["sign"]);
+
+	const data = encoder.encode(value);
+	const signature = await crypto.sign("HMAC", hmacKey, data);
+	const signatureArray = new Uint8Array(signature);
+
+	return Array.from(signatureArray, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}

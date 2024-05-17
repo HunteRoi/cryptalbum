@@ -41,6 +41,7 @@ export const env = createEnv({
 		MINIO_SECURE: z.boolean().default(false),
 		SEQ_URL: z.string().url(),
 		SEQ_API_KEY: z.string().min(1),
+		SERVER_LOG_SECRET_KEY: z.string().min(1),
 	},
 
 	/**
@@ -75,6 +76,7 @@ export const env = createEnv({
 		MINIO_SECURE: Boolean(process.env.MINIO_SECURE),
 		SEQ_URL: process.env.SEQ_URL,
 		SEQ_API_KEY: process.env.SEQ_API_KEY,
+		SERVER_LOG_SECRET_KEY: process.env.SERVER_LOG_SECRET_KEY,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

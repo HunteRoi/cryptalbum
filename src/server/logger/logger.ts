@@ -1,9 +1,11 @@
 import { LoggerConfiguration, ConsoleSink, type Logger, SeqSink } from 'serilogger';
 
 import { env } from "@cryptalbum/env";
+import { generateHmac } from '@cryptalbum/crypto';
 import { db } from '../db';
 import { DatabaseSink } from './custom-sinks/DatabaseSink';
 import type { Action } from './actions';
+import { toJsonData } from './utils';
 
 /**
  * A wrapper for the SeriLogger library, allowing to enrich the logger with additional properties
