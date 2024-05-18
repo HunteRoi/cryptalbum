@@ -20,6 +20,7 @@ import {
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
 
+import { ToastAction } from "@cryptalbum/components/ui/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -41,26 +42,45 @@ export default function DeviceLinkingRequestForm() {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		const keyPair =
-			(await loadKeyPair()) ?? (await generateAsymmetricalKeyPair());
+		try {
+			const keyPair =
+				(await loadKeyPair()) ?? (await generateAsymmetricalKeyPair());
 
-		const { email } = values;
-		const publicKey = keyPair.publicKey;
+			const { email } = values;
+			const publicKey = keyPair.publicKey;
 
-		const deviceId = await linkDeviceMutation.mutateAsync({
-			email,
-			publicKey: await exportAsymmetricalKey(publicKey),
-		});
+			const deviceId = await linkDeviceMutation.mutateAsync({
+				email,
+				publicKey: await exportAsymmetricalKey(publicKey),
+			});
 
-		toast({
-			title: "Device linked",
-			description: `A new device linking request has been created for ${email} with ID ${deviceId}`,
-			duration: 0,
-		});
+			toast({
+				title: "Device request sent",
+				description: `A new device linking request has been created for ${email} with ID ${deviceId}. Go to the login page to connect to your account once it is accepted.`,
+				action: (
+					<Button
+						onClick={() => router.push("/auth/login")}
+						variant="secondary"
+					>
+						Go to login
+					</Button>
+				),
+			});
 
-		await storeKeyPair(keyPair);
+			await storeKeyPair(keyPair);
+		} catch (error) {
+			const message =
+				error instanceof Error
+					? error.message
+					: "An error occurred while sending the request.";
 
-		router.push("/auth/login");
+			toast({
+				title: "Request error",
+				description: message,
+				variant: "destructive",
+				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+			});
+		}
 	};
 
 	return (

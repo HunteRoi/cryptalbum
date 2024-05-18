@@ -13,65 +13,70 @@ import {
 import { ToastAction } from "@cryptalbum/components/ui/toast";
 import { useToast } from "@cryptalbum/components/ui/use-toast";
 import { api } from "@cryptalbum/trpc/react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 type AlbumDeletionDialogProps = {
-    albumId?: string;
-    name?: string;
-}
+	albumId?: string;
+	name?: string;
+};
 
 export default function AlbumDeletionDialog({
-    albumId,
-    name,
+	albumId,
+	name,
 }: AlbumDeletionDialogProps) {
-    const { toast } = useToast();
-    const albumDeletionMutation = api.album.deleteAlbum.useMutation();
-    const getAlbumsQuery = api.album.getAlbums.useQuery();
-    const router = useRouter();
+	const { toast } = useToast();
+	const albumDeletionMutation = api.album.deleteAlbum.useMutation();
+	const getAlbumsQuery = api.album.getAlbums.useQuery();
+	const router = useRouter();
 
-    const handleDelete = async () => {
-        try {
-            await albumDeletionMutation.mutateAsync(albumId);
-            await getAlbumsQuery.refetch();
-            toast({
-                title: "Album deleted",
-                description: `The album "${name}" has been deleted.`,
-                action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
-            });
-            router.push("/gallery")
-        } catch (error) {
-            const message = error instanceof Error ? error.message : "An error occurred";
+	const handleDelete = async () => {
+		if (!albumId) {
+			return;
+		}
 
-            toast({
-                title: "Deletion error",
-                description: message,
-                variant: "destructive",
-                action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
-            });
-        }
-    }
+		try {
+			await albumDeletionMutation.mutateAsync(albumId);
+			await getAlbumsQuery.refetch();
+			toast({
+				title: "Album deleted",
+				description: `The album "${name}" has been deleted.`,
+				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+			});
+			router.push("/gallery");
+		} catch (error) {
+			const message =
+				error instanceof Error ? error.message : "An error occurred";
 
-    return (
-        <Dialog>
-            <DialogTrigger>
-                <Button className="bg-red-600">
-                    <Trash2 color="white" />
-                </Button>
-            </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Delete Album</DialogTitle>
-                    <DialogDescription>
-                        Are you sure you want to delete the album "{name}"? You won't be able to recover it afterwards.
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                    <Button onClick={handleDelete} className="bg-red-600">
-                        Delete
-                    </Button>
-                </DialogFooter>
+			toast({
+				title: "Deletion error",
+				description: message,
+				variant: "destructive",
+				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+			});
+		}
+	};
 
-            </DialogContent>
-        </Dialog>
-    );
+	return (
+		<Dialog>
+			<DialogTrigger>
+				<Button className="bg-red-600">
+					<Trash2 color="white" />
+				</Button>
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Delete Album</DialogTitle>
+					<DialogDescription>
+						Are you sure you want to delete the album "{name}"? You won't be
+						able to recover it afterwards.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogFooter>
+					<Button onClick={handleDelete} className="bg-red-600">
+						Delete
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
 }

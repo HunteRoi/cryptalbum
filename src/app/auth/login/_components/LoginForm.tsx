@@ -7,6 +7,7 @@ import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import { Button } from "@cryptalbum/components/ui/button";
 import { Input } from "@cryptalbum/components/ui/input";
 import { Label } from "@cryptalbum/components/ui/label";
+import { toast } from "@cryptalbum/components/ui/use-toast";
 import {
 	clearKeyPair,
 	decrypt,
@@ -32,10 +33,10 @@ export function LoginForm() {
 	const userData = useUserData();
 
 	useEffect(() => {
-		if(userData){
-			router.push("/gallery")
+		if (userData) {
+			router.push("/gallery");
 		}
-	},[userData, router]);
+	}, [userData, router]);
 
 	async function validChallenge() {
 		const keyPair = await loadKeyPair();
@@ -53,6 +54,13 @@ export function LoginForm() {
 						if (error.data?.code === "NOT_FOUND") {
 							clearKeyPair();
 							router.push("/auth/register");
+						} else {
+							toast({
+								title: "Error",
+								description:
+									"Your device is not yet officially linked to an account. Please try again when it is.",
+								variant: "destructive",
+							});
 						}
 					},
 				},
