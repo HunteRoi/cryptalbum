@@ -10,6 +10,7 @@ import {
 	DialogTrigger,
 } from "@cryptalbum/components/ui/dialog";
 import FileUploadForm from "./UploadFile";
+import { ScrollArea } from "./ui/scroll-area";
 
 type UploadFileDialogProps = {
 	albumId?: string;
@@ -23,14 +24,16 @@ export function UploadFileDialog({ albumId }: UploadFileDialogProps) {
 					Upload file
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-[500px]">
-				<DialogHeader>
-					<DialogTitle>Upload file</DialogTitle>
-					<DialogDescription>
-						Add a new pictures to your gallery
-					</DialogDescription>
-				</DialogHeader>
-				<FileUploadForm albumId={albumId} />
+			<DialogContent className="sm:max-w-[500px] h-[700px]">
+				<ScrollArea className="h-100 w-100">
+					<DialogHeader>
+						<DialogTitle>Upload file</DialogTitle>
+						<DialogDescription>
+							Add a new pictures to your gallery
+						</DialogDescription>
+					</DialogHeader>
+					<FileUploadForm albumId={albumId} />
+				</ScrollArea>
 			</DialogContent>
 		</Dialog>
 	);
