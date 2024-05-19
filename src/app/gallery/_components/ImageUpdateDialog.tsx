@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PenLine } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -45,10 +45,12 @@ export default function ImageUpdateDialog({
 	image,
 	name,
 }: ImageUpdateDialogProps) {
+	const searchParams = useParams();
+	const albumId = searchParams.albumId as string;
 	const userData = useUserData();
 	const router = useRouter();
 	const { toast } = useToast();
-	const imageListQuery = api.image.getImages.useQuery();
+	const trpcUtils = api.useUtils();
 	const imageUpdateMutation = api.image.update.useMutation();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -106,7 +108,11 @@ export default function ImageUpdateDialog({
 				description: "The image has been updated successfully.",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
 			});
-			await imageListQuery.refetch();
+			if (albumId) {
+				await trpcUtils.image.getAlbumImages.invalidate();
+			} else {
+				await trpcUtils.image.getImages.invalidate();
+			}
 		} catch (error) {
 			const errorMessage =
 				error instanceof Error ? error.message : "An unknown error occurred";
