@@ -39,7 +39,7 @@ import {
 	importRsaPublicKey,
 	loadKeyPair,
 } from "@cryptalbum/crypto";
-import { api } from "@cryptalbum/trpc/react";
+import { api } from "@cryptalbum/utils/api";
 import type { UserDevice } from "./UntrustedDevicesTable";
 
 type UntrustedDevicesTableRowProps = {

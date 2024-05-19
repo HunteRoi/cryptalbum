@@ -1,5 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { signOut } from "next-auth/react";
 
 import { Button } from "@cryptalbum/components/ui/button";
 import {
@@ -11,8 +12,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@cryptalbum/components/ui/dialog";
-import { api } from "@cryptalbum/trpc/react";
-import { signOut } from "next-auth/react";
+import { api } from "@cryptalbum/utils/api";
 import { Form } from "@cryptalbum/components/ui/form";
 
 export default function DeleteAccountForm() {

@@ -31,6 +31,7 @@
 		"@radix-ui/react-toast": "^1.1.5",
 		"@t3-oss/env-nextjs": "^0.10.1",
 		"@tanstack/react-query": "^5.25.0",
+		"@trpc-limiter/memory": "^1.0.0",
 		"@trpc/client": "next",
 		"@trpc/react-query": "next",
 		"@trpc/server": "next",

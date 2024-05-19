@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import UntrustedDevicesTableRow from "./UntrustedDevicesTableRow";
 
 import {
 	Table,
@@ -13,7 +12,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@cryptalbum/components/ui/table";
-import { api } from "@cryptalbum/trpc/react";
+import { api } from "@cryptalbum/utils/api";
+import UntrustedDevicesTableRow from "./UntrustedDevicesTableRow";
 
 export type UserDevice = {
 	id: string;

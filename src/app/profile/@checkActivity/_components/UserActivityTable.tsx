@@ -10,7 +10,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@cryptalbum/components/ui/table";
-import { api } from "@cryptalbum/trpc/react";
+import { api } from "@cryptalbum/utils/api";
 import UserActivityTableRow from "./UserActivityTableRow";
 import type { Activity } from "./types";
 

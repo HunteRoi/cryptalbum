@@ -1,6 +1,6 @@
-import {Trash2} from "lucide-react";
+import { Trash2 } from "lucide-react";
 
-import {Button} from "@cryptalbum/components/ui/button";
+import { Button } from "@cryptalbum/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -10,10 +10,10 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@cryptalbum/components/ui/dialog";
-import {ToastAction} from "@cryptalbum/components/ui/toast";
-import {useToast} from "@cryptalbum/components/ui/use-toast";
-import {api} from "@cryptalbum/trpc/react";
-import type {ImageInProps} from "./types";
+import { ToastAction } from "@cryptalbum/components/ui/toast";
+import { useToast } from "@cryptalbum/components/ui/use-toast";
+import { api } from "@cryptalbum/utils/api";
+import type { ImageInProps } from "./types";
 
 type ImageDeletionDialogProps = ImageInProps & {
 	name?: string;

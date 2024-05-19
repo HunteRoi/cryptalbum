@@ -1,7 +1,7 @@
 "use client";
 
 import { CardFooter } from "@cryptalbum/components/ui/card";
-import { api } from "@cryptalbum/trpc/react";
+import { api } from "@cryptalbum/utils/api";
 import ImageCard from "./ImageCard";
 import AlbumCard from "./AlbumCard";
 

@@ -32,7 +32,7 @@ import {
 	importSymmetricalKey,
 	loadKeyPair,
 } from "@cryptalbum/crypto";
-import { api } from "@cryptalbum/trpc/react";
+import { api } from "@cryptalbum/utils/api";
 import type { ImageInProps } from "./types";
 
 type ImageUpdateDialogProps = ImageInProps & { name?: string };

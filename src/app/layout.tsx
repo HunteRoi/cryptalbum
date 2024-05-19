@@ -6,7 +6,7 @@ import { AuthProvider } from "@cryptalbum/components/providers/AuthProvider";
 import { ThemeProvider } from "@cryptalbum/components/providers/ThemeProvider";
 import UserDataProvider from "@cryptalbum/components/providers/UserDataProvider";
 import { Toaster } from "@cryptalbum/components/ui/toaster";
-import { TRPCReactProvider } from "@cryptalbum/trpc/react";
+import { TRPCReactProvider } from "@cryptalbum/utils/api";
 
 import "@cryptalbum/styles/globals.css";
 

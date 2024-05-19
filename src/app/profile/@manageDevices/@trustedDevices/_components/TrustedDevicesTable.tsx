@@ -12,7 +12,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@cryptalbum/components/ui/table";
-import {api} from "@cryptalbum/trpc/react";
+import { api } from "@cryptalbum/utils/api";
 import TrustedDevicesTableRow from "./TrustedDevicesTableRow";
 
 export type UserDevice = {

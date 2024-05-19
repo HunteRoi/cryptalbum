@@ -1,5 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { signOut } from "next-auth/react";
 
 import {
 	type UserData,
@@ -25,8 +26,7 @@ import {
 	loadKeyPair,
 	storeKeyPair,
 } from "@cryptalbum/crypto";
-import { api } from "@cryptalbum/trpc/react";
-import { signOut } from "next-auth/react";
+import { api } from "@cryptalbum/utils/api";
 
 export default function ChangeKeyPairForm() {
 	const userData = useUserData() as UserData;

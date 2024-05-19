@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import { getCsrfToken } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -14,7 +13,7 @@ import {
 	exportAsymmetricalKey,
 	loadKeyPair,
 } from "@cryptalbum/crypto";
-import { api } from "@cryptalbum/trpc/react";
+import { api } from "@cryptalbum/utils/api";
 
 type State = {
 	csrfToken: string | undefined;

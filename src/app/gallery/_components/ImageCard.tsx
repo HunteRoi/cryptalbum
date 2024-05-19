@@ -1,11 +1,11 @@
 "use client";
 
-import React, {useCallback, useEffect, useState} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import ImageDeletionDialog from "@cryptalbum/app/gallery/_components/ImageDeletionDialog";
 import ImageUpdateDialog from "@cryptalbum/app/gallery/_components/ImageUpdateDialog";
-import {useUserData} from "@cryptalbum/components/providers/UserDataProvider";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@cryptalbum/components/ui/card";
+import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@cryptalbum/components/ui/card";
 import {
 	decrypt,
 	decryptFileSymmetrical,
@@ -13,8 +13,8 @@ import {
 	importSymmetricalKey,
 	loadKeyPair,
 } from "@cryptalbum/crypto";
-import {api} from "@cryptalbum/trpc/react";
-import type {ImageInProps} from "./types";
+import { api } from "@cryptalbum/utils/api";
+import type { ImageInProps } from "./types";
 
 type ImageCardState = {
 	name: string;

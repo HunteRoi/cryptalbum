@@ -22,7 +22,7 @@ import {
 	importSymmetricalKey,
 	loadKeyPair,
 } from "@cryptalbum/crypto";
-import { api } from "@cryptalbum/trpc/react";
+import { api } from "@cryptalbum/utils/api";
 import AlbumDeletionDialog from "../_components/AlbumDeletionDialog";
 import ImageCard from "../_components/ImageCard";
 

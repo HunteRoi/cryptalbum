@@ -1,4 +1,5 @@
 import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@cryptalbum/components/ui/button";
 import {
@@ -12,8 +13,7 @@ import {
 } from "@cryptalbum/components/ui/dialog";
 import { ToastAction } from "@cryptalbum/components/ui/toast";
 import { useToast } from "@cryptalbum/components/ui/use-toast";
-import { api } from "@cryptalbum/trpc/react";
-import { useRouter } from "next/navigation";
+import { api } from "@cryptalbum/utils/api";
 
 type AlbumDeletionDialogProps = {
 	albumId?: string;

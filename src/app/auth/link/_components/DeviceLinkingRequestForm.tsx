@@ -1,5 +1,10 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from "@cryptalbum/components/ui/button";
 import {
 	Form,
@@ -18,13 +23,8 @@ import {
 	loadKeyPair,
 	storeKeyPair,
 } from "@cryptalbum/crypto";
-import { api } from "@cryptalbum/trpc/react";
-
+import { api } from "@cryptalbum/utils/api";
 import { ToastAction } from "@cryptalbum/components/ui/toast";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 const formSchema = z.object({
 	email: z.string().email("Invalid email address"),

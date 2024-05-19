@@ -12,7 +12,7 @@ import {
 	importRsaPublicKey,
 	loadKeyPair,
 } from "@cryptalbum/crypto";
-import { api } from "@cryptalbum/trpc/react";
+import { api } from "@cryptalbum/utils/api";
 import { useUserData } from "./providers/UserDataProvider";
 import { Button } from "./ui/button";
 import {
