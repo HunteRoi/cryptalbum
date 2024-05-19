@@ -17,13 +17,10 @@ import UntrustedDevicesTableRow from "./UntrustedDevicesTableRow";
 
 export type UserDevice = {
 	id: string;
-	userId: string;
 	publicKey: string;
 	symmetricalKey: string | null;
 	name: string | null;
-	lastLogin: Date | null;
 	createdAt: Date;
-	updatedAt: Date;
 };
 
 export default function UntrustedDevicesTable() {

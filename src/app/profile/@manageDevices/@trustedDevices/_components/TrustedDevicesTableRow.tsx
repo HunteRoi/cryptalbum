@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { Trash2 } from "lucide-react";
+import React, {useEffect} from "react";
+import {Trash2} from "lucide-react";
 
-import { Button } from "@cryptalbum/components/ui/button";
-import { TableCell, TableRow } from "@cryptalbum/components/ui/table";
-import { api } from "@cryptalbum/trpc/react";
-import type { UserDevice } from "./TrustedDevicesTable";
-import { decryptFormValue } from "@cryptalbum/crypto";
-import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
+import {Button} from "@cryptalbum/components/ui/button";
+import {TableCell, TableRow} from "@cryptalbum/components/ui/table";
+import {api} from "@cryptalbum/trpc/react";
+import type {UserDevice} from "./TrustedDevicesTable";
+import {decryptFormValue} from "@cryptalbum/crypto";
+import {useUserData} from "@cryptalbum/components/providers/UserDataProvider";
 
 type TustedDevicesTableRowProps = {
 	device: UserDevice;
@@ -49,14 +49,14 @@ export default function TrustedDevicesTableRow({
 	}
 
 	useEffect(() => {
-		decryptDeviceName(device.name);
+		void decryptDeviceName(device.name);
 	}, [decryptDeviceName, device.name]);
 
 	return (
 		<TableRow key={device.id}>
 			<TableCell className="font-medium">{deviceName}</TableCell>
 			<TableCell className="text-right">
-				{device.createdAt.toISOString()}
+				{device.lastLogin?.toISOString() ?? "Has not logged in yet."}
 			</TableCell>
 			<TableCell className="text-center">
 				{userData?.id !== device.id ? (

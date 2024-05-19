@@ -1,22 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
-
-import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@cryptalbum/components/ui/card";
-import {
-	decrypt,
-	decryptFormValue,
-	importSymmetricalKey,
-} from "@cryptalbum/crypto";
-import { CardStackIcon } from "@radix-ui/react-icons";
+import React, {useCallback, useEffect, useState} from "react";
+import {CardStackIcon} from "@radix-ui/react-icons";
 import Link from "next/link";
+
+import {useUserData} from "@cryptalbum/components/providers/UserDataProvider";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@cryptalbum/components/ui/card";
+import {decrypt, decryptFormValue, importSymmetricalKey, loadKeyPair,} from "@cryptalbum/crypto";
 
 type AlbumCardProps = {
 	album: {
@@ -37,13 +27,15 @@ export default function AlbumCard({ album }: AlbumCardProps) {
 	const userData = useUserData();
 
 	const decipheredData = useCallback(async () => {
-		if (!userData) {
-			return null;
+		const keyPair = await loadKeyPair();
+
+		if (!userData || !keyPair)  {
+			return;
 		}
 
 		try {
 			const decipheredSymmetricalKey = await decrypt(
-				userData.symmetricalKey,
+				keyPair.privateKey,
 				Buffer.from(album.encryptionKey, "hex"),
 			);
 			const importedSymmetricalKey = await importSymmetricalKey(
@@ -60,7 +52,7 @@ export default function AlbumCard({ album }: AlbumCardProps) {
 					importedSymmetricalKey,
 				);
 			}
-			
+
 			setAlbumState({
 				name: decipheredName,
 				description: decipheredDescription,

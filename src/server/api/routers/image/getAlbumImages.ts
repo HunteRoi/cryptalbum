@@ -1,7 +1,7 @@
-import { z } from "zod";
+import {z} from "zod";
 
-import { protectedProcedure } from "@cryptalbum/server/api/trpc";
-import type { Extended, NonEmptyArray } from "@cryptalbum/@types";
+import {protectedProcedure} from "@cryptalbum/server/api/trpc";
+import type {Extended, NonEmptyArray} from "@cryptalbum/@types";
 
 type SharedKey = {
 	key: string;
@@ -22,13 +22,14 @@ export const getAlbumImages = protectedProcedure
 
 	const images = await ctx.db.picture.findMany({
 		where: {
-			userId: ctx.session.userId,
+			albumId: albumId,
 			shareds: {
 				some: {
 					userId: ctx.session.userId,
+					deviceId: ctx.session.user.id,
+					albumId: albumId,
 				},
 			},
-			albumId: albumId,
 		},
 		select: {
 			id: true,
@@ -39,7 +40,8 @@ export const getAlbumImages = protectedProcedure
 					key: true,
 				},
 				where: {
-					userId: ctx.session.userId,
+					deviceId: ctx.session.user.id,
+					albumId: albumId,
 				},
 			},
 		},

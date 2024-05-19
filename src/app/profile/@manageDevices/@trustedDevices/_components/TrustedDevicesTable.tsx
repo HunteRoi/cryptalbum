@@ -12,18 +12,15 @@ import {
 	TableHeader,
 	TableRow,
 } from "@cryptalbum/components/ui/table";
-import { api } from "@cryptalbum/trpc/react";
+import {api} from "@cryptalbum/trpc/react";
 import TrustedDevicesTableRow from "./TrustedDevicesTableRow";
 
 export type UserDevice = {
 	id: string;
-	userId: string;
 	publicKey: string;
 	symmetricalKey: string | null;
 	name: string | null;
 	lastLogin: Date | null;
-	createdAt: Date;
-	updatedAt: Date;
 };
 
 export default function TrustedDevicesTable() {
@@ -40,7 +37,7 @@ export default function TrustedDevicesTable() {
 			<TableHeader>
 				<TableRow>
 					<TableHead>Device name</TableHead>
-					<TableHead className="text-right">Request date</TableHead>
+					<TableHead className="text-right">Last login date</TableHead>
 					<TableHead className="text-center w-[200px]">Actions</TableHead>
 				</TableRow>
 			</TableHeader>

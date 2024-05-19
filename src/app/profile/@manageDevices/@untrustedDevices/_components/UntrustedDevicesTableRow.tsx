@@ -32,10 +32,12 @@ import {
 import { Input } from "@cryptalbum/components/ui/input";
 import { TableCell, TableRow } from "@cryptalbum/components/ui/table";
 import {
+	decrypt,
 	encrypt,
 	encryptFormValue,
 	exportSymmetricalKey,
 	importRsaPublicKey,
+	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
 import type { UserDevice } from "./UntrustedDevicesTable";
@@ -55,6 +57,8 @@ export default function UntrustedDevicesTableRow({
 
 	const trustedDevicesQuery = api.auth.listTrustedDevices.useQuery();
 	const untrustedDevicesQuery = api.auth.listUntrustedDevices.useQuery();
+	const allUserImagesQuery = api.image.getImages.useQuery();
+	const allUserAlbumsQuery = api.album.getAlbums.useQuery();
 	const trustDeviceMutation = api.auth.trustDevice.useMutation();
 	const deleteDeviceMutation = api.auth.deleteDevice.useMutation();
 
@@ -66,6 +70,12 @@ export default function UntrustedDevicesTableRow({
 	});
 
 	async function acceptDevice(values: z.infer<typeof formSchema>) {
+		const keyPair = await loadKeyPair();
+
+		if (!keyPair) {
+			return;
+		}
+
 		const { friendlyName } = values;
 		const { symmetricalKey } = userData;
 
@@ -74,12 +84,49 @@ export default function UntrustedDevicesTableRow({
 			await exportSymmetricalKey(symmetricalKey),
 			publicKey,
 		);
+		const [symmetricalKeysWithImage, symmetricalKeysWithAlbum] =
+			await Promise.all([
+				Promise.all(
+					(allUserImagesQuery.data || []).map(async (image) => {
+						const encryptedImageSymKey = await encrypt(
+							publicKey,
+							await decrypt(
+								keyPair.privateKey,
+								Buffer.from(image.encryptionKey, "hex"),
+							),
+						);
+
+						return {
+							symmetricalKey: encryptedImageSymKey,
+							imageId: image.id,
+						};
+					}),
+				),
+				Promise.all(
+					(allUserAlbumsQuery.data || []).map(async (album) => {
+						const encryptedAlbumSymKey = await encrypt(
+							publicKey,
+							await decrypt(
+								keyPair.privateKey,
+								Buffer.from(album.encryptionKey, "hex"),
+							),
+						);
+
+						return {
+							symmetricalKey: encryptedAlbumSymKey,
+							albumId: album.id,
+						};
+					}),
+				),
+			]);
 
 		const encryptedValue = await encryptFormValue(friendlyName, symmetricalKey);
 
 		await trustDeviceMutation.mutateAsync({
 			deviceId: device.id,
 			symmetricalKey: encryptedSymmetricalKey,
+			symmetricalKeysWithImage,
+			symmetricalKeysWithAlbum,
 			deviceName: encryptedValue,
 		});
 		await untrustedDevicesQuery.refetch();
@@ -103,12 +150,12 @@ export default function UntrustedDevicesTableRow({
 					title={`Reject ${device.id}`}
 					className="bg-red-600"
 				>
-					<Ban color="white"/>
+					<Ban color="white" />
 				</Button>{" "}
 				<Dialog>
 					<DialogTrigger asChild>
 						<Button title={`Accept ${device.id}`} className="bg-green-600">
-							<Check color="white"/>
+							<Check color="white" />
 						</Button>
 					</DialogTrigger>
 					<DialogContent className="sm:max-w-[425px]">

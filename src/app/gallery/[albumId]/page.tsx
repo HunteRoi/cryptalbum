@@ -1,22 +1,36 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-
-import { api } from "@cryptalbum/trpc/react";
-import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@cryptalbum/components/ui/card";
-import { UploadFileDialog } from "@cryptalbum/components/UploadFileDialog";
-import ImageCard from "../_components/ImageCard";
-import { decrypt, decryptFormValue, importSymmetricalKey } from "@cryptalbum/crypto";
-import { Button } from "@cryptalbum/components/ui/button";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+
+import { UploadFileDialog } from "@cryptalbum/components/UploadFileDialog";
+import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
+import { Button } from "@cryptalbum/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@cryptalbum/components/ui/card";
+import {
+	decrypt,
+	decryptFormValue,
+	encrypt,
+	importSymmetricalKey,
+	loadKeyPair,
+} from "@cryptalbum/crypto";
+import { api } from "@cryptalbum/trpc/react";
 import AlbumDeletionDialog from "../_components/AlbumDeletionDialog";
+import ImageCard from "../_components/ImageCard";
 
 type AlbumState = {
 	name: string;
 	description?: string;
 	encryptionKey: string;
+	images: Array<{ id: string; name: string; encryptionKey: string }>;
 };
 
 export default function AlbumPage() {
@@ -28,37 +42,58 @@ export default function AlbumPage() {
 	const { data: images } = api.image.getAlbumImages.useQuery(albumId);
 
 	const decipheredData = useCallback(async () => {
-		if (!userData || !album) {
+		const keyPair = await loadKeyPair();
+
+		if (!userData || !album || !keyPair) {
 			return null;
 		}
 
 		try {
-			const decipheredSymmetricalKey = await decrypt(
-				userData.symmetricalKey,
+			const decipheredAlbumSymmetricalKey = await decrypt(
+				keyPair.privateKey,
 				Buffer.from(album.encryptionKey, "hex"),
 			);
-			const importedSymmetricalKey = await importSymmetricalKey(
-				decipheredSymmetricalKey,
+			const albumSymmetricalKey = await importSymmetricalKey(
+				decipheredAlbumSymmetricalKey,
 			);
 			const decipheredName = await decryptFormValue(
 				album.name,
-				importedSymmetricalKey,
+				albumSymmetricalKey,
 			);
 			let decipheredDescription = undefined;
 			if (album.description) {
 				decipheredDescription = await decryptFormValue(
 					album.description,
-					importedSymmetricalKey,
+					albumSymmetricalKey,
 				);
 			}
-			
+
+			const decipheredImages = await Promise.all(
+				(images ?? []).map(async (image) => {
+					const decipheredImageSymKey = await decrypt(
+						albumSymmetricalKey,
+						Buffer.from(image.encryptionKey, "hex"),
+					);
+
+					return {
+						id: image.id,
+						name: image.name,
+						encryptionKey: await encrypt(
+							keyPair.publicKey,
+							decipheredImageSymKey,
+						),
+					};
+				}),
+			);
+
 			setAlbumState({
 				name: decipheredName,
 				description: decipheredDescription,
-				encryptionKey: decipheredSymmetricalKey,
+				encryptionKey: album.encryptionKey,
+				images: decipheredImages,
 			});
 		} catch (error) {}
-	}, [album, userData]);
+	}, [album, images, userData]);
 
 	useEffect(() => {
 		void decipheredData();
@@ -73,17 +108,18 @@ export default function AlbumPage() {
 				<div className="grid gap-2">
 					<CardTitle>{albumState?.name}</CardTitle>
 					<CardDescription>
-						{albumState?.description ?? "Here is a list of all the images in this folder."}
+						{albumState?.description ??
+							"Here is a list of all the images in this folder."}
 					</CardDescription>
 				</div>
 				<div className="ml-auto">
-					<UploadFileDialog />
-					<AlbumDeletionDialog albumId={album?.id} name={albumState?.name}/>
+					<UploadFileDialog albumId={albumId} />
+					<AlbumDeletionDialog albumId={album?.id} name={albumState?.name} />
 				</div>
 			</CardHeader>
 			<CardContent className="flex flex-row flex-wrap">
-				{albumState && images?.map((image) => (
-					<ImageCard key={image.id} image={{ ...image, encryptionKey: albumState.encryptionKey }} />
+				{albumState?.images.map((image) => (
+					<ImageCard key={image.id} image={image} />
 				))}
 			</CardContent>
 			{!images?.length && <CardFooter>No images found</CardFooter>}

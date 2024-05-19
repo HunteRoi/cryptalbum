@@ -9,10 +9,15 @@ export const create = protectedProcedure
 			payload: z.object({
 				name: z.string(),
 				description: z.string().optional(),
-				symmetricalKey: z.string(),
-				requestDate: z.date(),
+				symmetricalKeysWithDevice: z.array(
+					z.object({
+						deviceId: z.string(),
+						symmetricalKey: z.string(),
+					}),
+				),
 			}),
 			metadata: z.object({
+				requestDate: z.date(),
 				requestSize: z.number().gt(0),
 			}),
 		}),
@@ -31,9 +36,14 @@ export const create = protectedProcedure
 						description: payload.description,
 						metadata: metadata,
 						shareds: {
-							create: {
-								key: payload.symmetricalKey,
-								userId: ctx.session.userId,
+							createMany: {
+								data: payload.symmetricalKeysWithDevice.map(
+									(symmetricalKeyWithDevice) => ({
+										key: symmetricalKeyWithDevice.symmetricalKey,
+										deviceId: symmetricalKeyWithDevice.deviceId,
+										userId: ctx.session.userId,
+									}),
+								),
 							},
 						},
 					},

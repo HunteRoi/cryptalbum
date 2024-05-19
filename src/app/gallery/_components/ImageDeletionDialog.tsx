@@ -1,6 +1,6 @@
-import { Trash2 } from "lucide-react";
+import {Trash2} from "lucide-react";
 
-import { Button } from "@cryptalbum/components/ui/button";
+import {Button} from "@cryptalbum/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -10,10 +10,10 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@cryptalbum/components/ui/dialog";
-import { ToastAction } from "@cryptalbum/components/ui/toast";
-import { useToast } from "@cryptalbum/components/ui/use-toast";
-import { api } from "@cryptalbum/trpc/react";
-import type { ImageInProps } from "./types";
+import {ToastAction} from "@cryptalbum/components/ui/toast";
+import {useToast} from "@cryptalbum/components/ui/use-toast";
+import {api} from "@cryptalbum/trpc/react";
+import type {ImageInProps} from "./types";
 
 type ImageDeletionDialogProps = ImageInProps & {
 	name?: string;
@@ -25,12 +25,19 @@ export default function ImageDeletionDialog({
 }: ImageDeletionDialogProps) {
 	const { toast } = useToast();
 	const pictureDeletionMutation = api.image.delete.useMutation();
-	const getImagesQuery = api.image.getImages.useQuery();
+	const trpcUtils = api.useUtils();
 
 	const handleDelete = async () => {
 		try {
 			await pictureDeletionMutation.mutateAsync(image.id);
-			await getImagesQuery.refetch();
+
+			toast({
+				title: "Image deleted",
+				description: `The image "${name}" has been deleted`,
+				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+			});
+			await trpcUtils.image.getImages.invalidate();
+			await trpcUtils.image.getAlbumImages.invalidate();
 		} catch (error) {
 			const message =
 				error instanceof Error ? error.message : "An error occurred";

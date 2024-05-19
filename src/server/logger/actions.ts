@@ -15,9 +15,10 @@ export const actions = [
 	"CHANGE_DEVICE_KEY_PAIR",
 	"LIST_TRUSTED_DEVICES",
 	"CREATE_ALBUM",
-	"GET_ALBUMS",
+	"GET_ALBUM",
 	"DELETE_USER",
 	"DELETE_ALBUM",
+	"GET_USER_ALBUMS",
 ] as const;
 
 export type Action = (typeof actions)[number];

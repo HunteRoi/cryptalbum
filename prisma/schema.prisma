@@ -17,7 +17,6 @@ datasource db {
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
-  userId            String
   type              String
   provider          String
   providerAccountId String
@@ -28,6 +27,7 @@ model Account {
   scope             String?
   id_token          String? // @db.Text
   session_state     String?
+  userId            String
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -36,8 +36,8 @@ model Account {
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       String
   expires      DateTime
+  userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -66,78 +66,79 @@ model VerificationToken {
 
 model UserDevice {
   id             String                @id @default(cuid())
-  userId         String
   publicKey      String                @unique
   symmetricalKey String?               @unique
   name           String?
   lastLogin      DateTime?
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
-  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   challenges     UserDeviceChallenge[]
+  SharedKey      SharedKey[]
+  userId         String
+  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserDeviceChallenge {
   id           String     @id @default(cuid())
   challenge    String
-  userDeviceId String
   isValidated  Boolean    @default(false)
   expires      DateTime
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+  userDeviceId String
   userDevice   UserDevice @relation(fields: [userDeviceId], references: [id], onDelete: Cascade)
 }
 
 model Picture {
   id        String      @id @default(cuid())
-  userId    String
   name      String
-  albumId   String?
   metadata  Json
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   shareds   SharedKey[]
+  albumId   String?
   album     Album?      @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  userId    String
   owner     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SharedKey {
-  id           String      @id @default(cuid())
-  userId       String
-  photoId      String?
-  albumId      String?
-  key          String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  picture      Picture?     @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  album        Album?      @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  id        String     @id @default(cuid())
+  key       String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deviceId  String
+  device    UserDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  photoId   String?
+  picture   Picture?   @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  albumId   String?
+  album     Album?     @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  userId    String?
+  User      User?      @relation(fields: [userId], references: [id])
 }
 
 model Album {
-  id          String    @id @default(cuid())
-  userId      String
+  id          String      @id @default(cuid())
   name        String
   description String?
   metadata    Json
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  owner       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   pictures    Picture[]
   shareds     SharedKey[]
+  userId      String
+  owner       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Log {
-    id        Int      @id @default(autoincrement())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    action    String
-    message   String
-    args      Json?
-    level     String
-
-    userId    String?
-    user      User?     @relation(fields: [userId], references: [id])
-
-    hmac      String
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  action    String
+  message   String
+  args      Json?
+  level     String
+  hmac      String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
 }

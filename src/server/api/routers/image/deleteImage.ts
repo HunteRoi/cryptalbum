@@ -7,7 +7,6 @@ export const deleteImage = protectedProcedure
 	.input(z.string())
 	.mutation(async ({ ctx, input: imageId }) => {
 		const logger = ctx.logWrapper.enrichWithAction("DELETE_IMAGE").create();
-		logger.info("Trying to delete image {imageId}", { imageId });
 
 		const image = await ctx.db.picture.findFirst({
 			where: {
@@ -15,6 +14,16 @@ export const deleteImage = protectedProcedure
 				userId: ctx.session.userId,
 			},
 		});
+
+		if (image?.albumId) {
+			logger.info(
+				"Trying to delete image {imageId} from album {albumId}",
+				imageId,
+				image.albumId,
+			);
+		} else {
+			logger.info("Trying to delete image {imageId}", imageId);
+		}
 
 		if (!image) {
 			logger.error(
@@ -35,7 +44,7 @@ export const deleteImage = protectedProcedure
 				await ctx.minio.removeObject(env.MINIO_BUCKET, image.id);
 			});
 		} catch (error) {
-			logger.error("Failed to delete image {imageId}", { imageId });
+			logger.error("Failed to delete image {imageId}", imageId);
 
 			throw new TRPCError({
 				code: "INTERNAL_SERVER_ERROR",

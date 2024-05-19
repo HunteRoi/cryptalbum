@@ -1,17 +1,31 @@
 "use client";
 
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { encrypt, encryptFormValue, exportSymmetricalKey, generateSymmetricalKey } from "@cryptalbum/crypto";
+import {
+	encrypt,
+	encryptFormValue,
+	exportSymmetricalKey,
+	generateSymmetricalKey,
+	importRsaPublicKey,
+	loadKeyPair,
+} from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
 import { useUserData } from "./providers/UserDataProvider";
-import { useToast } from "./ui/use-toast";
-import { ToastAction } from "./ui/toast";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
-import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "./ui/form";
+import { Input } from "./ui/input";
+import { ToastAction } from "./ui/toast";
+import { useToast } from "./ui/use-toast";
 
 const formSchema = z.object({
 	name: z.string(),
@@ -21,6 +35,7 @@ const formSchema = z.object({
 export default function CreateAlbumForm() {
 	const { toast } = useToast();
 	const userData = useUserData();
+	const { data: userDevices } = api.auth.listTrustedDevices.useQuery();
 	const createAlbumMutation = api.album.create.useMutation();
 	const trpcUtils = api.useUtils();
 
@@ -33,13 +48,9 @@ export default function CreateAlbumForm() {
 	});
 
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
-		if (!userData) {
-			toast({
-				title: "Error",
-				description: "You need to be logged in to be able to create an album",
-				variant: "destructive",
-				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
-			});
+		const keyPair = await loadKeyPair();
+
+		if (!userData || !keyPair) {
 			return;
 		}
 		if (!data.name) {
@@ -58,11 +69,22 @@ export default function CreateAlbumForm() {
 		try {
 			const cryptoKey = await generateSymmetricalKey();
 			const exportedKey = await exportSymmetricalKey(cryptoKey);
-			const encryptedKey = await encrypt(userData.symmetricalKey, exportedKey);
-			const encryptedAlbumName = await encryptFormValue(
-				data.name,
-				cryptoKey,
-			);
+			const [encryptedAlbumName, ...symmetricalKeysWithDevice] =
+				await Promise.all([
+					encryptFormValue(data.name, cryptoKey),
+					...(userDevices || []).map(async (device) => {
+						const publicKey = await importRsaPublicKey(device.publicKey);
+						const encryptedSymmetricalKey = await encrypt(
+							publicKey,
+							exportedKey,
+						);
+
+						return {
+							symmetricalKey: encryptedSymmetricalKey,
+							deviceId: device.id,
+						};
+					}),
+				]);
 			let encryptedAlbumDescription = undefined;
 			if (data.description) {
 				encryptedAlbumDescription = await encryptFormValue(
@@ -73,16 +95,16 @@ export default function CreateAlbumForm() {
 			const payload = {
 				name: encryptedAlbumName,
 				description: encryptedAlbumDescription,
-				symmetricalKey: encryptedKey,
-				requestDate: new Date(),
+				symmetricalKeysWithDevice,
 			};
 			await createAlbumMutation.mutateAsync({
 				payload,
 				metadata: {
+					requestDate: new Date(),
 					requestSize: JSON.stringify(payload).length,
 				},
 			});
-			
+
 			form.reset();
 			toast({
 				title: "Album created",
@@ -93,7 +115,8 @@ export default function CreateAlbumForm() {
 			console.error(error);
 			toast({
 				title: "Failed to create album",
-				description: "The server trolled us, it want to be a teapot",
+				description:
+					"An error occurred while creating the album. Please try again later.",
 				variant: "destructive",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
 			});
@@ -102,7 +125,10 @@ export default function CreateAlbumForm() {
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="mx-auto p-10 w-[380px]">
+			<form
+				onSubmit={form.handleSubmit(onSubmit)}
+				className="mx-auto p-10 w-[380px]"
+			>
 				<FormField
 					control={form.control}
 					name="name"
@@ -110,23 +136,21 @@ export default function CreateAlbumForm() {
 						<FormItem>
 							<FormLabel>Album name</FormLabel>
 							<FormControl>
-								<Input
-									type="text"
-									placeholder="My awesome album"
-									{...field}
-								/>
+								<Input type="text" placeholder="My awesome album" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
-				<div className="pt-4"></div>
+				<div className="pt-4" />
 				<FormField
 					control={form.control}
 					name="description"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Album description <span className="italic">(optional)</span></FormLabel>
+							<FormLabel>
+								Album description <span className="italic">(optional)</span>
+							</FormLabel>
 							<FormControl>
 								<Input
 									type="text"
@@ -145,5 +169,5 @@ export default function CreateAlbumForm() {
 				</div>
 			</form>
 		</Form>
-	)
-};
+	);
+}

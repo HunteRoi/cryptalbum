@@ -1,25 +1,20 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 
 import ImageDeletionDialog from "@cryptalbum/app/gallery/_components/ImageDeletionDialog";
 import ImageUpdateDialog from "@cryptalbum/app/gallery/_components/ImageUpdateDialog";
-import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@cryptalbum/components/ui/card";
+import {useUserData} from "@cryptalbum/components/providers/UserDataProvider";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@cryptalbum/components/ui/card";
 import {
 	decrypt,
 	decryptFileSymmetrical,
 	decryptFormValue,
 	importSymmetricalKey,
+	loadKeyPair,
 } from "@cryptalbum/crypto";
-import { api } from "@cryptalbum/trpc/react";
-import type { ImageInProps } from "./types";
+import {api} from "@cryptalbum/trpc/react";
+import type {ImageInProps} from "./types";
 
 type ImageCardState = {
 	name: string;
@@ -34,13 +29,14 @@ export default function ImageCard({ image }: ImageInProps) {
 	);
 
 	const decipheredData = useCallback(async () => {
-		if (!userData || !encryptedImageContent) {
+		const keyPair = await loadKeyPair();
+		if (!userData || !encryptedImageContent || !keyPair) {
 			return null;
 		}
 
 		try {
 			const decipheredSymmetricalKey = await decrypt(
-				userData.symmetricalKey,
+				keyPair.privateKey,
 				Buffer.from(image.encryptionKey, "hex"),
 			);
 			const importedSymmetricalKey = await importSymmetricalKey(

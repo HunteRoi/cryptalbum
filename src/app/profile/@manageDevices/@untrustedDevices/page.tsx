@@ -1,6 +1,5 @@
 "use client";
 
-import UntrustedDevicesTable from "./_components/UntrustedDevicesTable";
 import {
 	Card,
 	CardContent,
@@ -8,6 +7,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@cryptalbum/components/ui/card";
+import UntrustedDevicesTable from "./_components/UntrustedDevicesTable";
 
 import React from "react";
 

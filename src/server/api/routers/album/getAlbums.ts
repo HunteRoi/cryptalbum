@@ -1,19 +1,8 @@
-import type { Extended, NonEmptyArray } from "@cryptalbum/@types";
 import { protectedProcedure } from "@cryptalbum/server/api/trpc";
-
-type SharedKey = {
-	key: string;
-};
-type Album = {
-	id: string;
-	name: string;
-	description: string | null;
-	shareds: SharedKey[];
-};
-type AlbumWithAtLeastOneSharedKey = Extended<Album, "shareds", NonEmptyArray<SharedKey>>;
+import type { Album, AlbumWithAtLeastOneSharedKey } from "./index";
 
 export const getAlbums = protectedProcedure.query(async ({ ctx }) => {
-	const logger = ctx.logWrapper.enrichWithAction("GET_ALBUMS").create();
+	const logger = ctx.logWrapper.enrichWithAction("GET_USER_ALBUMS").create();
 
 	logger.info("Fetching albums");
 
@@ -37,13 +26,17 @@ export const getAlbums = protectedProcedure.query(async ({ ctx }) => {
 				},
 				where: {
 					userId: ctx.session.userId,
+					deviceId: ctx.session.user.id,
 				},
 			},
 		},
 	});
 
 	return albums
-		.filter((album: Album): album is AlbumWithAtLeastOneSharedKey => album.shareds?.length > 0)
+		.filter(
+			(album: Album): album is AlbumWithAtLeastOneSharedKey =>
+				album.shareds.length > 0,
+		)
 		.map(({ shareds, ...albumData }) => {
 			return {
 				...albumData,

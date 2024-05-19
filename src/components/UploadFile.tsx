@@ -2,7 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -17,15 +19,21 @@ import {
 } from "@cryptalbum/components/ui/form";
 import { Input } from "@cryptalbum/components/ui/input";
 import {
+	decrypt,
+	decryptFormValue,
 	encrypt,
 	encryptFileSymmetrical,
 	encryptFormValue,
 	exportSymmetricalKey,
 	generateSymmetricalKey,
+	importRsaPublicKey,
+	importSymmetricalKey,
+	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
 import { arrayBufferToHex, fileSchemaFront } from "@cryptalbum/utils/file";
 
+import DropDownList from "./DropDownList";
 import FileSkeleton from "./FileSkeleton";
 import { useUserData } from "./providers/UserDataProvider";
 import { ToastAction } from "./ui/toast";
@@ -36,14 +44,24 @@ const formSchema = z.object({
 	fileName: z.string(),
 });
 
-export default function FileUploadForm() {
+type FileUploadFormProps = {
+	albumId?: string;
+};
+
+export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 	const { toast } = useToast();
 	const userData = useUserData();
+	const router = useRouter();
 	const uploadMutation = api.image.upload.useMutation();
 	const trpcUtils = api.useUtils();
-
+	const { data: albumList } = api.album.getAlbums.useQuery();
+	const { data: userDevices } = api.auth.listTrustedDevices.useQuery();
 	const [file, setFile] = useState<File | null>(null);
 	const [preview, setPreview] = useState<string | null>(null);
+	const [albumData, setAlbumData] = useState<
+		Array<{ value: string; label: string }>
+	>([]);
+	const [selectedAlbumId, setSelectedAlbumId] = React.useState(albumId ?? "");
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -55,20 +73,56 @@ export default function FileUploadForm() {
 
 	const fileRef = form.register("file");
 
+	const decipheredAlbumList = useCallback(async () => {
+		const keyPair = await loadKeyPair();
+		if (!userData || !albumList || !keyPair) {
+			return null;
+		}
+		try {
+			const dropdownContent = await Promise.all(
+				albumList.map(async (album) => {
+					const decipheredSymmetricalKey = await decrypt(
+						keyPair.privateKey,
+						Buffer.from(album.encryptionKey, "hex"),
+					);
+					const importedSymKey = await importSymmetricalKey(
+						decipheredSymmetricalKey,
+					);
+					const decipheredAlbumName = await decryptFormValue(
+						album.name,
+						importedSymKey,
+					);
+					return { value: album.id, label: decipheredAlbumName };
+				}),
+			);
+
+			setAlbumData(dropdownContent);
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
+	}, [albumList, userData]);
+
+	useEffect(() => {
+		void decipheredAlbumList();
+	}, [decipheredAlbumList]);
+
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
-		if (!userData) {
+		const keyPair = await loadKeyPair();
+		if (!userData || !keyPair) {
 			toast({
 				title: "Failed to upload file",
 				description: "You need to be logged in to be able to upload files",
 				variant: "destructive",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
 			});
+			router.push("/auth/login");
 			return;
 		}
 		if (!data.file) {
 			form.setError("file", {
 				type: "manual",
-				message: "File is required",
+				message: "The file is required or invalid",
 			});
 			toast({
 				title: "Failed to upload file",
@@ -78,6 +132,7 @@ export default function FileUploadForm() {
 			});
 			return;
 		}
+
 		if (!data.fileName) {
 			form.setError("fileName", {
 				type: "manual",
@@ -91,22 +146,64 @@ export default function FileUploadForm() {
 			});
 			return;
 		}
+
 		try {
 			const cryptoKey = await generateSymmetricalKey();
 			const encryptedFile = await encryptFileSymmetrical(data.file, cryptoKey);
-			const fileData = arrayBufferToHex(encryptedFile);
+
 			const exportedKey = await exportSymmetricalKey(cryptoKey);
-			const encryptedKey = await encrypt(userData.symmetricalKey, exportedKey);
-			const encryptedFileName = await encryptFormValue(
-				data.fileName,
-				cryptoKey,
-			);
-			const payload = {
-				image: fileData,
-				symmetricalKey: encryptedKey,
+			const [encryptedFileName, ...symmetricalKeysWithDevice] =
+				await Promise.all([
+					encryptFormValue(data.fileName, cryptoKey),
+					...(userDevices || []).map(async (device) => {
+						const publicKey = await importRsaPublicKey(device.publicKey);
+						const encryptedSymmetricalKey = await encrypt(
+							publicKey,
+							exportedKey,
+						);
+
+						return {
+							symmetricalKey: encryptedSymmetricalKey,
+							deviceId: device.id,
+						};
+					}),
+				]);
+
+			const payload: {
+				image: string;
+				symmetricalKeysWithDevice: {
+					symmetricalKey: string;
+					deviceId: string;
+				}[];
+				imageName: string;
+				requestDate: Date;
+				album?: { id: string; symmetricalKey: string };
+			} = {
+				image: arrayBufferToHex(encryptedFile),
+				symmetricalKeysWithDevice,
 				imageName: encryptedFileName,
 				requestDate: new Date(),
 			};
+
+			const album = albumList?.find((album) => album.id === selectedAlbumId);
+
+			if (album) {
+				const decipheredAlbumSymKey = await decrypt(
+					keyPair.privateKey,
+					Buffer.from(album.encryptionKey, "hex"),
+				);
+				const importedSymKey = await importSymmetricalKey(
+					decipheredAlbumSymKey,
+				);
+				const exportedPictureSymKey = await exportSymmetricalKey(cryptoKey);
+				const encryptedImageSymKey = await encrypt(
+					importedSymKey,
+					exportedPictureSymKey,
+				);
+
+				payload.album = { id: album.id, symmetricalKey: encryptedImageSymKey };
+			}
+
 			await uploadMutation.mutateAsync({
 				metadata: {
 					requestSize: JSON.stringify(payload).length,
@@ -189,6 +286,17 @@ export default function FileUploadForm() {
 						</FormItem>
 					)}
 				/>
+				<FormItem>
+					<FormLabel>
+						Album <span className="italic">(optional)</span>
+					</FormLabel>{" "}
+					<DropDownList
+						selections={albumData}
+						valueType="album"
+						selectedValue={selectedAlbumId}
+						setSelectedValue={setSelectedAlbumId}
+					/>
+				</FormItem>
 				<div className="flex pt-4">
 					<Button type="submit" className="mx-auto">
 						Submit

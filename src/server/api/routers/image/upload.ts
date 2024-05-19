@@ -3,6 +3,13 @@ import { protectedProcedure } from "@cryptalbum/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+type AlbumSharedKeys = Array<{
+	key: string;
+	userId: string;
+	deviceId: string;
+	albumId: string;
+}>;
+
 export const upload = protectedProcedure
 	.input(
 		z.object({
@@ -10,7 +17,18 @@ export const upload = protectedProcedure
 				image: z.string(),
 				imageName: z.string(),
 				requestDate: z.date(),
-				symmetricalKey: z.string(),
+				symmetricalKeysWithDevice: z.array(
+					z.object({
+						deviceId: z.string(),
+						symmetricalKey: z.string(),
+					}),
+				),
+				album: z
+					.object({
+						id: z.string(),
+						symmetricalKey: z.string(),
+					})
+					.optional(),
 			}),
 			metadata: z.object({
 				requestSize: z.number().gt(0),
@@ -21,19 +39,60 @@ export const upload = protectedProcedure
 		const logger = ctx.logWrapper.enrichWithAction("UPLOAD_IMAGE").create();
 
 		try {
-			logger.info("Uploading new image");
+			if (payload.album) {
+				logger.info("Uploading new image to album {albumId}", payload.album.id);
+			} else {
+				logger.info("Uploading new image");
+			}
+			const userDevices = await ctx.db.userDevice.findMany({
+				where: {
+					userId: ctx.session.userId,
+				},
+			});
+
+			const albumSharedKeys = userDevices
+				.map((userDevice) => {
+					return payload.album
+						? {
+								key: payload.album.symmetricalKey,
+								userId: ctx.session.userId,
+								deviceId: userDevice.id,
+								albumId: payload.album.id,
+							}
+						: undefined;
+				})
+				.filter((value) => value !== undefined) as AlbumSharedKeys;
 
 			await ctx.db.$transaction(async (database) => {
 				const { id } = await database.picture.create({
 					data: {
-						userId: ctx.session.userId,
 						name: payload.imageName,
 						metadata,
 						shareds: {
-							create: {
-								key: payload.symmetricalKey,
-								userId: ctx.session.userId,
+							createMany: {
+								data: [
+									...payload.symmetricalKeysWithDevice.map(
+										(symmetricalKeyWithDevice) => ({
+											key: symmetricalKeyWithDevice.symmetricalKey,
+											deviceId: symmetricalKeyWithDevice.deviceId,
+											userId: ctx.session.userId,
+										}),
+									),
+									...albumSharedKeys,
+								],
 							},
+						},
+						owner: {
+							connect: {
+								id: ctx.session.userId,
+							},
+						},
+						album: {
+							connect: payload.album
+								? {
+										id: payload.album.id,
+									}
+								: undefined,
 						},
 					},
 				});

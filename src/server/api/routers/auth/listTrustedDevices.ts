@@ -1,4 +1,4 @@
-import { protectedProcedure } from "@cryptalbum/server/api/trpc";
+import {protectedProcedure} from "@cryptalbum/server/api/trpc";
 
 export const listTrustedDevices = protectedProcedure.query(async ({ ctx }) => {
 	ctx.logWrapper
@@ -7,5 +7,12 @@ export const listTrustedDevices = protectedProcedure.query(async ({ ctx }) => {
 		.info("Listing trusted devices");
 	return ctx.db.userDevice.findMany({
 		where: { symmetricalKey: { not: null }, userId: ctx.session.userId },
+		select: {
+			id: true,
+			publicKey: true,
+			symmetricalKey: true,
+			name: true,
+			lastLogin: true,
+		}
 	});
 });

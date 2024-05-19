@@ -11,7 +11,11 @@ import {
 } from "@cryptalbum/components/ui/dialog";
 import FileUploadForm from "./UploadFile";
 
-export function UploadFileDialog() {
+type UploadFileDialogProps = {
+	albumId?: string;
+};
+
+export function UploadFileDialog({ albumId }: UploadFileDialogProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
@@ -26,7 +30,7 @@ export function UploadFileDialog() {
 						Add a new pictures to your gallery
 					</DialogDescription>
 				</DialogHeader>
-				<FileUploadForm />
+				<FileUploadForm albumId={albumId} />
 			</DialogContent>
 		</Dialog>
 	);

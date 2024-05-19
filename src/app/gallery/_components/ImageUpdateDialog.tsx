@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PenLine } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -29,9 +30,9 @@ import {
 	decrypt,
 	encryptFormValue,
 	importSymmetricalKey,
+	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/trpc/react";
-import { useRouter } from "next/navigation";
 import type { ImageInProps } from "./types";
 
 type ImageUpdateDialogProps = ImageInProps & { name?: string };
@@ -47,6 +48,7 @@ export default function ImageUpdateDialog({
 	const userData = useUserData();
 	const router = useRouter();
 	const { toast } = useToast();
+	const imageListQuery = api.image.getImages.useQuery();
 	const imageUpdateMutation = api.image.update.useMutation();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -56,7 +58,8 @@ export default function ImageUpdateDialog({
 	});
 
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
-		if (!userData) {
+		const keyPair = await loadKeyPair();
+		if (!userData || !keyPair) {
 			toast({
 				title: "Error",
 				description: "You need to be logged in to update an image.",
@@ -82,7 +85,7 @@ export default function ImageUpdateDialog({
 
 		try {
 			const decipheredSymmetricalKey = await decrypt(
-				userData.symmetricalKey,
+				keyPair.privateKey,
 				Buffer.from(image.encryptionKey, "hex"),
 			);
 			const importedSymmetricalKey = await importSymmetricalKey(
@@ -97,6 +100,13 @@ export default function ImageUpdateDialog({
 				imageId: image.id,
 				newName: encryptedNewName,
 			});
+
+			toast({
+				title: "Image updated",
+				description: "The image has been updated successfully.",
+				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+			});
+			await imageListQuery.refetch();
 		} catch (error) {
 			const errorMessage =
 				error instanceof Error ? error.message : "An unknown error occurred";
