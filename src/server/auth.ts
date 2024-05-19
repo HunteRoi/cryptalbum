@@ -22,6 +22,7 @@ declare module "next-auth" {
 		user: {
 			id: string;
 			email: string;
+			userId: string;
 			deviceName: string;
 			name: string;
 			symmetricalKey: string;
@@ -49,19 +50,23 @@ declare module "next-auth/jwt" {
 export const authOptions: NextAuthOptions = {
 	callbacks: {
 		async session(data) {
-			const user = data.session.user;
+			const user = await db.user.findFirst({
+				where: { email: data.session.user?.email },
+			});
 			const session = data.session;
 			const userDevice = await db.userDevice.findFirst({
 				where: { id: data.token.id },
 			});
 
 			if (user && userDevice) {
-				const { name: deviceName, symmetricalKey } = userDevice;
-
-				session.user = user;
-				session.user.id = data.token.id;
-				session.user.deviceName = deviceName as string;
-				session.user.symmetricalKey = symmetricalKey as string;
+				session.user = {
+					id: userDevice.id,
+					email: user.email as string,
+					userId: user.id,
+					deviceName: userDevice.name as string,
+					name: user.name as string,
+					symmetricalKey: userDevice.symmetricalKey as string,
+				};
 			}
 
 			return session;

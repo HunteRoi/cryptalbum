@@ -12,9 +12,7 @@ export const changeDevicePublicKey = protectedProcedure
 		ctx.logWrapper
 			.enrichWithAction("CHANGE_DEVICE_KEY_PAIR")
 			.create()
-			.info("Changing device key pair for {deviceId}", {
-				deviceId: ctx.session.user.id,
-			});
+			.info("Changing device key pair for {deviceId}", ctx.session.user.id);
 
 		await ctx.db.userDevice.update({
 			where: {

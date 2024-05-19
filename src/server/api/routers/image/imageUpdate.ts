@@ -9,19 +9,19 @@ export const imageUpdate = protectedProcedure
 			newName: z.string(),
 		}),
 	)
-	.mutation(async ({ ctx, input: { imageId: id, newName } }) => {
+	.mutation(async ({ ctx, input: { imageId, newName } }) => {
 		const logger = ctx.logWrapper.enrichWithAction("UPDATE_IMAGE").create();
 
-		logger.info("Updating image {imageId} with new name", { imageId: id });
+		logger.info("Updating image {imageId} with new name", imageId);
 
 		const image = await ctx.db.picture.findUnique({
 			where: {
-				id,
+				id: imageId,
 			},
 		});
 
 		if (!image) {
-			logger.error("Image {imageId} not found", { imageId: id });
+			logger.error("Image {imageId} not found", imageId);
 			throw new TRPCError({
 				code: "NOT_FOUND",
 				message: "Image not found",
@@ -29,9 +29,7 @@ export const imageUpdate = protectedProcedure
 		}
 
 		if (image.userId !== ctx.session.userId) {
-			logger.error("User is not the owner of the image {imageId}", {
-				imageId: id,
-			});
+			logger.error("User is not the owner of the image {imageId}", imageId);
 			throw new TRPCError({
 				code: "FORBIDDEN",
 				message: "You cannot update an image you don't own!",
@@ -40,7 +38,7 @@ export const imageUpdate = protectedProcedure
 
 		await ctx.db.picture.update({
 			where: {
-				id,
+				id: imageId,
 			},
 			data: {
 				name: newName,

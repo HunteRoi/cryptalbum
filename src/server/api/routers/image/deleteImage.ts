@@ -7,6 +7,7 @@ export const deleteImage = protectedProcedure
 	.input(z.string())
 	.mutation(async ({ ctx, input: imageId }) => {
 		const logger = ctx.logWrapper.enrichWithAction("DELETE_IMAGE").create();
+		logger.info("Trying to delete image {imageId}", imageId);
 
 		const image = await ctx.db.picture.findFirst({
 			where: {

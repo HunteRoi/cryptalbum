@@ -73,7 +73,7 @@ model UserDevice {
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
   challenges     UserDeviceChallenge[]
-  SharedKey      SharedKey[]
+  shareds        SharedKey[]
   userId         String
   user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

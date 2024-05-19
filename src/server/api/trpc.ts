@@ -8,13 +8,13 @@
  */
 
 import { TRPCError, initTRPC } from "@trpc/server";
+import { Client as MinioClient } from "minio";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { Client as MinioClient } from "minio";
 
+import { env } from "@cryptalbum/env";
 import { getServerAuthSession } from "@cryptalbum/server/auth";
 import { db } from "@cryptalbum/server/db";
-import { env } from "@cryptalbum/env";
 import { unconfiguredLogger } from "@cryptalbum/server/logger";
 
 /**
@@ -34,7 +34,7 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
 	const logWrapper = unconfiguredLogger.enrichWithAction("UNKNOWN");
 
 	if (session) {
-		logWrapper.enrichWithUserId(session.user.id);
+		logWrapper.enrichWithUserId(session.user.userId);
 	}
 
 	return {
@@ -119,34 +119,36 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
 	});
 
 	if (!userDevice) {
-		defaultLogger.error('No user device found');
+		defaultLogger.error("No user device found");
 		throw new TRPCError({ code: "BAD_REQUEST" });
 	}
 	if (!userDevice.symmetricalKey) {
-		defaultLogger.error('Request from untrusted device {deviceId}', userDevice.id);
+		defaultLogger.error(
+			"Request from untrusted device {deviceId}",
+			userDevice.id,
+		);
 		throw new TRPCError({ code: "UNAUTHORIZED" });
 	}
 
 	const minioClient = new MinioClient({
-        endPoint: env.MINIO_ENDPOINT,
-        port: env.MINIO_PORT,
-        useSSL: false,
-        accessKey: env.MINIO_ACCESS_KEY,
-        secretKey: env.MINIO_SECRET_KEY,
-        region: env.MINIO_REGION,
-    });
+		endPoint: env.MINIO_ENDPOINT,
+		port: env.MINIO_PORT,
+		useSSL: false,
+		accessKey: env.MINIO_ACCESS_KEY,
+		secretKey: env.MINIO_SECRET_KEY,
+		region: env.MINIO_REGION,
+	});
 
 	return next({
 		ctx: {
 			// infers the `session` as non-nullable
 			session: {
 				...ctx.session,
-				user: ctx.session.user,
-				userId: userDevice.userId,
+				userId: ctx.session.user.userId,
 			},
 			minio: minioClient,
 			// provides a logger with the current user
-			defaultLogger
+			defaultLogger,
 		},
 	});
 });

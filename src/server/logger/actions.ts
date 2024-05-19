@@ -1,24 +1,30 @@
-export const actions = [
-	"UNKNOWN",
+export const renderableActions = [
 	"AUTHENTICATE",
-	"CREATE_ACCOUNT",
-	"CREATE_DEVICE",
 	"DELETE_DEVICE",
-	"GENERATE_CHALLENGE",
-	"LIST_UNTRUSTED_DEVICES",
 	"TRUST_DEVICE",
 	"UPLOAD_IMAGE",
 	"UPDATE_IMAGE",
 	"DELETE_IMAGE",
+	"CHANGE_DEVICE_KEY_PAIR",
+	"CREATE_ALBUM",
+	"DELETE_ALBUM",
+];
+
+const nonRenderableActions = [
+	"UNKNOWN",
+	"LIST_UNTRUSTED_DEVICES",
+	"CREATE_ACCOUNT",
+	"CREATE_DEVICE",
+	"GENERATE_CHALLENGE",
 	"GET_USER_IMAGES",
 	"GET_IMAGE_FILE",
-	"CHANGE_DEVICE_KEY_PAIR",
 	"LIST_TRUSTED_DEVICES",
-	"CREATE_ALBUM",
-	"GET_ALBUM",
+	"GET_ALBUMS",
 	"DELETE_USER",
 	"DELETE_ALBUM",
 	"GET_USER_ALBUMS",
 ] as const;
+
+export const actions = [...nonRenderableActions, ...renderableActions] as const;
 
 export type Action = (typeof actions)[number];

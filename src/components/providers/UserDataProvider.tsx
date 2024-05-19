@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	decrypt,
 	decryptFormValue,
 	importSymmetricalKey,
 	loadKeyPair,
@@ -41,14 +40,15 @@ export default function UserDataProvider({
 		const keyPair = await loadKeyPair();
 
 		if (keyPair && session) {
-			const { id, email, symmetricalKey, ...encryptedValues } = session.user;
+			const { id, email, symmetricalKey, userId, ...encryptedValues } =
+				session.user;
 
 			const decipheredSymmetricalKey = await decryptFormValue(
 				symmetricalKey,
 				keyPair.privateKey,
 			);
 			const importedSymmetricalKey = await importSymmetricalKey(
-				decipheredSymmetricalKey
+				decipheredSymmetricalKey,
 			);
 
 			const decipheredValues = await Promise.all(

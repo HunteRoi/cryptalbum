@@ -39,14 +39,14 @@ export async function loadKeyPair(): Promise<CryptoKeyPair | null> {
 		JSON.parse(publicKeyString) as JsonWebKey,
 		{ name: "RSA-OAEP", hash: "SHA-256" },
 		true,
-		["encrypt"]
+		["encrypt"],
 	);
 	const privateKey = await crypto.importKey(
 		"jwk",
 		JSON.parse(privateKeyString) as JsonWebKey,
 		{ name: "RSA-OAEP", hash: "SHA-256" },
 		true,
-		["decrypt"]
+		["decrypt"],
 	);
 	return { publicKey, privateKey };
 }
@@ -169,14 +169,25 @@ export async function decryptFormValue(value: string, key: CryptoKey) {
 	return decrypt(key, Buffer.from(encryptedValue, "hex"), new Uint8Array(iv));
 }
 
-export async function generateHmac(value: string, secretKey: string): Promise<string> {
+export async function generateHmac(
+	value: string,
+	secretKey: string,
+): Promise<string> {
 	const encoder = new TextEncoder();
 	const key = encoder.encode(secretKey);
-	const hmacKey = await crypto.importKey("raw", key, { name: "HMAC", hash: "SHA-512" }, false, ["sign"]);
+	const hmacKey = await crypto.importKey(
+		"raw",
+		key,
+		{ name: "HMAC", hash: "SHA-512" },
+		false,
+		["sign"],
+	);
 
 	const data = encoder.encode(value);
 	const signature = await crypto.sign("HMAC", hmacKey, data);
 	const signatureArray = new Uint8Array(signature);
 
-	return Array.from(signatureArray, (byte) => byte.toString(16).padStart(2, "0")).join("");
+	return Array.from(signatureArray, (byte) =>
+		byte.toString(16).padStart(2, "0"),
+	).join("");
 }
