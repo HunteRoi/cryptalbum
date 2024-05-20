@@ -1,5 +1,7 @@
+"use client";
+
 import { getCsrfToken } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
@@ -25,7 +27,12 @@ type State = {
 		| undefined;
 };
 
+const knownErrorsByCode: Record<string, string> = {
+	CredentialsSignin: "Invalid credentials",
+};
+
 export function LoginForm() {
+	const searchParams = useSearchParams();
 	const challengeMutation = api.auth.challenge.useMutation();
 	const router = useRouter();
 	const [state, setState] = useState<State>();
@@ -36,6 +43,18 @@ export function LoginForm() {
 			router.push("/gallery");
 		}
 	}, [userData, router]);
+
+	useEffect(() => {
+		const error = searchParams.get("error");
+		if (error) {
+			const message = knownErrorsByCode[error] ?? "An error occurred";
+			toast({
+				title: "Error",
+				description: message,
+				variant: "destructive",
+			});
+		}
+	}, [searchParams]);
 
 	const validChallenge = useCallback(async () => {
 		const keyPair = await loadKeyPair();
@@ -80,9 +99,16 @@ export function LoginForm() {
 				},
 			});
 		} catch (error) {
-			console.error(error);
+			const message =
+				error instanceof Error ? error.message : "An error occurred";
+
+			toast({
+				title: "Error",
+				description: message,
+				variant: "destructive",
+			});
 		}
-	}, [challengeMutation, router]);
+	}, []);
 
 	useEffect(() => {
 		void validChallenge();

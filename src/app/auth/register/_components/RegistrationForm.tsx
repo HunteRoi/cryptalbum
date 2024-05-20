@@ -90,12 +90,13 @@ export default function RegistrationForm() {
 
 				await storeKeyPair(keyPair);
 
+				form.reset();
 				router.push("/auth/login");
 			} catch (error) {
 				console.error("An error occurred. Please try again.", error);
 			}
 		},
-		[registerMutation, router, toast],
+		[registerMutation, router, toast, form],
 	);
 
 	useEffect(() => {
