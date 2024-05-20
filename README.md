@@ -90,11 +90,11 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 CryptAlbum has been created with [T3 Stack](https://create.t3.gg/).
 
 The contributors to this project are:
-- [ALBANESE Matteo](https://gitlab.com/CaiiTa7)
-- [ARTS Loïck](https://github.com/MRGoose70)
-- [BELTUS Lucas](https://gitlab.com/Lucas.Beltus)
-- [BERNARD Christophe](https://github.com/drakexorn)
-- [BOLLE Emilien](https://github.com/Bollemii)
-- [DEVRESSE Tinaël](https://github.com/hunteroi)
+- [ALBANESE Matteo - etu55891](https://gitlab.com/CaiiTa7)
+- [ARTS Loïck - etu45363](https://github.com/MRGoose70)
+- [BELTUS Lucas - etu45170](https://gitlab.com/Lucas.Beltus)
+- [BERNARD Christophe - etu39862](https://github.com/drakexorn)
+- [BOLLE Emilien - etu45187](https://github.com/Bollemii)
+- [DEVRESSE Tinaël - etu33784](https://github.com/hunteroi)
 
 A special thank you to [Steven Sermeus](https://github.com/StevenSermeus) for the tips on some questions we had during the development phase.
