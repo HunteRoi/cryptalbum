@@ -3,12 +3,7 @@ import { protectedProcedure } from "@cryptalbum/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-type AlbumSharedKeys = Array<{
-	key: string;
-	userId: string;
-	deviceId: string;
-	albumId: string;
-}>;
+import type { AlbumSharedKeys } from ".";
 
 export const upload = protectedProcedure
 	.input(

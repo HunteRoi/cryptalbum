@@ -2,6 +2,8 @@ import { protectedProcedure } from "@cryptalbum/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+import type { AlbumSharedKeys } from ".";
+
 // in the case of moving an image to another album, we differentiate between moving it to an album and moving it outside of any album
 // so we use value for newAlbum :
 // - album object if we want to move the image to an album
@@ -91,24 +93,55 @@ export const imageUpdate = protectedProcedure
 				}
 
 				await ctx.db.$transaction(async (database) => {
-					await database.picture.update({
-						where: {
-							id: imageId,
-						},
-						data: {
-							albumId: newAlbum.id,
-						},
-					});
-					await database.sharedKey.updateMany({
-						where: {
-							photoId: imageId,
-							albumId: { not: null },
-						},
-						data: {
-							albumId: newAlbum.id,
-							key: newAlbum.key,
-						},
-					});
+					if (image.albumId) {
+						// move the image from an album to an other album
+						await database.picture.update({
+							where: {
+								id: imageId,
+							},
+							data: {
+								albumId: newAlbum.id,
+							},
+						});
+						await database.sharedKey.updateMany({
+							where: {
+								photoId: imageId,
+								albumId: { not: null },
+							},
+							data: {
+								albumId: newAlbum.id,
+								key: newAlbum.key,
+							},
+						});
+					} else {
+						// move the image from outside of any album to an album
+						const userDevices = await ctx.db.userDevice.findMany({
+							where: {
+								userId: ctx.session.userId,
+							},
+						});
+						const albumSharedKeys = userDevices.map((userDevice) => {
+							return {
+								key: newAlbum.key,
+								userId: ctx.session.userId,
+								deviceId: userDevice.id,
+								albumId: newAlbum.id,
+							};
+						}) as AlbumSharedKeys;
+						await database.picture.update({
+							where: {
+								id: imageId,
+							},
+							data: {
+								albumId: newAlbum.id,
+								shareds: {
+									createMany: {
+										data: albumSharedKeys,
+									},
+								}
+							},
+						});
+					}
 				});
 			} else {
 				// move the image outside of any album
