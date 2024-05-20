@@ -131,12 +131,23 @@ export default function ImageUpdateDialog({
 			} | null; // null means place outside of any album
 		} = {};
 
-		if (data.newName === name && selectedAlbumId === albumId) {
+		if (data.newName === name || selectedAlbumId === albumId) {
 			// No change
 			toast({
 				title: "Error while updating image",
 				description:
 					"You need to change the name or the album to update the image.",
+				variant: "destructive",
+				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+			});
+
+			return;
+		}
+
+		if (!data.newName && !selectedAlbumId) {
+			toast({
+				title: "Error while updating image",
+				description: "The name of the image and the new album cannot be empty.",
 				variant: "destructive",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
 			});
