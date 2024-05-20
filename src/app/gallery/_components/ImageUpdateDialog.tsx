@@ -144,10 +144,10 @@ export default function ImageUpdateDialog({
 			return;
 		}
 
-		if (!data.newName) {
+		if (!data.newName && !selectedAlbumId) {
 			toast({
 				title: "Error while updating image",
-				description: "The name of the image cannot be empty.",
+				description: "The name of the image and the new album cannot be empty.",
 				variant: "destructive",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
 			});
