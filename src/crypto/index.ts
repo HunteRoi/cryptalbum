@@ -9,7 +9,7 @@ export async function generateAsymmetricalKeyPair(): Promise<CryptoKeyPair> {
 		name: "RSA-OAEP",
 		modulusLength: 4096,
 		publicExponent: new Uint8Array([1, 0, 1]),
-		hash: "SHA-256",
+		hash: "SHA-512",
 	};
 	return await crypto.generateKey(algorithm, true, ["encrypt", "decrypt"]);
 }
@@ -37,14 +37,14 @@ export async function loadKeyPair(): Promise<CryptoKeyPair | null> {
 	const publicKey = await crypto.importKey(
 		"jwk",
 		JSON.parse(publicKeyString) as JsonWebKey,
-		{ name: "RSA-OAEP", hash: "SHA-256" },
+		{ name: "RSA-OAEP", hash: "SHA-512" },
 		true,
 		["encrypt"],
 	);
 	const privateKey = await crypto.importKey(
 		"jwk",
 		JSON.parse(privateKeyString) as JsonWebKey,
-		{ name: "RSA-OAEP", hash: "SHA-256" },
+		{ name: "RSA-OAEP", hash: "SHA-512" },
 		true,
 		["decrypt"],
 	);
@@ -62,7 +62,7 @@ export async function importRsaPublicKey(
 	return await crypto.importKey(
 		"jwk",
 		JSON.parse(publicKey) as JsonWebKey,
-		{ name: "RSA-OAEP", hash: "SHA-256" },
+		{ name: "RSA-OAEP", hash: "SHA-512" },
 		true,
 		["encrypt"],
 	);
@@ -107,7 +107,7 @@ export function clearKeyPair() {
 }
 
 export async function generateSymmetricalKey(): Promise<CryptoKey> {
-	return await crypto.generateKey({ name: "AES-GCM", length: 256 }, true, [
+	return await crypto.generateKey({ name: "AES-GCM", length: 512 }, true, [
 		"encrypt",
 		"decrypt",
 	]);
