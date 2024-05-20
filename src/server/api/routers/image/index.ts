@@ -5,6 +5,7 @@ import { getAlbumImages } from "./getAlbumImages";
 import { getImageContent } from "./getImageContent";
 import { getImages } from "./getImages";
 import { upload } from "./upload";
+import { sharePicture } from "./sharePicture";
 
 export const imageRouter = createTRPCRouter({
 	upload,
@@ -13,4 +14,5 @@ export const imageRouter = createTRPCRouter({
 	getImageContent,
 	delete: deleteImage,
 	update: imageUpdate,
+	sharePicture,
 });

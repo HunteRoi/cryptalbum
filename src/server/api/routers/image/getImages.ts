@@ -22,7 +22,6 @@ export const getImages = protectedProcedure.query(async ({ ctx }) => {
 
 	const images = await ctx.db.picture.findMany({
 		where: {
-			userId: ctx.session.userId,
 			albumId: null,
 			shareds: {
 				some: {
