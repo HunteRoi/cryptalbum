@@ -114,8 +114,8 @@ export default function AlbumPage() {
 							"Here is a list of all the images in this folder."}
 					</CardDescription>
 				</div>
-				<div className="ml-auto">
-					<UploadFileDialog albumId={albumId} />
+				<div className="ml-auto flex flex-row items-center">
+					<UploadFileDialog albumId={albumId} />{" "}
 					{albumState && (
 						<>
 							<AlbumSharingDialog

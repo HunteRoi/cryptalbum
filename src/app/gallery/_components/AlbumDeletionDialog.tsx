@@ -59,7 +59,7 @@ export default function AlbumDeletionDialog({
 	return (
 		<Dialog>
 			<DialogTrigger>
-				<Button className="bg-red-600">
+				<Button className="bg-red-600 ml-2">
 					<Trash2 color="white" />
 				</Button>
 			</DialogTrigger>

@@ -214,7 +214,11 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 				title: "File uploaded",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
 			});
-			await trpcUtils.image.getImages.reset();
+			if (albumId) {
+				await trpcUtils.image.getAlbumImages.invalidate();
+			} else {
+				await trpcUtils.image.getImages.invalidate();
+			}
 		} catch (e) {
 			console.error(e);
 			toast({
