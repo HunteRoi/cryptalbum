@@ -36,9 +36,35 @@ export const upload = protectedProcedure
 		try {
 			if (payload.album) {
 				logger.info("Uploading new image to album {albumId}", payload.album.id);
+
+				const album = await ctx.db.album.findUnique({
+					where: {
+						id: payload.album?.id,
+					},
+				});
+
+				if (!album) {
+					logger.error("Album {albumId} not found", payload.album.id);
+					throw new TRPCError({
+						code: "NOT_FOUND",
+						message: "Album not found",
+					});
+				}
+
+				if (album.userId !== ctx.session.userId) {
+					logger.error(
+						"User is not the owner of the album {albumId}",
+						payload.album.id,
+					);
+					throw new TRPCError({
+						code: "FORBIDDEN",
+						message: "You cannot upload an image to an album you don't own!",
+					});
+				}
 			} else {
 				logger.info("Uploading new image");
 			}
+
 			const userDevices = await ctx.db.userDevice.findMany({
 				where: {
 					userId: ctx.session.userId,
