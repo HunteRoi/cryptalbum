@@ -8,7 +8,7 @@ import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import { Button } from "@cryptalbum/components/ui/button";
 import { Input } from "@cryptalbum/components/ui/input";
 import { Label } from "@cryptalbum/components/ui/label";
-import { toast } from "@cryptalbum/components/ui/use-toast";
+import { useToast } from "@cryptalbum/components/ui/use-toast";
 import {
 	clearKeyPair,
 	decrypt,
@@ -35,6 +35,7 @@ export function LoginForm() {
 	const searchParams = useSearchParams();
 	const challengeMutation = api.auth.challenge.useMutation();
 	const router = useRouter();
+	const { toast } = useToast();
 	const [state, setState] = useState<State>();
 	const userData = useUserData();
 
