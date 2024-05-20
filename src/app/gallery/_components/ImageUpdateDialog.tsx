@@ -132,7 +132,7 @@ export default function ImageUpdateDialog({
 			} | null,	// null means place outside of any album
 		} = {};
 
-		if (data.newName === name && selectedAlbumId === albumId) {
+		if (data.newName === name || selectedAlbumId === albumId) {
 			// No change
 			toast({
 				title: "Error while updating image",
