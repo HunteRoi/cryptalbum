@@ -30,7 +30,7 @@ const formSchema = z.object({
 	email: z.string().email("Invalid email address"),
 });
 
-export default function ImageSharingRequestForm({ album }: AlbumInProps) {
+export default function AlbumSharingRequestForm({ album }: AlbumInProps) {
 	const { toast } = useToast();
 	const trpcUtils = api.useUtils();
 	const shareAlbumMutation = api.album.shareAlbum.useMutation();
@@ -76,6 +76,8 @@ export default function ImageSharingRequestForm({ album }: AlbumInProps) {
 					return { deviceId: device.id, encryptedSymKey };
 				}),
 			);
+
+			debugger;
 
 			await shareAlbumMutation.mutateAsync({
 				albumId: album.id,

@@ -199,7 +199,7 @@ export default function ImageUpdateDialog({
 						key: encryptedImageSymKey,
 					};
 				} else {
-					// The image is moved outside of any album
+					// The image is moved outside any album
 					newData.newAlbum = null;
 				}
 			}

@@ -9,8 +9,8 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@cryptalbum/components/ui/dialog";
+import AlbumSharingRequestForm from "./AlbumSharingRequestForm";
 import type { AlbumInProps } from "./types";
-import GallerySharingRequestForm from "./AlbumSharingRequestForm";
 
 export default function AlbumSharingDialog({ album }: AlbumInProps) {
 	return (
@@ -27,7 +27,7 @@ export default function AlbumSharingDialog({ album }: AlbumInProps) {
 						Share your album with someone else by typing their email address.
 					</DialogDescription>
 				</DialogHeader>
-				<GallerySharingRequestForm album={album} />
+				<AlbumSharingRequestForm album={album} />
 			</DialogContent>
 		</Dialog>
 	);

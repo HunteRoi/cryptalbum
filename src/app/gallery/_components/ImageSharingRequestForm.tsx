@@ -44,6 +44,7 @@ export default function ImageSharingRequestForm({ image }: ImageInProps) {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		form.reset();
 		const keyPair = await loadKeyPair();
 		if (!keyPair) {
 			return;
