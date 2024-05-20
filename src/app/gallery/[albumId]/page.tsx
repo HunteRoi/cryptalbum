@@ -115,7 +115,7 @@ export default function AlbumPage() {
 					</CardDescription>
 				</div>
 				<div className="ml-auto flex flex-row items-center">
-					<UploadFileDialog albumId={albumId} />{" "}
+					<UploadFileDialog albumId={albumId} />
 					{albumState && (
 						<>
 							<AlbumSharingDialog
@@ -124,15 +124,15 @@ export default function AlbumPage() {
 									name: albumState.name,
 									encryptionKey: albumState.encryptionKey,
 								}}
-							/>{" "}
-              <AlbumUpdateDialog
-                album={{
-                  id: albumId,
-                  name: albumState.name,
-                  description: albumState.description,
-                  encryptionKey: albumState.encryptionKey,
-                }}
-              />{" "}
+							/>
+							<AlbumUpdateDialog
+								album={{
+								id: albumId,
+								name: albumState.name,
+								description: albumState.description,
+								encryptionKey: albumState.encryptionKey,
+								}}
+							/>
 							<AlbumDeletionDialog albumId={album?.id} name={albumState.name} />
 						</>
 					)}

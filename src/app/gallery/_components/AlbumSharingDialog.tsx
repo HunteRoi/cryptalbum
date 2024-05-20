@@ -16,7 +16,7 @@ export default function AlbumSharingDialog({ album }: AlbumInProps) {
 	return (
 		<Dialog>
 			<DialogTrigger>
-				<Button title={"Share album"}>
+				<Button title={"Share album"} className="ml-2">
 					<ExternalLink />
 				</Button>
 			</DialogTrigger>

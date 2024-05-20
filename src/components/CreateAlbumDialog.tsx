@@ -14,8 +14,8 @@ import CreateAlbumForm from "./CreateAlbumForm";
 export default function CreateAlbumDialog() {
     return(
         <Dialog>
-			<DialogTrigger asChild>
-				<Button size="sm" className="mx-2 gap-1">
+			<DialogTrigger>
+				<Button className="ml-2">
 					Create album
 				</Button>
 			</DialogTrigger>

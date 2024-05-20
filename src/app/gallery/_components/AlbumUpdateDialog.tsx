@@ -134,7 +134,7 @@ export default function AlbumUpdateDialog({ album }: AlbumUpdateDialogProps) {
 	return (
 		<Dialog>
 			<DialogTrigger>
-				<Button variant="secondary">Update</Button>
+				<Button className="ml-2">Update</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
