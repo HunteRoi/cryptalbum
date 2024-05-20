@@ -5,3 +5,11 @@ export type ImageInProps = {
 		encryptionKey: string;
 	};
 };
+
+export type AlbumInProps = {
+	album: {
+		id: string;
+		name: string;
+		encryptionKey: string;
+	};
+};

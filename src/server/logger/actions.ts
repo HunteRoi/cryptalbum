@@ -9,6 +9,7 @@ export const renderableActions = [
 	"CREATE_ALBUM",
   "UPDATE_ALBUM",
   "DELETE_ALBUM",
+	"SHARE_ALBUM",
 ];
 
 const nonRenderableActions = [

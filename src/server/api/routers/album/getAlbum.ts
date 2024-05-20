@@ -18,7 +18,6 @@ export const getAlbum = protectedProcedure
 
 		const album: Album | null = await ctx.db.album.findUnique({
 			where: {
-				userId: ctx.session.userId,
 				id: albumId,
 				shareds: {
 					some: {

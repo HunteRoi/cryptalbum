@@ -1,5 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from "@cryptalbum/components/ui/button";
 import {
 	Form,
@@ -11,7 +15,8 @@ import {
 	FormMessage,
 } from "@cryptalbum/components/ui/form";
 import { Input } from "@cryptalbum/components/ui/input";
-
+import { ToastAction } from "@cryptalbum/components/ui/toast";
+import { useToast } from "@cryptalbum/components/ui/use-toast";
 import {
 	decrypt,
 	encrypt,
@@ -19,22 +24,16 @@ import {
 	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/utils/api";
-
-import { ToastAction } from "@cryptalbum/components/ui/toast";
-import { useToast } from "@cryptalbum/components/ui/use-toast";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import type { ImageInProps } from "./types";
+import type { AlbumInProps } from "./types";
 
 const formSchema = z.object({
 	email: z.string().email("Invalid email address"),
 });
 
-export default function ImageSharingRequestForm({ image }: ImageInProps) {
+export default function ImageSharingRequestForm({ album }: AlbumInProps) {
 	const { toast } = useToast();
 	const trpcUtils = api.useUtils();
-	const sharePictureMutation = api.image.sharePicture.useMutation();
+	const shareAlbumMutation = api.album.shareAlbum.useMutation();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -62,9 +61,9 @@ export default function ImageSharingRequestForm({ image }: ImageInProps) {
 				return;
 			}
 
-			const decipheredImageSymmetricalKey = await decrypt(
+			const decipheredAlbumSymmetricalKey = await decrypt(
 				keyPair.privateKey,
-				Buffer.from(image.encryptionKey, "hex"),
+				Buffer.from(album.encryptionKey, "hex"),
 			);
 
 			const symKeyEncryptedWithDevicesKey = await Promise.all(
@@ -72,29 +71,30 @@ export default function ImageSharingRequestForm({ image }: ImageInProps) {
 					const devicePublicKey = await importRsaPublicKey(device.publicKey);
 					const encryptedSymKey = await encrypt(
 						devicePublicKey,
-						decipheredImageSymmetricalKey,
+						decipheredAlbumSymmetricalKey,
 					);
 					return { deviceId: device.id, encryptedSymKey };
 				}),
 			);
 
-			await sharePictureMutation.mutateAsync({
-				imageId: image.id,
+			await shareAlbumMutation.mutateAsync({
+				albumId: album.id,
 				symmetricalKeys: symKeyEncryptedWithDevicesKey,
 				email,
 			});
 
 			toast({
-				title: "Image shared",
-				description: "The image has been shared with the recipient",
+				title: "Album shared",
+				description: `Album shared with ${email}`,
 				variant: "default",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
 			});
 		} catch (error) {
 			const message =
 				error instanceof Error ? error.message : "An error occurred";
+
 			toast({
-				title: "Error",
+				title: "Album sharing error",
 				description: message,
 				variant: "destructive",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
@@ -115,8 +115,8 @@ export default function ImageSharingRequestForm({ image }: ImageInProps) {
 								<Input placeholder="me@example.com" {...field} />
 							</FormControl>
 							<FormDescription>
-								This is the email address of the person you whant to share your
-								picture with.
+								This is the email address of the person you want to share your
+								album with.
 							</FormDescription>
 							<FormMessage />
 						</FormItem>

@@ -8,7 +8,6 @@ export const getAlbums = protectedProcedure.query(async ({ ctx }) => {
 
 	const albums = await ctx.db.album.findMany({
 		where: {
-			userId: ctx.session.userId,
 			shareds: {
 				some: {
 					userId: ctx.session.userId,

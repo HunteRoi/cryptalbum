@@ -5,6 +5,7 @@ import { deleteAlbum } from "./deleteAlbum";
 import { getAlbum } from "./getAlbum";
 import { getAlbums } from "./getAlbums";
 import { updateAlbum } from "./updateAlbum";
+import { shareAlbum } from "./shareAlbum";
 
 export type SharedKey = {
 	key: string;
@@ -27,4 +28,5 @@ export const albumRouter = createTRPCRouter({
 	getAlbums,
 	deleteAlbum,
 	updateAlbum,
+	shareAlbum,
 });

@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import AlbumDeletionDialog from "../_components/AlbumDeletionDialog";
+import AlbumSharingDialog from "../_components/AlbumSharingDialog";
 import AlbumUpdateDialog from "@cryptalbum/app/gallery/_components/AlbumUpdateDialog";
 import { UploadFileDialog } from "@cryptalbum/components/UploadFileDialog";
 import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
@@ -114,17 +115,24 @@ export default function AlbumPage() {
 					</CardDescription>
 				</div>
 				<div className="ml-auto">
-					<UploadFileDialog albumId={albumId} />{" "}
+					<UploadFileDialog albumId={albumId} />
 					{albumState && (
 						<>
-							<AlbumUpdateDialog
+							<AlbumSharingDialog
 								album={{
 									id: albumId,
 									name: albumState.name,
-									description: albumState.description,
 									encryptionKey: albumState.encryptionKey,
 								}}
 							/>{" "}
+              <AlbumUpdateDialog
+                album={{
+                  id: albumId,
+                  name: albumState.name,
+                  description: albumState.description,
+                  encryptionKey: albumState.encryptionKey,
+                }}
+              />{" "}
 							<AlbumDeletionDialog albumId={album?.id} name={albumState.name} />
 						</>
 					)}
