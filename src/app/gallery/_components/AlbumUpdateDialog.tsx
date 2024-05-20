@@ -62,7 +62,7 @@ export default function AlbumUpdateDialog({ album }: AlbumUpdateDialogProps) {
 
 	const handleUpdate = async (data: z.infer<typeof formSchema>) => {
 		const keyPair = await loadKeyPair();
-
+		
 		if (!album.id || !keyPair) {
 			return;
 		}

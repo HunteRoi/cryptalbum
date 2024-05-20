@@ -38,7 +38,7 @@ const ratelimiter = createTRPCStoreLimiter<typeof t>({
 	windowMs: 20000,
 	message: (retryAfter) =>
 		`Too many requests, please try again later. ${retryAfter}`,
-	max: 15,
+	max: 30,
 	onLimit: (retryAfter, _ctx, fingerprint) => {
 		_ctx.logWrapper.create().warn(`Rate limit exceeded for ${fingerprint}`);
 		throw new TRPCError({
@@ -71,14 +71,14 @@ export const protectedProcedure = ratelimitedProcedure.use(
 	async ({ ctx, next }) => {
 		const defaultLogger = ctx.logWrapper.create();
 
-		if (!ctx.session?.user) {
+		if (!ctx.session?.user || !ctx.session?.user.id) {
 			defaultLogger.error("Unauthorized request to protected procedure");
 			throw new TRPCError({ code: "UNAUTHORIZED" });
 		}
 
 		defaultLogger.verbose("Load Protected Procedure");
 
-		const userDevice = await ctx.db.userDevice.findFirst({
+		const userDevice = await ctx.db.userDevice.findUnique({
 			where: { id: ctx.session.user.id },
 		});
 
