@@ -93,7 +93,14 @@ export default function RegistrationForm() {
 				form.reset();
 				router.push("/auth/login");
 			} catch (error) {
-				console.error("An error occurred. Please try again.", error);
+				const message =
+					error instanceof Error ? error.message : "An error occurred";
+
+				toast({
+					title: "Error",
+					description: message,
+					variant: "destructive",
+				});
 			}
 		},
 		[registerMutation, router, toast, form],
