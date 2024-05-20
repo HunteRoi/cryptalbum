@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PenLine } from "lucide-react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import DropDownList from "@cryptalbum/components/DropDownList";
 import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import { Button } from "@cryptalbum/components/ui/button";
 import {
@@ -32,13 +33,11 @@ import {
 	decryptFormValue,
 	encrypt,
 	encryptFormValue,
-	exportSymmetricalKey,
 	importSymmetricalKey,
 	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/utils/api";
-import type { ImageInProps } from "./types";
-import DropDownList from "@cryptalbum/components/DropDownList";
+import type { ImageInProps } from "./types"; // in the case of moving an image to another album, we differentiate between moving it to an album and moving it outside of any album
 
 // in the case of moving an image to another album, we differentiate between moving it to an album and moving it outside of any album
 // so we use value for newAlbum :
@@ -124,19 +123,20 @@ export default function ImageUpdateDialog({
 			return;
 		}
 
-		const newData : {
-			newName?: string,
+		const newData: {
+			newName?: string;
 			newAlbum?: {
-				id: string,
-				key: string,
-			} | null,	// null means place outside of any album
+				id: string;
+				key: string;
+			} | null; // null means place outside of any album
 		} = {};
 
 		if (data.newName === name && selectedAlbumId === albumId) {
 			// No change
 			toast({
 				title: "Error while updating image",
-				description: "You need to change the name or the album to update the image.",
+				description:
+					"You need to change the name or the album to update the image.",
 				variant: "destructive",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
 			});
@@ -155,18 +155,19 @@ export default function ImageUpdateDialog({
 			);
 			if (data.newName && data.newName !== name) {
 				// The image name is changed
-				const encryptedNewName = await encryptFormValue(
+				newData.newName = await encryptFormValue(
 					data.newName,
 					importedImageSymKey,
 				);
-				newData.newName = encryptedNewName;
 			}
 
 			if (selectedAlbumId !== albumId) {
 				// The image is moved
 				if (selectedAlbumId) {
 					// The image is moved to an album
-					const newAlbum = albumList?.find((album) => album.id === selectedAlbumId);
+					const newAlbum = albumList?.find(
+						(album) => album.id === selectedAlbumId,
+					);
 					if (!newAlbum) {
 						throw new Error("The selected album does not exist.");
 					}
@@ -191,7 +192,7 @@ export default function ImageUpdateDialog({
 					newData.newAlbum = null;
 				}
 			}
-			
+
 			await imageUpdateMutation.mutateAsync({
 				imageId: image.id,
 				...newData,
