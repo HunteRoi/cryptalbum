@@ -144,6 +144,17 @@ export default function ImageUpdateDialog({
 			return;
 		}
 
+		if (!data.newName) {
+			toast({
+				title: "Error while updating image",
+				description: "The name of the image cannot be empty.",
+				variant: "destructive",
+				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
+			});
+
+			return;
+		}
+
 		// There is a change
 		try {
 			const decipheredImageSymKey = await decrypt(
