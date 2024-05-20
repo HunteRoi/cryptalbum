@@ -7,7 +7,8 @@ export const renderableActions = [
 	"DELETE_IMAGE",
 	"CHANGE_DEVICE_KEY_PAIR",
 	"CREATE_ALBUM",
-	"DELETE_ALBUM",
+  "UPDATE_ALBUM",
+  "DELETE_ALBUM",
 ];
 
 const nonRenderableActions = [
@@ -19,10 +20,9 @@ const nonRenderableActions = [
 	"GET_USER_IMAGES",
 	"GET_IMAGE_FILE",
 	"LIST_TRUSTED_DEVICES",
-	"GET_ALBUMS",
+  "GET_USER_ALBUMS",
 	"DELETE_USER",
 	"DELETE_ALBUM",
-	"GET_USER_ALBUMS",
 ] as const;
 
 export const actions = [...nonRenderableActions, ...renderableActions] as const;

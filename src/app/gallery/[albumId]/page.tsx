@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+import AlbumDeletionDialog from "../_components/AlbumDeletionDialog";
+import AlbumUpdateDialog from "@cryptalbum/app/gallery/_components/AlbumUpdateDialog";
 import { UploadFileDialog } from "@cryptalbum/components/UploadFileDialog";
 import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import { Button } from "@cryptalbum/components/ui/button";
@@ -23,7 +25,6 @@ import {
 	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/utils/api";
-import AlbumDeletionDialog from "../_components/AlbumDeletionDialog";
 import ImageCard from "../_components/ImageCard";
 
 type AlbumState = {
@@ -113,8 +114,20 @@ export default function AlbumPage() {
 					</CardDescription>
 				</div>
 				<div className="ml-auto">
-					<UploadFileDialog albumId={albumId} />
-					<AlbumDeletionDialog albumId={album?.id} name={albumState?.name} />
+					<UploadFileDialog albumId={albumId} />{" "}
+					{albumState && (
+						<>
+							<AlbumUpdateDialog
+								album={{
+									id: albumId,
+									name: albumState.name,
+									description: albumState.description,
+									encryptionKey: albumState.encryptionKey,
+								}}
+							/>{" "}
+							<AlbumDeletionDialog albumId={album?.id} name={albumState.name} />
+						</>
+					)}
 				</div>
 			</CardHeader>
 			<CardContent className="flex flex-row flex-wrap">
