@@ -10,7 +10,7 @@ logique:
 - [ ] recréation d'un compte sur un appareil supprimé avec le même email sans retour utilisateur WTF? --> Christophe
 - [ ] suppression d'un appareil en étant toujours connecté dessus (pas éjecté du compte?) --> Loïck
 - [x] on peut insérer plusieurs images depuis un seul formulaire si on spamme enter (record de mon frère : 8 doublons d'une image)
-- [ ] on peut partager 2x une image/un album à un même utilisateur --> Christophe
+- [x] on peut partager 2x une image/un album à un même utilisateur --> Christophe
 - [ ] suppression d'une image liée à aucun utilisateur depuis un appareil supprimé --> Loïck
 
 

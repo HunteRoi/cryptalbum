@@ -115,6 +115,8 @@ model SharedKey {
   album     Album?     @relation(fields: [albumId], references: [id], onDelete: Cascade)
   userId    String?
   User      User?      @relation(fields: [userId], references: [id])
+
+  @@unique([deviceId, photoId, albumId, userId])
 }
 
 model Album {
