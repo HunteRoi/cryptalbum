@@ -2,6 +2,7 @@ UI:
 - [x] login sans retour utilisateur quand pas de compte WTF
 - [x] redirection vers register automatiquement alors que pas de compte ?? (challenge peut-être?)
 - [x] pas d'image dans les albums quand déplacées
+- [x] mise à jour des redirections dans la barre de recherche
 - [ ] accès à la galerie depuis un appareil connecté mais qui a été supprimé (mais pas d'images/albums affichés, juste on est pas déconnecté entièrement) --> Loïck
 - [ ] toutes les popups ne se ferment pas une fois soumises WTF
 - [ ] les boutons d'administration d'une image/un album ne doivent pas être visibles sur un compte partagé
