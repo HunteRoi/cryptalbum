@@ -3,16 +3,16 @@ UI:
 - [x] redirection vers register automatiquement alors que pas de compte ?? (challenge peut-être?)
 - [x] pas d'image dans les albums quand déplacées
 - [x] mise à jour des redirections dans la barre de recherche
-- [ ] accès à la galerie depuis un appareil connecté mais qui a été supprimé (mais pas d'images/albums affichés, juste on est pas déconnecté entièrement) --> Loïck
+- [X] accès à la galerie depuis un appareil connecté mais qui a été supprimé (mais pas d'images/albums affichés, juste on est pas déconnecté entièrement) --> Loïck
 - [ ] toutes les popups ne se ferment pas une fois soumises WTF
 - [ ] les boutons d'administration d'une image/un album ne doivent pas être visibles sur un compte partagé
 
 logique:
 - [x] recréation d'un compte sur un appareil supprimé avec le même email sans retour utilisateur WTF? --> Christophe
-- [ ] suppression d'un appareil en étant toujours connecté dessus (pas éjecté du compte?) --> Loïck
+- [X] suppression d'un appareil en étant toujours connecté dessus (pas éjecté du compte?) --> Loïck
 - [x] on peut insérer plusieurs images depuis un seul formulaire si on spamme enter (record de mon frère : 8 doublons d'une image)
 - [x] on peut partager 2x une image/un album à un même utilisateur --> Christophe
-- [ ] suppression d'une image liée à aucun utilisateur depuis un appareil supprimé --> Loïck
+- [X] suppression d'une image liée à aucun utilisateur depuis un appareil supprimé --> Loïck
 
 
 NO GO
