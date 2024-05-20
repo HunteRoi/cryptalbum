@@ -107,6 +107,7 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 	}, [decipheredAlbumList]);
 
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
+		form.reset();
 		const keyPair = await loadKeyPair();
 		if (!userData || !keyPair) {
 			toast({
@@ -210,7 +211,6 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 				payload,
 			});
 			setFile(null);
-			form.reset();
 			toast({
 				title: "File uploaded",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
