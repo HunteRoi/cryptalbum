@@ -72,7 +72,6 @@ export function LoginForm() {
 						//if 404
 						if (error.data?.code === "NOT_FOUND") {
 							clearKeyPair();
-							router.push("/auth/register");
 						} else {
 							toast({
 								title: "Error",
