@@ -4,6 +4,8 @@
 # IL PERMET EGALEMENT DE COPIER LES IMAGES DANS LE DOSSIER DE SORTIE
 # PUIS DE GENERER UN FICHIER PDF AVEC PANDOC-IESN (DOCKER)
 # ATTENTION, IL S'EXECUTE DEPUIS LA RACINE DU PROJET: ./docs/merge.sh
+# VOUS DEVEZ AVOIR DOCKER INSTALLE SUR VOTRE MACHINE, ET EVIDEMMENT CHANGER LES CHEMINS
+# VERS LES BONS FICHIERS (docs/groupe_X/main.md, docs/groupe_X/5_conclusion.md et le chemin absolu pour le volume Docker)
 
 if [ ! -d "docs/output" ]; then
   mkdir docs/output
@@ -29,4 +31,4 @@ cat docs/groupe_2/5_conclusion.md >>docs/output/document.md
 # Copy all images from the images directory to the output directory
 cp -r docs/assets docs/output
 
-docker run -v ./output:/data mfreeze/pandoc-iesn:mermaid-latest -p xelatex -m -l -M -e -N -I -i pdf document.md
+docker run -v //h/git/Henallux/cryptalbum/docs/output:/data mfreeze/pandoc-iesn:mermaid-latest -p xelatex -m -l -M -e -N -I -i pdf document.md

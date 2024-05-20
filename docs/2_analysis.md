@@ -1,14 +1,14 @@
 
-## Analyse
+# Analyse
 
-### Objectif
+## Objectif
 Le client souhaite le développement d'un gestionnaire d'albums photo sécurisé de bout-en-bout.
 
-### Définition des besoins
+## Définition des besoins
 
 Les besoins suivants sont le résultat d'une analyse approfondie des demandes client et sont formulés sous forme d'_user stories_.
 
-#### Besoins fonctionnels
+### Besoins fonctionnels
 
 - Un **utilisateur** doit pouvoir **s'enregistrer** dans le système.
 
@@ -38,7 +38,7 @@ NB2: les images peuvent être téléversées dans un album si l'utilisateur en e
 - Un **utilisateur** peut **__voir__ les photos** qui lui ont été **partagées**.
 NB: c'est une visibilité read-only, il n'a pas le droit de modifier ces photos.
 
-#### Besoins techniques
+### Besoins techniques
 Une architecture client/serveur est obligatoire, dans laquelle le serveur n'est pas une entité de confiance.
 
 Les informations relatives aux utilisateurs, aux albums, aux photos et aux métadonnées de celles-ci sont considérés sensibles et doivent donc être chiffrés avant leur envoi vers le serveur.

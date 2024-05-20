@@ -1,5 +1,4 @@
-
-## Introduction
+# Introduction
 
 Ce document représente le cahier des charges et la documentation du travail produit au cours du second quadrimestre dans le cadre du cours "Sécurité des Applications".
 
@@ -8,7 +7,7 @@ Une documentation technique en rapport à la sécurité sur le travail effectué
 
 Le code source est disponible sur GitLab, et les différents rapports d'analyse de code statique sont accessibles depuis ce même dépôt GitLab.
 
-## Méthode de travail
+# Méthode de travail
 En duo, nous avons rassemblé nos compétences et connaissances au sein d'une plus grosse équipe constituée de 3 groupes de deux.
 
 Nous avons travaillé ensemble à la mise en place de cette application en commençant d'abord par l'utilisation intensive de GitLab pour la gestion du projet.

@@ -1,16 +1,16 @@
 
-## Conception
+# Conception
 
-### Architecture système
+## Architecture système
 
-![diagram](./assets/system_architecture.png)
+![Diagramme de l'architecture système](./assets/system_architecture.png)
 
 Nous sommes parti sur une architecture client-serveur afin de séparer le programme "frontend" du programme "backend".
 Nous avons également décidé d'ajouter des services externes pour stocker les données (base de données PostgreSQL), les images (serveur Minio) et les logs (serveur Seq).
 
 Chaque service externe représente un serveur à part, dont on a pas confiance. Par conséquence, les données qui y sont stockées y sont envoyées de manière chiffrées.
 
-### Technologies
+## Technologies
 
 Le projet a été démarré au moyen d'une stack technologique appelée "T3 App". Celle-ci inclut:
 - NextJS comme framework de gestion front et back ;
