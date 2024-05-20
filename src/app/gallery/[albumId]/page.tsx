@@ -4,8 +4,6 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import AlbumDeletionDialog from "../_components/AlbumDeletionDialog";
-import AlbumSharingDialog from "../_components/AlbumSharingDialog";
 import AlbumUpdateDialog from "@cryptalbum/app/gallery/_components/AlbumUpdateDialog";
 import { UploadFileDialog } from "@cryptalbum/components/UploadFileDialog";
 import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
@@ -26,6 +24,8 @@ import {
 	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/utils/api";
+import AlbumDeletionDialog from "../_components/AlbumDeletionDialog";
+import AlbumSharingDialog from "../_components/AlbumSharingDialog";
 import ImageCard from "../_components/ImageCard";
 
 type AlbumState = {
@@ -55,6 +55,7 @@ export default function AlbumPage() {
 				keyPair.privateKey,
 				Buffer.from(album.encryptionKey, "hex"),
 			);
+
 			const albumSymmetricalKey = await importSymmetricalKey(
 				decipheredAlbumSymmetricalKey,
 			);
@@ -94,7 +95,9 @@ export default function AlbumPage() {
 				encryptionKey: album.encryptionKey,
 				images: decipheredImages,
 			});
-		} catch (error) {}
+		} catch (error) {
+			console.error(JSON.stringify(error, null, 2));
+		}
 	}, [album, images, userData]);
 
 	useEffect(() => {
@@ -124,15 +127,15 @@ export default function AlbumPage() {
 									name: albumState.name,
 									encryptionKey: albumState.encryptionKey,
 								}}
-							/>
+							/>{" "}
 							<AlbumUpdateDialog
 								album={{
-								id: albumId,
-								name: albumState.name,
-								description: albumState.description,
-								encryptionKey: albumState.encryptionKey,
+									id: albumId,
+									name: albumState.name,
+									description: albumState.description,
+									encryptionKey: albumState.encryptionKey,
 								}}
-							/>
+							/>{" "}
 							<AlbumDeletionDialog albumId={album?.id} name={albumState.name} />
 						</>
 					)}
