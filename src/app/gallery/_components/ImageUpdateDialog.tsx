@@ -65,7 +65,7 @@ export default function ImageUpdateDialog({
 	const { data: albumList } = api.album.getAlbums.useQuery();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
-		defaultValues: {
+		values: {
 			newName: name,
 		},
 	});
@@ -131,7 +131,7 @@ export default function ImageUpdateDialog({
 			} | null; // null means place outside of any album
 		} = {};
 
-		if (data.newName === name || selectedAlbumId === albumId) {
+		if (data.newName === name && selectedAlbumId === albumId) {
 			// No change
 			toast({
 				title: "Error while updating image",
@@ -144,10 +144,10 @@ export default function ImageUpdateDialog({
 			return;
 		}
 
-		if (!data.newName && !selectedAlbumId) {
+		if (!data.newName) {
 			toast({
 				title: "Error while updating image",
-				description: "The name of the image and the new album cannot be empty.",
+				description: "The name of the image cannot be empty.",
 				variant: "destructive",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
 			});
