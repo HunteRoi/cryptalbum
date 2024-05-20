@@ -68,9 +68,11 @@ In a development phase, you will need to set the following keys:
 <!-- END TABLE -->
 
 You will then need to execute the following steps:
-1. Push the database schema with `yarn db:push`.
+1. Download the dependencies with `yarn install`.
 
-2. Run the project startup script with `yarn dev`.
+2. Push the database schema with `yarn db:push`.
+
+3. Run the project startup script with `yarn dev`.
 
 ### Contributing
 We welcome contributions to this project!
