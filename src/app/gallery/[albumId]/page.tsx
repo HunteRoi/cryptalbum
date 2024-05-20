@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import AlbumUpdateDialog from "@cryptalbum/app/gallery/_components/AlbumUpdateDialog";
@@ -42,6 +42,15 @@ export default function AlbumPage() {
 	const [albumState, setAlbumState] = useState<AlbumState | null>(null);
 	const { data: album } = api.album.getAlbum.useQuery(albumId);
 	const { data: images } = api.image.getAlbumImages.useQuery(albumId);
+
+	const router = useRouter();
+	const whoAmIQuery = api.auth.whoami.useQuery();
+
+	useEffect(() => {
+		if (whoAmIQuery.error) {
+			router.push("/auth/custom-logout");
+		}
+	}, [whoAmIQuery]);
 
 	const decipheredData = useCallback(async () => {
 		const keyPair = await loadKeyPair();

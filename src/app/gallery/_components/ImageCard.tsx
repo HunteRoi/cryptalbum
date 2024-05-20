@@ -65,7 +65,9 @@ export default function ImageCard({ image }: ImageInProps) {
 					"base64",
 				)}`,
 			});
-		} catch (error) {}
+		} catch (error) {
+			// ignore error
+		}
 	}, [encryptedImageContent, image, userData]);
 
 	useEffect(() => {

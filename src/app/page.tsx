@@ -1,24 +1,30 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
+import { api } from "@cryptalbum/utils/api";
 
 export default function Home() {
 	const userData = useUserData();
 	const router = useRouter();
 
-	useEffect(() => {
-		if(userData){
-			router.push("/gallery")
-		}
-		else{
-			router.push("/auth/login")
-		}
-	},[userData, router]);
+	const whoAmIQuery = api.auth.whoami.useQuery();
 
-	return (
-		<></>
-	);
+	useEffect(() => {
+		if (whoAmIQuery.error) {
+			router.push("/auth/custom-logout");
+		}
+	}, [whoAmIQuery]);
+
+	useEffect(() => {
+		if (userData) {
+			router.push("/gallery");
+		} else {
+			router.push("/auth/login");
+		}
+	}, [userData, router]);
+
+	return <></>;
 }

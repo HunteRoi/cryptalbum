@@ -77,8 +77,6 @@ export default function AlbumSharingRequestForm({ album }: AlbumInProps) {
 				}),
 			);
 
-			debugger;
-
 			await shareAlbumMutation.mutateAsync({
 				albumId: album.id,
 				symmetricalKeys: symKeyEncryptedWithDevicesKey,
