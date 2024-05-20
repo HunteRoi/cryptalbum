@@ -116,7 +116,8 @@ model SharedKey {
   userId    String?
   User      User?      @relation(fields: [userId], references: [id])
 
-  @@unique([deviceId, photoId, albumId, userId])
+  // It cause a bug in picture moving
+  // @@unique([deviceId, photoId, albumId, userId])
 }
 
 model Album {
