@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -38,7 +38,7 @@ export default function RegistrationForm() {
 	const router = useRouter();
 	const { toast } = useToast();
 
-	async function checkKeyPair() {
+	const checkKeyPair = useCallback(async () => {
 		const keyPair = await loadKeyPair();
 		if (keyPair) {
 			toast({
@@ -47,7 +47,7 @@ export default function RegistrationForm() {
 			});
 			router.push("/auth/login");
 		}
-	}
+	}, [router, toast]);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -58,47 +58,49 @@ export default function RegistrationForm() {
 		},
 	});
 
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		const keyPair = await generateAsymmetricalKeyPair();
-		const publicKey = await exportAsymmetricalKey(keyPair.publicKey);
-		const symmetricalKey = await generateSymmetricalKey();
+	const onSubmit = useCallback(
+		async (values: z.infer<typeof formSchema>) => {
+			const keyPair = await generateAsymmetricalKeyPair();
+			const publicKey = await exportAsymmetricalKey(keyPair.publicKey);
+			const symmetricalKey = await generateSymmetricalKey();
 
-		try {
-			const [encryptedName, encryptedDeviceName, encryptedSymmetricalKey] =
-				await Promise.all([
-					encryptFormValue(values.name, symmetricalKey),
-					encryptFormValue(values.deviceName, symmetricalKey),
-					encryptFormValue(
-						await exportSymmetricalKey(symmetricalKey),
-						keyPair.publicKey,
-					),
-				]);
+			try {
+				const [encryptedName, encryptedDeviceName, encryptedSymmetricalKey] =
+					await Promise.all([
+						encryptFormValue(values.name, symmetricalKey),
+						encryptFormValue(values.deviceName, symmetricalKey),
+						encryptFormValue(
+							await exportSymmetricalKey(symmetricalKey),
+							keyPair.publicKey,
+						),
+					]);
 
-			await registerMutation.mutateAsync({
-				email: values.email,
-				name: encryptedName,
-				deviceName: encryptedDeviceName,
-				publicKey,
-				symmetricalKey: encryptedSymmetricalKey,
-			});
+				await registerMutation.mutateAsync({
+					email: values.email,
+					name: encryptedName,
+					deviceName: encryptedDeviceName,
+					publicKey,
+					symmetricalKey: encryptedSymmetricalKey,
+				});
 
-			toast({
-				title: "Account created successfully",
-				description: "You can now log in with your new account",
-			});
+				toast({
+					title: "Account created successfully",
+					description: "You can now log in with your new account",
+				});
 
-			await storeKeyPair(keyPair);
+				await storeKeyPair(keyPair);
 
-			router.push("/auth/login");
-		} catch (error) {
-			console.error("An error occurred. Please try again.", error);
-		}
-	};
+				router.push("/auth/login");
+			} catch (error) {
+				console.error("An error occurred. Please try again.", error);
+			}
+		},
+		[registerMutation, router, toast],
+	);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: The function has to run once on mount
 	useEffect(() => {
 		void checkKeyPair();
-	}, []);
+	}, [checkKeyPair]);
 
 	return (
 		<Form {...form}>

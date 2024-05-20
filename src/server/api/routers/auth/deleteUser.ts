@@ -9,7 +9,7 @@ export const deleteUser = protectedProcedure.mutation(async ({ ctx }) => {
 		where: { userId: ctx.session.userId },
 	});
 
-	ctx.db.$transaction(async (db) => {
+	await ctx.db.$transaction(async (db) => {
 		await ctx.minio.removeObjects(
 			env.MINIO_BUCKET,
 			images.map((image) => image.id),

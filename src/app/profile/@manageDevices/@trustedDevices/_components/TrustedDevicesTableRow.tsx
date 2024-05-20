@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
 import { Trash2 } from "lucide-react";
+import React, { useCallback, useEffect } from "react";
 
+import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import { Button } from "@cryptalbum/components/ui/button";
 import { TableCell, TableRow } from "@cryptalbum/components/ui/table";
-import { api } from "@cryptalbum/utils/api";
 import { decryptFormValue } from "@cryptalbum/crypto";
-import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
+import { api } from "@cryptalbum/utils/api";
 import type { UserDevice } from "./TrustedDevicesTable";
 
 type TustedDevicesTableRowProps = {
@@ -27,26 +27,29 @@ export default function TrustedDevicesTableRow({
 		await trustedDevicesQuery.refetch();
 	}
 
-	async function decryptDeviceName(name: string | null) {
-		if (!userData?.symmetricalKey) {
-			return;
-		}
+	const decryptDeviceName = useCallback(
+		async (name: string | null) => {
+			if (!userData?.symmetricalKey) {
+				return;
+			}
 
-		if (!name) {
-			return;
-		}
+			if (!name) {
+				return;
+			}
 
-		try {
-			const decryptedName = await decryptFormValue(
-				name,
-				userData?.symmetricalKey,
-			);
+			try {
+				const decryptedName = await decryptFormValue(
+					name,
+					userData?.symmetricalKey,
+				);
 
-			setDeviceName(decryptedName);
-		} catch (error) {
-			return;
-		}
-	}
+				setDeviceName(decryptedName);
+			} catch (error) {
+				return;
+			}
+		},
+		[userData?.symmetricalKey],
+	);
 
 	useEffect(() => {
 		void decryptDeviceName(device.name);
@@ -65,9 +68,11 @@ export default function TrustedDevicesTableRow({
 						title={`Delete ${device.id}`}
 						className="bg-red-600"
 					>
-						<Trash2 color="white"/>
+						<Trash2 color="white" />
 					</Button>
-				): <p>You can't delete current device.</p>}
+				) : (
+					<p>You can&apos;t delete current device.</p>
+				)}
 			</TableCell>
 		</TableRow>
 	);

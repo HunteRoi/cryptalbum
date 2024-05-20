@@ -67,8 +67,8 @@ export default function AlbumDeletionDialog({
 				<DialogHeader>
 					<DialogTitle>Delete Album</DialogTitle>
 					<DialogDescription>
-						Are you sure you want to delete the album "{name}"? You won't be
-						able to recover it afterwards.
+						Are you sure you want to delete the album &quot;{name}&quot;? You
+						won&apos;t be able to recover it afterwards.
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter>

@@ -1,11 +1,8 @@
+import { signOut } from "next-auth/react";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { signOut } from "next-auth/react";
 
-import {
-	type UserData,
-	useUserData,
-} from "@cryptalbum/components/providers/UserDataProvider";
+import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import { Button } from "@cryptalbum/components/ui/button";
 import {
 	Dialog,
@@ -29,7 +26,7 @@ import {
 import { api } from "@cryptalbum/utils/api";
 
 export default function ChangeKeyPairForm() {
-	const userData = useUserData() as UserData;
+	const userData = useUserData()!;
 	const { toast } = useToast();
 	const form = useForm();
 	const changeDevicePublicKeyMutation =
@@ -75,7 +72,7 @@ export default function ChangeKeyPairForm() {
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
 					<DialogTitle>
-						Are you sure you want to generate a new key pair ?
+						Are you sure you want to generate a new key pair?
 					</DialogTitle>
 					<DialogDescription>
 						You will be automatically logged out and you will need to log in

@@ -138,7 +138,7 @@ export default function AlbumUpdateDialog({ album }: AlbumUpdateDialogProps) {
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Update album "{album.name}"</DialogTitle>
+					<DialogTitle>Update album &quot;{album.name}&quot;</DialogTitle>
 					<DialogDescription>
 						Update the album name and description
 					</DialogDescription>

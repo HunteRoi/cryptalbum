@@ -54,7 +54,7 @@ export const getImages = protectedProcedure.query(async ({ ctx }) => {
 		.map(({ shareds, ...imageData }) => {
 			return {
 				...imageData,
-				encryptionKey: shareds[0]?.key as string,
+				encryptionKey: shareds[0]!.key,
 			};
 		});
 });

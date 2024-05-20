@@ -243,7 +243,8 @@ export default function ImageUpdateDialog({
 				<DialogHeader>
 					<DialogTitle>Update Image {name}</DialogTitle>
 					<DialogDescription>
-						You can change the image's name and move it to another album here.
+						You can change the image&apos;s name and move it to another album
+						here.
 					</DialogDescription>
 				</DialogHeader>
 				<Form {...form}>

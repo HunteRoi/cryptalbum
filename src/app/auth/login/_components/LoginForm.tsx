@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { getCsrfToken } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import { Button } from "@cryptalbum/components/ui/button";
@@ -37,7 +37,7 @@ export function LoginForm() {
 		}
 	}, [userData, router]);
 
-	async function validChallenge() {
+	const validChallenge = useCallback(async () => {
 		const keyPair = await loadKeyPair();
 		if (!keyPair) {
 			return;
@@ -82,12 +82,11 @@ export function LoginForm() {
 		} catch (error) {
 			console.error(error);
 		}
-	}
+	}, [challengeMutation, router]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: This is a one-time effect
 	useEffect(() => {
 		void validChallenge();
-	}, []);
+	}, [validChallenge]);
 
 	return (
 		<form method="post" action="/api/auth/callback/credentials">

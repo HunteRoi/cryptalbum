@@ -6,10 +6,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import {
-	type UserData,
-	useUserData,
-} from "@cryptalbum/components/providers/UserDataProvider";
+import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import { Button } from "@cryptalbum/components/ui/button";
 import {
 	Dialog,
@@ -53,7 +50,7 @@ const formSchema = z.object({
 export default function UntrustedDevicesTableRow({
 	device,
 }: UntrustedDevicesTableRowProps) {
-	const userData = useUserData() as UserData;
+	const userData = useUserData()!;
 
 	const trustedDevicesQuery = api.auth.listTrustedDevices.useQuery();
 	const untrustedDevicesQuery = api.auth.listUntrustedDevices.useQuery();
@@ -87,7 +84,7 @@ export default function UntrustedDevicesTableRow({
 		const [symmetricalKeysWithImage, symmetricalKeysWithAlbum] =
 			await Promise.all([
 				Promise.all(
-					(allUserImagesQuery.data || []).map(async (image) => {
+					(allUserImagesQuery.data ?? []).map(async (image) => {
 						const encryptedImageSymKey = await encrypt(
 							publicKey,
 							await decrypt(
@@ -103,7 +100,7 @@ export default function UntrustedDevicesTableRow({
 					}),
 				),
 				Promise.all(
-					(allUserAlbumsQuery.data || []).map(async (album) => {
+					(allUserAlbumsQuery.data ?? []).map(async (album) => {
 						const encryptedAlbumSymKey = await encrypt(
 							publicKey,
 							await decrypt(

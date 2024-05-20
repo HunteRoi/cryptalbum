@@ -31,6 +31,7 @@ import {
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/utils/api";
 import { arrayBufferToHex, fileSchemaFront } from "@cryptalbum/utils/file";
+import Image from "next/image";
 import DropDownList from "./DropDownList";
 import FileSkeleton from "./FileSkeleton";
 import { useUserData } from "./providers/UserDataProvider";
@@ -153,7 +154,7 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 			const [encryptedFileName, ...symmetricalKeysWithDevice] =
 				await Promise.all([
 					encryptFormValue(data.fileName, cryptoKey),
-					...(userDevices || []).map(async (device) => {
+					...(userDevices ?? []).map(async (device) => {
 						const publicKey = await importRsaPublicKey(device.publicKey);
 						const encryptedSymmetricalKey = await encrypt(
 							publicKey,
@@ -257,7 +258,7 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 								/>
 							</FormControl>
 							{preview ? (
-								<img
+								<Image
 									src={preview}
 									alt="preview"
 									height={240}

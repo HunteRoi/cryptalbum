@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React, { useCallback, useEffect, useState } from "react";
 
 import ImageDeletionDialog from "@cryptalbum/app/gallery/_components/ImageDeletionDialog";
@@ -20,9 +21,8 @@ import {
 	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/utils/api";
-import type {ImageInProps} from "./types";
 import ImageSharingDialog from "./ImageSharingDialog";
-
+import type { ImageInProps } from "./types";
 
 type ImageCardState = {
 	name: string;
@@ -77,17 +77,19 @@ export default function ImageCard({ image }: ImageInProps) {
 	return (
 		<Card className="w-full max-w-sm m-2 py-2 basis-1/5 grow">
 			<CardContent className="aspect-w-4 aspect-h-5 relative">
-				<img
-					alt={imageState?.name}
-					className="object-cover rounded-t-lg"
-					height={500}
-					src={imageState?.path}
-					style={{
-						aspectRatio: "400/500",
-						objectFit: "cover",
-					}}
-					width={400}
-				/>
+				{imageState && (
+					<Image
+						alt={imageState.name}
+						className="object-cover rounded-t-lg"
+						height={500}
+						src={imageState.path}
+						style={{
+							aspectRatio: "400/500",
+							objectFit: "cover",
+						}}
+						width={400}
+					/>
+				)}
 			</CardContent>
 			<CardHeader className="grid gap-1 p-4">
 				<CardTitle>{imageState?.name}</CardTitle>

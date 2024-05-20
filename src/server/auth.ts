@@ -61,11 +61,11 @@ export const authOptions: NextAuthOptions = {
 			if (user && userDevice) {
 				session.user = {
 					id: userDevice.id,
-					email: user.email as string,
+					email: user.email!,
 					userId: user.id,
-					deviceName: userDevice.name as string,
-					name: user.name as string,
-					symmetricalKey: userDevice.symmetricalKey as string,
+					deviceName: userDevice.name!,
+					name: user.name!,
+					symmetricalKey: userDevice.symmetricalKey!,
 				};
 			}
 
