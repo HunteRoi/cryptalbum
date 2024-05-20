@@ -1,7 +1,7 @@
 title: "Rapport de conception de CryptAlbum"
 author:
-  - ARTS Loïck
-  - DEVRESSE Tinaël
+  - ALBANESE Matteo
+  - BERNARD Christophe
 academicyear: 2023-2024
 category: MASI
 fontsize: 11.5pt
@@ -28,5 +28,3 @@ toc-title: "Sommaire"
 codeBlockCaptions: True
 table-use-row-colors: True
 ---
-
-<!-- CONTENT -->
