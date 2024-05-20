@@ -10,6 +10,7 @@ import {
 } from "@cryptalbum/components/ui/card";
 
 import { LoginForm } from "@cryptalbum/app/auth/login/_components/LoginForm";
+import { Suspense } from "react";
 
 export default function Login() {
 	return (
@@ -22,7 +23,9 @@ export default function Login() {
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<LoginForm />
+					<Suspense>
+						<LoginForm />
+					</Suspense>
 					<RedirectionLink
 						link={{ href: "/auth/register", text: "Sign up" }}
 						contents="Don't have an account?"
