@@ -39,7 +39,7 @@ Cette clé est ensuite re-chiffrée avec la clé publique de l'appareil qui dema
 
 Finalement, les données sont enregistrées dans la base de données.
 Cette dernière action clôture l'ajout d'un autre appareil à un même compte utilisateur.
-L'autre appareil possède donc un accès aux mêmes données que l'appareil principal, en déchirant la clé symétrique avec sa clé privée.
+L'autre appareil possède donc un accès aux mêmes données que l'appareil principal, en déchiffrant la clé symétrique avec sa clé privée.
 
 Voici un schéma représentant les différents échanges:
 
@@ -73,8 +73,7 @@ La clé symétrique de l'album est ensuite chiffrée avec la clé publique de ch
 Lorsqu'un utilisateur souhaite partager une image, on récupère l'adresse email du destinataire et on l'ajoute sur le site web.
 Quand l'adresse est validée, on récupère tous les appareils liés au destinataire.
 
-Pour chacune des clés publiques des appareils, on va déchiffrer la clé symétrique de l'image avec la clé privée de l'appareil.
-Cette clé déchiffrée va être chiffrée avec la clé publique de tous les appareils du destinataire.
+On va déchiffrer la clé symétrique de l'image avec la clé privée de l'appareil de l'utilisateur. Cette clé déchiffrée va être rechiffrée avec la clé publique de chaque appareil du destinataire. Ainsi, chaque appareil du destinataire pourra déchiffrer la clé symétrique de l'image avec sa clé privée et accéder à l'image.
 
 Le résultat est un tableau de clés chiffrées qu'on ajoute comme clés partagées liées à l'image (colonne `sharedKeys` dans le schéma de la base de données).
 
@@ -82,7 +81,6 @@ Le résultat est un tableau de clés chiffrées qu'on ajoute comme clés partag�
 Lorsqu'un utilisateur souhaite partager un album, on récupère l'adresse email du destinataire et on l'ajoute sur le site web.
 Quand l'adresse est validée, on récupère tous les appareils liés au destinataire.
 
-Pour chacune des clés publiques des appareils, on va déchiffrer la clé symétrique de l'album avec la clé privée de l'appareil.
-Cette clé déchiffrée va être chiffrée avec la clé publique de tous les appareils du destinataire.
+On va déchiffrer la clé symétrique de l'album avec la clé privée de l'appareil de l'utilisateur. Cette clé déchiffrée va être rechiffrée avec la clé publique de chaque appareil du destinataire. Ainsi, chaque appareil du destinataire pourra déchiffrer la clé symétrique de l'album avec sa clé privée et accéder à l'album.
 
 Le résultat est un tableau de clés chiffrées qu'on ajoute comme clés partagées liée à l'album (colonne `sharedKeys` dans le schéma de la base de données).

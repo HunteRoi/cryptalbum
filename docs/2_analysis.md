@@ -36,7 +36,7 @@ NB2: les images peuvent être téléversées dans un album si l'utilisateur en e
 
 - Un **utilisateur** peut **partager des photos** de deux manières:
   - en partageant un album (toutes les photos sont partagées immédiatement aux utilisateurs qui y ont accès) ;
-  - en partageant directement la photo (qu'elle soit ou non au sein d'un album).
+  - en partageant directement une photo (hors d'un album). Il n'est pas possible de partager une photo d'un album sans partager l'album.
 
 - Un **utilisateur** peut **__voir__ les photos** qui lui ont été **partagées**.
 
@@ -45,4 +45,4 @@ NB: c'est une visibilité read-only, il n'a pas le droit de modifier ces photos.
 ### Besoins techniques
 Une architecture client/serveur est obligatoire, dans laquelle le serveur n'est pas une entité de confiance.
 
-Les informations relatives aux utilisateurs, aux albums, aux photos et aux métadonnées de celles-ci sont considérés sensibles et doivent donc être chiffrés avant leur envoi vers le serveur.
+Les informations relatives aux utilisateurs, aux albums, aux photos et aux métadonnées de celles-ci sont considérées sensibles et doivent donc être chiffrées avant leur envoi vers le serveur.
