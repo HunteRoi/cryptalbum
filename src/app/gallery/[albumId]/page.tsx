@@ -153,18 +153,18 @@ export default function AlbumPage() {
 					{albumState && albumState.userId === userData?.userId && (
 						<>
 							<UploadFileDialog albumId={albumId} />
-							<AlbumSharingDialog
-								album={{
-									id: albumId,
-									name: albumState.name,
-									encryptionKey: albumState.encryptionKey,
-								}}
-							/>{" "}
 							<AlbumUpdateDialog
 								album={{
 									id: albumId,
 									name: albumState.name,
 									description: albumState.description,
+									encryptionKey: albumState.encryptionKey,
+								}}
+							/>{" "}
+							<AlbumSharingDialog
+								album={{
+									id: albumId,
+									name: albumState.name,
 									encryptionKey: albumState.encryptionKey,
 								}}
 							/>{" "}

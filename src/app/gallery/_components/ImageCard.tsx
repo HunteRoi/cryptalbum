@@ -101,13 +101,16 @@ export default function ImageCard({ image, inAlbum = false }: ImageCardProps) {
 				<CardTitle>{imageState?.name}</CardTitle>
 				{image.userId === userData?.userId && (
 					<CardDescription>
-						<ImageDeletionDialog image={image} name={imageState?.name} />{" "}
 						<ImageUpdateDialog image={image} name={imageState?.name} />{" "}
 						{!inAlbum && (
 							<>
-								<ImageSharingDialog image={image} name={imageState?.name} />
+								<ImageSharingDialog
+									image={image}
+									name={imageState?.name}
+								/>{" "}
 							</>
 						)}
+						<ImageDeletionDialog image={image} name={imageState?.name} />
 					</CardDescription>
 				)}
 			</CardHeader>

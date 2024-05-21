@@ -33,6 +33,7 @@ import {
 	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/utils/api";
+import { PenLine } from "lucide-react";
 
 type AlbumUpdateDialogProps = {
 	album: {
@@ -62,7 +63,7 @@ export default function AlbumUpdateDialog({ album }: AlbumUpdateDialogProps) {
 
 	const handleUpdate = async (data: z.infer<typeof formSchema>) => {
 		const keyPair = await loadKeyPair();
-		
+
 		if (!album.id || !keyPair) {
 			return;
 		}
@@ -134,7 +135,10 @@ export default function AlbumUpdateDialog({ album }: AlbumUpdateDialogProps) {
 	return (
 		<Dialog>
 			<DialogTrigger>
-				<Button className="ml-2">Update</Button>
+				<Button className="ml-2" title={`Update ${album.name}`}>
+					{" "}
+					<PenLine />
+				</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
