@@ -82,4 +82,4 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./nginx/certs/:/etc/nginx/certs
-
+      - ./nginx/conf.d/:/etc/nginx/vhost.d/:ro
