@@ -32,6 +32,22 @@ It is recommended to read the [documentation](./docs/) for more insight on the t
 If you want the **PDF** version of the documentation, please head to [the artifacts section](/-/artifacts).
 You can also download the latest artifact [by clicking here](/-/jobs/artifacts/nivelling/download?job=convert_to_pdf).
 
+## Installation
+
+The first step is basically to clone the repository (`git clone`). Once this is done, you have to go into this directory. You will see `setup.sh`
+1. Type this commande `./setup.sh` : All the requirement will be installed if required.
+2. The script will ask you to add the following lines into your `/etc/host`. You will have to enter `y`.
+    - `127.0.0.1 host.docker.internal`
+    - `127.0.0.1 seq.local`
+    - `127.0.0.1 minio.local`
+    - `127.0.0.1 cryptalbum.local`
+3. You will have to enter credentials for Minio. You will need them a bit later for the configuration.
+4. Select your username for Postgres.
+5. After few seconds, you will be asked the `Minio access key` and `Minio secret key`. You will have to open your browser to `https://minio.local/access-keys`. On this website, you will have to enter credentials from step 3. Press the button `Create access key` and then the button `Create`. Afterwards, your `Access Key` and `Secret Key` will be shown to you. Don't forget to get a copy of it !
+6. You will be asked the `Seq API key` and this time, you will need to go to `https://seq.local/#/settings/api-keys` and press the button `ADD API KEY`. For basic installation, you just have to add a `title` and press `Save Changes`. You will get a popup with your key.
+7. Everything is setup and everything will build up ! It will take few minutes to finish.
+8. Once it is done, you will be able to access `https://cryptalbum.local/`
+
 ## Getting Started
 
 ### Prerequisites
