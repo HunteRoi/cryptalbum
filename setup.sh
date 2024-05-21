@@ -17,11 +17,13 @@ function introduction() {
   echo "Checking for required software..."
   if ! command -v docker &> /dev/null
   then
+      echo "Docker not found. Installing it..."
       wget -qO- https://get.docker.com | sh
   fi
 
   if ! command -v docker-compose &> /dev/null
   then
+      echo "Docker Compose not found. Installing it..."
       sudo apt-get update
       sudo apt-get install -y docker-compose
   fi
