@@ -82,8 +82,8 @@ function set_up_postgres_env_vars() {
     POSTGRES_PASSWORD=$(openssl rand -base64 32)
 
     {
-        echo "POSTGRES_USERNAME=$POSTGRES_USERNAME",
-        echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD",
+        echo "POSTGRES_USERNAME=$POSTGRES_USERNAME"
+        echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
         echo "POSTGRES_DB=cryptalbum"
     } >> .postgres.env
 
@@ -104,8 +104,8 @@ function generate_next_auth_secrets() {
     echo "Generating NextAuth secret..."
 
     {
-        echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)",
-        echo "NEXTAUTH_URL=http://cryptalbum.local:3000",
+        echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)"
+        echo "NEXTAUTH_URL=http://cryptalbum.local:3000"
     } >> .env
 
     echo "Secret generated."
@@ -133,12 +133,12 @@ function save_minio_data_to_env() {
     done
 
     {
-        echo "MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY",
+        echo "MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY"
         echo "MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
-        echo "MINIO_ENDPOINT=host.docker.internal",
-        echo "MINIO_PORT=9000",
-        echo "MINIO_BUCKET=cryptalbum",
-        echo "MINIO_SECURE=false",
+        echo "MINIO_ENDPOINT=host.docker.internal"
+        echo "MINIO_PORT=9000"
+        echo "MINIO_BUCKET=cryptalbum"
+        echo "MINIO_SECURE=false"
     } >> .env
 
     echo "Minio access and secret keys saved."
@@ -157,9 +157,9 @@ function save_seq_data_to_env() {
     done
 
     {
-        echo "SEQ_URL=http://host.docker.internal:5341",
-        echo "SEQ_API_KEY=$SEQ_API_KEY",
-        echo "SERVER_LOG_SECRET_KEY=$(openssl rand -base64 64 | tr -d '\n')",
+        echo "SEQ_URL=http://host.docker.internal:5341"
+        echo "SEQ_API_KEY=$SEQ_API_KEY"
+        echo "SERVER_LOG_SECRET_KEY=$(openssl rand -base64 64 | tr -d '\n')"
     } >> .env
 
     echo "Seq API key saved."
