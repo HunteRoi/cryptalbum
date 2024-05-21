@@ -1,7 +1,8 @@
+
 # Conclusion
 
 ## Statut actuel
-A l'issue de ce projet, nous avons pu réaliser une application web permettant de gérer des albums et des images. Un utilisateur peut créer un compte, l'utiliser sur plusieurs appareils, créer des albums et des images, les partager et les modifier. 
+A l'issue de ce projet, nous avons pu réaliser une application web permettant de gérer des albums et des images. Un utilisateur peut créer un compte, l'utiliser sur plusieurs appareils, créer des albums et des images, les partager et les modifier.
 
 L'application est sécurisée de bout en bout, avec une authentification forte et une gestion des données chiffrées. Ainsi, les données de l'utilisateur sont protégées et ne peuvent être consultées que par lui-même. Les actions de l'utilisateur sont également loggées pour permettre une traçabilité des actions.
 
