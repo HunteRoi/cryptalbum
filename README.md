@@ -19,23 +19,21 @@
 [TOC]
 
 ## Overview
-
 CryptAlbum is an end-to-end encrypted gallery of photos. You can access it from any device you want and store your photos safely to share to your friends and family.
 
 ![overview gif][./docs/assets/overview.gif]
 
 ## How it works
-
 It is recommended to read the [documentation](./docs/) for more insight on the topic.
 
 **If you want the PDF version of the docs, you can download the latest one [by clicking here](/-/jobs/artifacts/nivelling/download?job=convert_to_pdf).**
 If needed, you can also head to [the artifacts section](/-/artifacts) to view all previous versions.
 
 ## Getting Started
-
 The first step is basically to clone the repository (`git clone`). Once this is done, you have a few configuration steps to achieve.
 
 ### Production
+⚠️ The production target is Ubuntu 22.04 LTS.
 
 Whenever it is to execute it on your own machine or on a server, for production, we recommend that you execute the setup script with the command `./setup.sh`.
 
@@ -71,7 +69,6 @@ You will also be prompted to enter credentials for Minio and PostgreSQL. Those w
 ### Development
 
 #### Prerequisites
-
 1. Install and start Docker (you can use [Docker Desktop](https://www.docker.com/products/docker-desktop/) if you are on Windows).
 
 2. Type `cp .minio.env.example .minio.env` to create a `.minio.env` file from the [example](.env.minio.example) available on the repo **and update the keys accordingly**:
@@ -117,7 +114,6 @@ You will then need to follow these steps:
 3. Run the project startup script with `yarn dev`.
 
 ### Contributing
-
 We welcome contributions to this project!
 If you have ideas, suggestions, or bug reports, please open an issue or submit a pull request. Follow these steps to contribute:
 
@@ -127,11 +123,9 @@ If you have ideas, suggestions, or bug reports, please open an issue or submit a
 - Open a pull request to the main repository.
 
 ## License
-
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
 ## Acknowledgement
-
 CryptAlbum has been created with [T3 Stack](https://create.t3.gg/).
 
 The contributors to this project are:
