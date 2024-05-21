@@ -38,6 +38,15 @@ export const shareAlbum = protectedProcedure
 			where: {
 				id: input.albumId,
 			},
+			select: {
+				id: true,
+				userId: true,
+				shareds: {
+					select: {
+						userId: true,
+					},
+				},
+			},
 		});
 
 		if (!album) {
@@ -51,6 +60,13 @@ export const shareAlbum = protectedProcedure
 			throw new TRPCError({
 				code: "FORBIDDEN",
 				message: "You are not the owner of this album",
+			});
+		}
+
+		if (album.shareds.some((shared) => shared.userId === user.id)) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "Album is already shared with this user",
 			});
 		}
 

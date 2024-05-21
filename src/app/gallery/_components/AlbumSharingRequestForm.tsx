@@ -43,6 +43,7 @@ export default function AlbumSharingRequestForm({ album }: AlbumInProps) {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		form.reset();
 		const keyPair = await loadKeyPair();
 		if (!keyPair) {
 			return;
