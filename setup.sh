@@ -79,7 +79,7 @@ function set_up_postgres_env_vars() {
     fi
 
     echo "Generating the Postgres password..."
-    POSTGRES_PASSWORD=$(openssl rand -base64 32 | tr -d '=')
+    POSTGRES_PASSWORD=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 32)
 
     {
         echo "POSTGRES_USERNAME=$POSTGRES_USERNAME"
