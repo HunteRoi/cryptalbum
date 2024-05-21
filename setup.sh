@@ -7,7 +7,7 @@ Green='\033[0;32m'        # Green
 Blue='\033[0;34m'         # Blue
 
 function exit_with_message_and_error() {
-    echo "${Red}An error occurred : $1. Exiting.${NC}"
+    echo -e "${Red}An error occurred : $1. Exiting.${NC}"
     exit "$2"
 }
 
@@ -45,18 +45,18 @@ function set_up_minio_env_vars() {
     read -r MINIO_USERNAME
     while [ -z "$MINIO_USERNAME" ]
     do
-        echo "${Red}Username cannot be empty.${NC}"
+        echo -e "${Red}Username cannot be empty.${NC}"
         echo "Enter the Minio username you want to use:"
         read -r MINIO_USERNAME
     done
 
     echo "Enter the Minio password you want to use:"
-    read -r MINIO_PASSWORD
+    read -r -s MINIO_PASSWORD
     while [ -z "$MINIO_PASSWORD" ]
     do
-        echo "${Red}Password cannot be empty.${NC}"
+        echo -e "${Red}Password cannot be empty.${NC}"
         echo "Enter the Minio password you want to use:"
-        read -r MINIO_PASSWORD
+        read -r -s MINIO_PASSWORD
     done
 
     echo "MINIO_ROOT_USER=$MINIO_USERNAME" >> .minio.env
@@ -87,8 +87,8 @@ function set_up_postgres_env_vars() {
     echo "DATABASE_URL=postgres://$POSTGRES_USERNAME:$POSTGRES_PASSWORD@host.docker.internal:5432/cryptalbum" >> .env
 
     echo "Postgres environment variables set up."
-    echo "Postgres username: ${Green}$POSTGRES_USERNAME${NC}"
-    echo "Postgres password: ${Green}$POSTGRES_PASSWORD${NC}"
+    #echo -e "Postgres username: ${Green}$POSTGRES_USERNAME${NC}"
+    #echo -e "Postgres password: ${Green}$POSTGRES_PASSWORD${NC}"
 }
 
 function start_storage_services() {
@@ -112,21 +112,21 @@ function save_minio_data_to_env() {
     echo "Please go to https://minio.local/access-keys and create a new access key."
     echo "Enter the Minio access key you created:"
 
-    read -r MINIO_ACCESS_KEY
+    read -r -s MINIO_ACCESS_KEY
     while [ -z "$MINIO_ACCESS_KEY" ]
     do
-        echo "${Red}Access key cannot be empty.${NC}"
+        echo -e "${Red}Access key cannot be empty.${NC}"
         echo "Enter the Minio access key you created:"
-        read -r MINIO_ACCESS_KEY
+        read -r -s MINIO_ACCESS_KEY
     done
 
     echo "Enter the Minio secret key you created:"
-    read -r MINIO_SECRET_KEY
+    read -r -s MINIO_SECRET_KEY
     while [ -z "$MINIO_SECRET_KEY" ]
     do
-        echo "${Red}Secret key cannot be empty.${NC}"
+        echo -e "${Red}Secret key cannot be empty.${NC}"
         echo "Enter the Minio secret key you created:"
-        read -r MINIO_SECRET_KEY
+        read -r -s MINIO_SECRET_KEY
     done
 
     {
@@ -145,12 +145,12 @@ function save_seq_data_to_env() {
     echo "Please go to https://seq.local/#/settings/api-keys and create a new API key for the application."
     echo "Enter the Seq API key you created:"
 
-    read -r SEQ_API_KEY
+    read -r -s SEQ_API_KEY
     while [ -z "$SEQ_API_KEY" ]
     do
-        echo "${Red}API key cannot be empty.${NC}"
+        echo -e "${Red}API key cannot be empty.${NC}"
         echo "Enter the Seq API key you created:"
-        read -r SEQ_API_KEY
+        read -r -s SEQ_API_KEY
     done
 
     {
@@ -158,6 +158,8 @@ function save_seq_data_to_env() {
         echo "SEQ_API_KEY=$SEQ_API_KEY",
         echo "SERVER_LOG_SECRET_KEY=$(openssl rand -base64 64 | tr -d '\n')",
     } >> .env
+
+    echo "Seq API key saved."
 }
 
 function generate_nginx_certificates() {
@@ -185,29 +187,29 @@ function start_app_container() {
 
 function add_to_hosts() {
     echo "In order to use the application correctly, you need to add the following line to your hosts file:"
-    echo "${Green}127.0.0.1 host.docker.internal${NC}"
-    echo "${Green}127.0.0.1 seq.local${NC}"
-    echo "${Green}127.0.0.1 minio.local${NC}"
-    echo "${Green}127.0.0.1 cryptalbum.local${NC}"
+    echo -e "${Green}127.0.0.1 host.docker.internal${NC}"
+    echo -e "${Green}127.0.0.1 seq.local${NC}"
+    echo -e "${Green}127.0.0.1 minio.local${NC}"
+    echo -e "${Green}127.0.0.1 cryptalbum.local${NC}"
     echo ""
     echo "Do you want this script to add the lines to your hosts file? (y/n)"
     read -r ADD_TO_HOSTS
 
     while [ "$ADD_TO_HOSTS" != "y" ] && [ "$ADD_TO_HOSTS" != "n" ]
     do
-        echo "${Red}Invalid input.${NC}"
+        echo -e "${Red}Invalid input.${NC}"
         echo "Do you want this script to add the line to your hosts file? (y/n)"
         read -r ADD_TO_HOSTS
     done
 
     if [ "$ADD_TO_HOSTS" == "y" ]
     then
-        echo "${Blue}Adding the line to the hosts file...${NC}"
+        echo -e "${Blue}Adding the line to the hosts file...${NC}"
         echo "127.0.0.1 host.docker.internal" | sudo tee -a /etc/hosts
         echo "127.0.0.1 seq.local" | sudo tee -a /etc/hosts
         echo "127.0.0.1 minio.local" | sudo tee -a /etc/hosts
         echo "127.0.0.1 cryptalbum.local" | sudo tee -a /etc/hosts
-        echo "${Green}Lines added.${NC}"
+        echo -e "${Green}Lines added.${NC}"
     fi
 }
 
