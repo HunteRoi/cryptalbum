@@ -48,6 +48,8 @@ Il est ensuite invité à entrer l'adresse email du compte auquel il souhaite ap
 Le propriétaire du compte reçoit cette demande depuis un de ses appareils certifiés et peut l'accepter ou la refuser.
 Lors de l'acceptation, celui-ci peut donner un nom à cet appareil afin qu'il puisse le repérer plus facilement.
 
+![Ajout d'un appareil](./assets/manage-new-device.png)
+
 Après avoir donné un nom à son nouvel appareil, le processus d'échange de clés peut commencer.
 La clé symétrique de l'utilisateur est déchiffrée avec la clé privée de l'appareil auquel il a déjà accès, et est
 ensuite re-chiffrée avec la clé publique de l'appareil qui demande à rejoindre (sachant que celle-ci a été envoyée lors
@@ -95,6 +97,8 @@ l'album. La clé symétrique de l'album est ensuite chiffrée avec la clé publi
 
 Le résultat est un tableau de clés chiffrées qu'on ajoute comme clés partagées liées à l'image.
 
+![Ajout d'une image](./assets/upload-image.png)
+
 ## Partage d'une image
 
 Lorsqu'un utilisateur souhaite partager une image, on récupère l'adresse email du destinataire et on l'ajoute sur le
@@ -106,6 +110,8 @@ symétrique de l'image avec sa clé privée et accéder à l'image.
 
 Le résultat est un tableau de clés chiffrées qu'on ajoute comme clés partagées liées à l'image (colonne `sharedKeys`
 dans le schéma de la base de données).
+
+![Partage d'une image](./assets/share-image.png)
 
 ## Partage d'un album
 
@@ -119,7 +125,23 @@ déchiffrer la clé symétrique de l'album avec sa clé privée et accéder à l
 Le résultat est un tableau de clés chiffrées qu'on ajoute comme clés partagées liée à l'album (colonne `sharedKeys` dans
 le schéma de la base de données).
 
+![Partage de l'album](./assets/share-album.png)
+
 ## Régénération des clés
+
+Un utilisateur possède toujours la possibilité de régénérer ses clés asymétriques en cas de soucis avec la paire précédente. Pour se faire, celui-ci doit se rendre dans la section `profile` du site et doit cliquer sur le bouton :
+![Bouton régénération de clefs](./assets/key-gen-button.png)
+
+Voici le processus :
+1) on déchiffre la clé symétrique de l'utilisateur avec la clé privée actuelle,
+2) on récupère toutes les clés partagées liées à l'appareil courant
+3) on déchiffre les clés partagées avec la clé privée actuelle
+3) on génère une nouvelle paire de clés asymétriques
+4) on chiffre la clé symétrique de l'utilisateur et toutes les clés partagées avec la nouvelle clé publique
+5) on transmet le tout à l'API, avec la nouvelle clé publique de l'appareil
+
+Voici un diagramme de séquence qui explique son fonctionnement
+![Diagramme de séquence de régénération des clés](./assets/seq-diag-reg-key.svg)
 
 ## Utilisation du reverse proxy Nginx pour TLS
 
