@@ -30,9 +30,15 @@ import ImageCard from "../_components/ImageCard";
 
 type AlbumState = {
 	name: string;
+	userId: string;
 	description?: string;
 	encryptionKey: string;
-	images: Array<{ id: string; name: string; encryptionKey: string }>;
+	images: Array<{
+		id: string;
+		name: string;
+		encryptionKey: string;
+		userId: string;
+	}>;
 };
 
 export default function AlbumPage() {
@@ -103,11 +109,13 @@ export default function AlbumPage() {
 							keyPair.publicKey,
 							decipheredImageSymKey,
 						),
+						userId: image.userId,
 					};
 				}),
 			);
 
 			setAlbumState({
+				userId: album.userId,
 				name: decipheredName,
 				description: decipheredDescription,
 				encryptionKey: album.encryptionKey,
@@ -136,9 +144,9 @@ export default function AlbumPage() {
 					</CardDescription>
 				</div>
 				<div className="ml-auto flex flex-row items-center">
-					<UploadFileDialog albumId={albumId} />
-					{albumState && (
+					{albumState && albumState.userId === userData?.userId && (
 						<>
+							<UploadFileDialog albumId={albumId} />
 							<AlbumSharingDialog
 								album={{
 									id: albumId,

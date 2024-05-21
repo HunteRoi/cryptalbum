@@ -33,6 +33,7 @@ export const getImages = protectedProcedure.query(async ({ ctx }) => {
 			id: true,
 			name: true,
 			metadata: false,
+			userId: true,
 			shareds: {
 				select: {
 					key: true,

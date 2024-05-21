@@ -3,6 +3,7 @@ export type ImageInProps = {
 		id: string;
 		name: string;
 		encryptionKey: string;
+		userId: string;
 	};
 };
 

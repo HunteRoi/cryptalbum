@@ -95,11 +95,13 @@ export default function ImageCard({ image }: ImageInProps) {
 			</CardContent>
 			<CardHeader className="grid gap-1 p-4">
 				<CardTitle>{imageState?.name}</CardTitle>
-				<CardDescription>
-					<ImageDeletionDialog image={image} name={imageState?.name} />{" "}
-					<ImageUpdateDialog image={image} name={imageState?.name} />{" "}
-					<ImageSharingDialog image={image} name={imageState?.name} />
-				</CardDescription>
+				{image.userId === userData?.userId && (
+					<CardDescription>
+						<ImageDeletionDialog image={image} name={imageState?.name} />{" "}
+						<ImageUpdateDialog image={image} name={imageState?.name} />{" "}
+						<ImageSharingDialog image={image} name={imageState?.name} />
+					</CardDescription>
+				)}
 			</CardHeader>
 		</Card>
 	);

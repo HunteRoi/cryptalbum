@@ -18,6 +18,7 @@ import {
 
 export type UserData = {
 	id: string;
+	userId: string;
 	email: string;
 	name: string;
 	deviceName: string;
@@ -43,7 +44,7 @@ export default function UserDataProvider({
 			const { id, email, symmetricalKey, userId, ...encryptedValues } =
 				session.user;
 
-			void userId;
+			userId;
 
 			const decipheredSymmetricalKey = await decryptFormValue(
 				symmetricalKey,
@@ -65,6 +66,7 @@ export default function UserDataProvider({
 
 			setUserData({
 				id,
+				userId,
 				email,
 				name: decipheredValues.find(([key]) => key === "name")?.[1] ?? "",
 				deviceName:

@@ -31,6 +31,7 @@ export const getAlbum = protectedProcedure
 				name: true,
 				description: true,
 				metadata: false,
+				userId: true,
 				shareds: {
 					select: {
 						key: true,
@@ -55,5 +56,6 @@ export const getAlbum = protectedProcedure
 			name: album.name,
 			description: album.description,
 			encryptionKey: album.shareds[0].key,
+			userId: album.userId,
 		};
 	});
