@@ -9,6 +9,20 @@ export const getSharedKeys = protectedProcedure.query(async ({ ctx }) => {
 		where: {
 			userId: ctx.session.userId,
 			deviceId: ctx.session.user.id,
+			OR: [
+				{
+					photoId: {
+						not: null,
+					},
+					albumId: null,
+				},
+				{
+					photoId: null,
+					albumId: {
+						not: null,
+					},
+				},
+			],
 		},
 		select: {
 			id: true,

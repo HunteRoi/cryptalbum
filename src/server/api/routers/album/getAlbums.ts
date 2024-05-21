@@ -25,6 +25,7 @@ export const getAlbums = protectedProcedure.query(async ({ ctx }) => {
 					key: true,
 				},
 				where: {
+					photoId: null,
 					userId: ctx.session.userId,
 					deviceId: ctx.session.user.id,
 				},

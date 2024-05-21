@@ -22,6 +22,7 @@ export const getAlbum = protectedProcedure
 				id: albumId,
 				shareds: {
 					some: {
+						photoId: null,
 						userId: ctx.session.userId,
 					},
 				},
@@ -37,6 +38,7 @@ export const getAlbum = protectedProcedure
 						key: true,
 					},
 					where: {
+						photoId: null,
 						userId: ctx.session.userId,
 						deviceId: ctx.session.user.id,
 					},
