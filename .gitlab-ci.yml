@@ -12,7 +12,7 @@ convert_to_pdf:
     - sh ./docs/merge.sh $GROUP_NAME
     - mv ./docs/output/document.pdf ./docs/output/rapport.pdf
   artifacts:
-    expose_as: 'Rapport $GROUP_NAME'
+    expose_as: 'Rapport_$GROUP_NAME'
     paths:
       - ./docs/output/rapport.pdf
     expire_in: 30 days
