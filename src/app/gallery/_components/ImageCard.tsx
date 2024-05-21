@@ -29,7 +29,11 @@ type ImageCardState = {
 	path: string;
 };
 
-export default function ImageCard({ image }: ImageInProps) {
+type ImageCardProps = ImageInProps & {
+	inAlbum?: boolean;
+};
+
+export default function ImageCard({ image, inAlbum = false }: ImageCardProps) {
 	const [imageState, setImageState] = useState<ImageCardState | null>(null);
 	const userData = useUserData();
 	const { data: encryptedImageContent } = api.image.getImageContent.useQuery(
@@ -99,7 +103,11 @@ export default function ImageCard({ image }: ImageInProps) {
 					<CardDescription>
 						<ImageDeletionDialog image={image} name={imageState?.name} />{" "}
 						<ImageUpdateDialog image={image} name={imageState?.name} />{" "}
-						<ImageSharingDialog image={image} name={imageState?.name} />
+						{!inAlbum && (
+							<>
+								<ImageSharingDialog image={image} name={imageState?.name} />
+							</>
+						)}
 					</CardDescription>
 				)}
 			</CardHeader>

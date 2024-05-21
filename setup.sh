@@ -17,12 +17,15 @@ function introduction() {
   echo "Checking for required software..."
   if ! command -v docker &> /dev/null
   then
-      exit_with_message_and_error "${Red}Docker${NC} could not be found. Please install Docker and try again." 1
+      curl -fsSL https://get.docker.com -o get-docker.sh
+      sudo sh get-docker.sh
+      rm get-docker.sh
   fi
 
   if ! command -v docker-compose &> /dev/null
   then
-      exit_with_message_and_error "${Red}Docker Compose${NC} could not be found. Please install Docker Compose and try again." 1
+      sudo apt-get update
+      sudo apt-get install -y docker-compose
   fi
 
   echo "Required software found."

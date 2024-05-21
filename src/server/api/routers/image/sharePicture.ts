@@ -73,6 +73,14 @@ export const sharePicture = protectedProcedure
 			});
 		}
 
+		if (image.albumId) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message:
+					"You are not allowed to share an image that belongs to an album",
+			});
+		}
+
 		if (image.shareds.some((shared) => shared.userId === user.id)) {
 			throw new TRPCError({
 				code: "FORBIDDEN",
