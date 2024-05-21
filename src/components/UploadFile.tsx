@@ -176,13 +176,11 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 					deviceId: string;
 				}[];
 				imageName: string;
-				requestDate: Date;
 				album?: { id: string; symmetricalKey: string };
 			} = {
 				image: arrayBufferToHex(encryptedFile),
 				symmetricalKeysWithDevice,
 				imageName: encryptedFileName,
-				requestDate: new Date(),
 			};
 
 			const album = albumList?.find((album) => album.id === selectedAlbumId);
@@ -207,6 +205,7 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 			await uploadMutation.mutateAsync({
 				metadata: {
 					requestSize: JSON.stringify(payload).length,
+					requestDate: new Date(),
 				},
 				payload,
 			});

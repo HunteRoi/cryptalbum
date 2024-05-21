@@ -11,7 +11,6 @@ export const upload = protectedProcedure
 			payload: z.object({
 				image: z.string(),
 				imageName: z.string(),
-				requestDate: z.date(),
 				symmetricalKeysWithDevice: z.array(
 					z.object({
 						deviceId: z.string(),
@@ -26,6 +25,7 @@ export const upload = protectedProcedure
 					.optional(),
 			}),
 			metadata: z.object({
+				requestDate: z.date(),
 				requestSize: z.number().gt(0),
 			}),
 		}),
