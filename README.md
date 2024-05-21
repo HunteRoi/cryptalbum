@@ -29,6 +29,9 @@ photos safely to share to your friends and family.
 
 It is recommended to read the [documentation](./docs/) for more insight on the topic.
 
+If you want the **PDF** version of the documentation, please head to [the artifacts section](/-/artifacts).
+You can also download the latest artifact [by clicking here](/-/jobs/artifacts/nivelling/download?job=convert_to_pdf).
+
 ## Getting Started
 
 ### Prerequisites
