@@ -20,8 +20,7 @@
 
 ## Overview
 
-CryptAlbum is an end-to-end encrypted gallery of photos. You can access it from any device you want and store your
-photos safely to share to your friends and family.
+CryptAlbum is an end-to-end encrypted gallery of photos. You can access it from any device you want and store your photos safely to share to your friends and family.
 
 ![overview gif][./docs/assets/overview.gif]
 
@@ -29,52 +28,66 @@ photos safely to share to your friends and family.
 
 It is recommended to read the [documentation](./docs/) for more insight on the topic.
 
-If you want the **PDF** version of the documentation, please head to [the artifacts section](/-/artifacts).
-You can also download the latest artifact [by clicking here](/-/jobs/artifacts/nivelling/download?job=convert_to_pdf).
-
-## Installation
-
-The first step is basically to clone the repository (`git clone`). Once this is done, you have to go into this directory. You will see `setup.sh`
-1. Type this commande `./setup.sh` : All the requirement will be installed if required.
-2. The script will ask you to add the following lines into your `/etc/host`. You will have to enter `y`.
-    - `127.0.0.1 host.docker.internal`
-    - `127.0.0.1 seq.local`
-    - `127.0.0.1 minio.local`
-    - `127.0.0.1 cryptalbum.local`
-3. You will have to enter credentials for Minio. You will need them a bit later for the configuration.
-4. Select your username for Postgres.
-5. After few seconds, you will be asked the `Minio access key` and `Minio secret key`. You will have to open your browser to `https://minio.local/access-keys`. On this website, you will have to enter credentials from step 3. Press the button `Create access key` and then the button `Create`. Afterwards, your `Access Key` and `Secret Key` will be shown to you. Don't forget to get a copy of it !
-6. You will be asked the `Seq API key` and this time, you will need to go to `https://seq.local/#/settings/api-keys` and press the button `ADD API KEY`. For basic installation, you just have to add a `title` and press `Save Changes`. You will get a popup with your key.
-7. Everything is setup and everything will build up ! It will take few minutes to finish.
-8. Once it is done, you will be able to access `https://cryptalbum.local/`
+**If you want the PDF version of the docs, you can download the latest one [by clicking here](/-/jobs/artifacts/nivelling/download?job=convert_to_pdf).**
+If needed, you can also head to [the artifacts section](/-/artifacts) to view all previous versions.
 
 ## Getting Started
 
-### Prerequisites
+The first step is basically to clone the repository (`git clone`). Once this is done, you have a few configuration steps to achieve.
 
-The first step is basically to clone the repository (`git clone`). Once this is done, you have a few configuration steps
-to achieve.
+### Production
 
-1. Install and start Docker (you can use [Docker Desktop](https://www.docker.com/products/docker-desktop/) if you are on
-   Windows).
+Whenever it is to execute it on your own machine or on a server, for production, we recommend that you execute the setup script with the command `./setup.sh`.
 
-2. Type `cp .minio.env.example .minio.env` to create a `.minio.env` file from the [example](.env.minio.example)
-   available on the repo **and update the keys accordingly**:
-  - `MINIO_ROOT_USER` is the account's name ;
-  - `MINIO_ROOT_PASSWORD` is the account's password.
+The script will lead you through a few steps described herebelow.
+The main purpose is for all the require dependencies and packages to be installed if not already present on your machine.
+You will also be prompted to enter credentials for Minio and PostgreSQL. Those will be used to configure your environment.
 
-1. Type `cp .postgres.env.example .postgres.env` to create a `.postgres.env` file from
-   the [example](.env.postgres.example) available on the repo **and update the keys accordingly**:
-  - `POSTGRES_USER` is the database user name ;
-  - `POSTGRES_PASSWORD` is the database user's password ;
-  - `POSTGRES_DB` is the database name.
+1. The script will ask you if you agree to update your `/etc/host`. This action is to append the redirections from the following local domains:
 
-2. Type `cp .env.example .env` to create a `.env` file from the [example](.env.example) available on the repository *
-   *and update the keys accordingly**.
+   - `127.0.0.1 host.docker.internal`
+   - `127.0.0.1 seq.local`
+   - `127.0.0.1 minio.local`
+   - `127.0.0.1 cryptalbum.local`
 
-3. Run the [docker-compose](./docker-compose.yml) script to build all the containers needed for the application to run.
+2. You will also be asked for the `Minio Access Key` and `Minio Secret Key`.
 
-#### Development
+   - Open your browser to [https://minio.local/access-keys](https://minio.local/access-keys).
+   - You will have to authenticate with the credentials you provided to the script.
+   - Press the button `Create access key` and then the button `Create`.
+   - Afterwards, your `Access Key` and `Secret Key` will be shown to you. **Don't forget to copy it!**
+
+3. You will then be asked the `Seq API key`.
+
+   - This time, head over to [https://seq.local/#/settings/api-keys](https://seq.local/#/settings/api-keys).
+   - Press the button `ADD API KEY`.
+   - For basic installation, you just have to add a `title` and press `Save Changes`.
+   - You will get a popup with your key. **Don't forget to copy it!**
+
+4. Everything is setup and the app will now compile! It might take some time, better get some tea or coffee in the meantime 🍵
+
+5. Once available, you can access the website on [https://cryptalbum.local/](https://cryptalbum.local/).
+
+### Development
+
+#### Prerequisites
+
+1. Install and start Docker (you can use [Docker Desktop](https://www.docker.com/products/docker-desktop/) if you are on Windows).
+
+2. Type `cp .minio.env.example .minio.env` to create a `.minio.env` file from the [example](.env.minio.example) available on the repo **and update the keys accordingly**:
+
+   - `MINIO_ROOT_USER` is the account's name ;
+   - `MINIO_ROOT_PASSWORD` is the account's password.
+
+3. Type `cp .postgres.env.example .postgres.env` to create a `.postgres.env` file from the [example](.env.postgres.example) available on the repo **and update the keys accordingly**:
+
+   - `POSTGRES_USER` is the database user name ;
+   - `POSTGRES_PASSWORD` is the database user's password ;
+   - `POSTGRES_DB` is the database name.
+
+4. Type `cp .env.example .env` to create a `.env` file from the [example](.env.example) available on the repository **and update the keys accordingly**.
+
+5. Run the [docker-compose](./docker-compose.yml) script to build all the containers needed for the application to run.
 
 In a development phase, you will need to set the following keys:
 <!-- TABLE -->
@@ -97,19 +110,16 @@ In a development phase, you will need to set the following keys:
 
 <!-- END TABLE -->
 
-You will then need to execute the following steps:
+You will then need to follow these steps:
 
 1. Download the dependencies with `yarn install`.
-
 2. Push the database schema with `yarn db:push`.
-
 3. Run the project startup script with `yarn dev`.
 
 ### Contributing
 
 We welcome contributions to this project!
-If you have ideas, suggestions, or bug reports, please open an issue or submit a pull request. Follow these steps to
-contribute:
+If you have ideas, suggestions, or bug reports, please open an issue or submit a pull request. Follow these steps to contribute:
 
 - Fork the repository.
 - Create a new branch for your feature or bugfix.
@@ -132,5 +142,4 @@ The contributors to this project are:
 - [BOLLE Emilien - etu45187](https://github.com/Bollemii)
 - [DEVRESSE Tinaël - etu33784](https://github.com/hunteroi)
 
-A special thank you to [Steven Sermeus](https://github.com/StevenSermeus) for the tips on some questions we had during
-the development phase.
+A special thank you to [Steven Sermeus](https://github.com/StevenSermeus) for the tips on some questions we had during the development phase.
