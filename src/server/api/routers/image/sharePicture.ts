@@ -66,6 +66,13 @@ export const sharePicture = protectedProcedure
 			});
 		}
 
+		if (image.userId === user.id) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "You are not allowed to share an image with yourself",
+			});
+		}
+
 		if (image.shareds.some((shared) => shared.userId === user.id)) {
 			throw new TRPCError({
 				code: "FORBIDDEN",

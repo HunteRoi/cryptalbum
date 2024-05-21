@@ -63,6 +63,13 @@ export const shareAlbum = protectedProcedure
 			});
 		}
 
+		if (user.id === album.userId) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "You are not allowed to share an album with yourself",
+			});
+		}
+
 		if (album.shareds.some((shared) => shared.userId === user.id)) {
 			throw new TRPCError({
 				code: "FORBIDDEN",
