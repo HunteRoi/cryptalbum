@@ -7,14 +7,14 @@ Green='\033[0;32m'        # Green
 Blue='\033[0;34m'         # Blue
 
 function exit_with_message_and_error() {
-    print "${Red}An error occurred : $1. Exiting.${NC}"
+    echo "${Red}An error occurred : $1. Exiting.${NC}"
     exit "$2"
 }
 
 function introduction() {
-  print "This installation script will set up the production environment for the cryptalbum project."
+  echo "This installation script will set up the production environment for the cryptalbum project."
 
-  print "Checking for required software..."
+  echo "Checking for required software..."
   if ! command -v docker &> /dev/null
   then
       exit_with_message_and_error "${Red}Docker${NC} could not be found. Please install Docker and try again." 1
@@ -25,41 +25,49 @@ function introduction() {
       exit_with_message_and_error "${Red}Docker Compose${NC} could not be found. Please install Docker Compose and try again." 1
   fi
 
-  print "Required software found."
+  echo "Required software found."
 
-  print "Setting up the environment..."
+  echo "Setting up the environment..."
+}
+
+function clean_env_files() {
+    echo "Cleaning up environment files..."
+    rm -f .env
+    rm -f .minio.env
+    rm -f .postgres.env
+    echo "Environment files cleaned up."
 }
 
 function set_up_minio_env_vars() {
-    print "Setting up Minio environment variables..."
+    echo "Setting up Minio environment variables..."
 
-    print "Enter the Minio username you want to use:"
+    echo "Enter the Minio username you want to use:"
     read -r MINIO_USERNAME
     while [ -z "$MINIO_USERNAME" ]
     do
-        print "${Red}Username cannot be empty.${NC}"
-        print "Enter the Minio username you want to use:"
+        echo "${Red}Username cannot be empty.${NC}"
+        echo "Enter the Minio username you want to use:"
         read -r MINIO_USERNAME
     done
 
-    print "Enter the Minio password you want to use:"
+    echo "Enter the Minio password you want to use:"
     read -r MINIO_PASSWORD
     while [ -z "$MINIO_PASSWORD" ]
     do
-        print "${Red}Password cannot be empty.${NC}"
-        print "Enter the Minio password you want to use:"
+        echo "${Red}Password cannot be empty.${NC}"
+        echo "Enter the Minio password you want to use:"
         read -r MINIO_PASSWORD
     done
 
     echo "MINIO_USERNAME=$MINIO_USERNAME" >> .minio.env
     echo "MINIO_PASSWORD=$MINIO_PASSWORD" >> .minio.env
 
-    print "Minio environment variables set up."
+    echo "Minio environment variables set up."
 }
 
 function set_up_postgres_env_vars() {
-    print "Setting up Postgres environment variables..."
-    print "Enter the Postgres username you want to use (default: postgres):"
+    echo "Setting up Postgres environment variables..."
+    echo "Enter the Postgres username you want to use (default: postgres):"
     read -r POSTGRES_USERNAME
 
     if [ -z "$POSTGRES_USERNAME" ]
@@ -67,7 +75,7 @@ function set_up_postgres_env_vars() {
         POSTGRES_USERNAME="postgres"
     fi
 
-    print "Generating the Postgres password..."
+    echo "Generating the Postgres password..."
     POSTGRES_PASSWORD=$(openssl rand -base64 32)
 
     {
@@ -78,46 +86,46 @@ function set_up_postgres_env_vars() {
 
     echo "DATABASE_URL=postgres://$POSTGRES_USERNAME:$POSTGRES_PASSWORD@host.docker.internal:5432/cryptalbum" >> .env
 
-    print "Postgres environment variables set up."
-    print "Postgres username: ${Green}$POSTGRES_USERNAME${NC}"
-    print "Postgres password: ${Green}$POSTGRES_PASSWORD${NC}"
+    echo "Postgres environment variables set up."
+    echo "Postgres username: ${Green}$POSTGRES_USERNAME${NC}"
+    echo "Postgres password: ${Green}$POSTGRES_PASSWORD${NC}"
 }
 
 function start_storage_services() {
-    print "Starting storage and database services..."
-    docker-compose -f docker-compose.storage.yml up -d
-    print "Storage services started."
+    echo "Starting storage and database services..."
+    sudo docker-compose -f docker-compose.storage.yml up -d
+    echo "Storage services started."
 }
 
 function generate_next_auth_secrets() {
-    print "Generating NextAuth secret..."
+    echo "Generating NextAuth secret..."
 
     {
         echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)",
         echo "NEXTAUTH_URL=http://cryptalbum.local:3000",
     } >> .env
 
-    print "Secret generated."
+    echo "Secret generated."
 }
 
 function save_minio_data_to_env() {
-    print "Please go to https://minio.local/access-keys and create a new access key."
-    print "Enter the Minio access key you created:"
+    echo "Please go to https://minio.local/access-keys and create a new access key."
+    echo "Enter the Minio access key you created:"
 
     read -r MINIO_ACCESS_KEY
     while [ -z "$MINIO_ACCESS_KEY" ]
     do
-        print "${Red}Access key cannot be empty.${NC}"
-        print "Enter the Minio access key you created:"
+        echo "${Red}Access key cannot be empty.${NC}"
+        echo "Enter the Minio access key you created:"
         read -r MINIO_ACCESS_KEY
     done
 
-    print "Enter the Minio secret key you created:"
+    echo "Enter the Minio secret key you created:"
     read -r MINIO_SECRET_KEY
     while [ -z "$MINIO_SECRET_KEY" ]
     do
-        print "${Red}Secret key cannot be empty.${NC}"
-        print "Enter the Minio secret key you created:"
+        echo "${Red}Secret key cannot be empty.${NC}"
+        echo "Enter the Minio secret key you created:"
         read -r MINIO_SECRET_KEY
     done
 
@@ -130,18 +138,18 @@ function save_minio_data_to_env() {
         echo "MINIO_SECURE=false",
     } >> .env
 
-    print "Minio access and secret keys saved."
+    echo "Minio access and secret keys saved."
 }
 
 function save_seq_data_to_env() {
-    print "Please go to https://seq.local/#/settings/api-keys and create a new API key for the application."
-    print "Enter the Seq API key you created:"
+    echo "Please go to https://seq.local/#/settings/api-keys and create a new API key for the application."
+    echo "Enter the Seq API key you created:"
 
     read -r SEQ_API_KEY
     while [ -z "$SEQ_API_KEY" ]
     do
-        print "${Red}API key cannot be empty.${NC}"
-        print "Enter the Seq API key you created:"
+        echo "${Red}API key cannot be empty.${NC}"
+        echo "Enter the Seq API key you created:"
         read -r SEQ_API_KEY
     done
 
@@ -153,61 +161,63 @@ function save_seq_data_to_env() {
 }
 
 function generate_nginx_certificates() {
-    print "Generating server certificates and registering them as trusted..."
+    echo "Generating server certificates and registering them as trusted..."
     printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/seq.local.key -out nginx/certs/seq.local.crt -config nginx/certs/cryptalbum.conf
     printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/minio.local.key -out nginx/certs/minio.local.crt -config nginx/certs/cryptalbum.conf
     printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/cryptalbum.local.key -out nginx/certs/cryptalbum.local.crt -config nginx/certs/cryptalbum.conf
 
     if ! command -v certutil &> /dev/null
     then
-      print "certutil not found. Skipping registering certificates as trusted."
+      echo "certutil not found. Skipping registering certificates as trusted."
     else
       certutil -d "sql:$HOME/.pki/nssdb" -A -t "P,," -n "localhost" -i nginx/certs/seq.local.crt
       certutil -d "sql:$HOME/.pki/nssdb" -A -t "P,," -n "localhost" -i nginx/certs/minio.local.crt
       certutil -d "sql:$HOME/.pki/nssdb" -A -t "P,," -n "localhost" -i nginx/certs/cryptalbum.local.crt
     fi
-    print "Certificates generated."
+    echo "Certificates generated."
 }
 
 function start_app_container() {
-    print "Starting the application..."
-    docker-compose -f docker-compose.app.yml up -d --build
-    print "Application started."
+    echo "Starting the application..."
+    sudo docker-compose -f docker-compose.app.yml up -d --build
+    echo "Application started."
 }
 
 function add_to_hosts() {
-    print "In order to use the application correctly, you need to add the following line to your hosts file:"
-    print "${Green}127.0.0.1 host.docker.internal${NC}"
-    print "${Green}127.0.0.1 seq.local${NC}"
-    print "${Green}127.0.0.1 minio.local${NC}"
-    print "${Green}127.0.0.1 cryptalbum.local${NC}"
-    print ""
-    print "Do you want this script to add the lines to your hosts file? (y/n)"
+    echo "In order to use the application correctly, you need to add the following line to your hosts file:"
+    echo "${Green}127.0.0.1 host.docker.internal${NC}"
+    echo "${Green}127.0.0.1 seq.local${NC}"
+    echo "${Green}127.0.0.1 minio.local${NC}"
+    echo "${Green}127.0.0.1 cryptalbum.local${NC}"
+    echo ""
+    echo "Do you want this script to add the lines to your hosts file? (y/n)"
     read -r ADD_TO_HOSTS
 
     while [ "$ADD_TO_HOSTS" != "y" ] && [ "$ADD_TO_HOSTS" != "n" ]
     do
-        print "${Red}Invalid input.${NC}"
-        print "Do you want this script to add the line to your hosts file? (y/n)"
+        echo "${Red}Invalid input.${NC}"
+        echo "Do you want this script to add the line to your hosts file? (y/n)"
         read -r ADD_TO_HOSTS
     done
 
     if [ "$ADD_TO_HOSTS" == "y" ]
     then
-        print "${Blue}Adding the line to the hosts file...${NC}"
+        echo "${Blue}Adding the line to the hosts file...${NC}"
+        echo "127.0.0.1 host.docker.internal" | sudo tee -a /etc/hosts
         echo "127.0.0.1 seq.local" | sudo tee -a /etc/hosts
         echo "127.0.0.1 minio.local" | sudo tee -a /etc/hosts
         echo "127.0.0.1 cryptalbum.local" | sudo tee -a /etc/hosts
-        print "${Green}Lines added.${NC}"
+        echo "${Green}Lines added.${NC}"
     fi
 }
 
 function finish() {
-    print "The setup is complete. Exiting."
+    echo "The setup is complete. Exiting."
 }
 
 introduction
 add_to_hosts
+clean_env_files
 set_up_minio_env_vars
 set_up_postgres_env_vars
 start_storage_services
