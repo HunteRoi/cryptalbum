@@ -26,8 +26,8 @@ CryptAlbum is an end-to-end encrypted gallery of photos. You can access it from 
 ## How it works
 It is recommended to read the [documentation](./docs/) for more insight on the topic.
 
-**If you want the PDF version of the docs, you can download the latest one [by clicking here](../-/jobs/artifacts/download?job=convert_to_pdf).**
-If needed, you can also head to [the artifacts section](../-/artifacts) to view all previous versions.
+**If you want the PDF version of the docs, you can download the latest one [by clicking here](../-/jobs/artifacts/main/download?job=convert_to_pdf).**
+If needed, you can also head to [the artifacts section](../../../-/main/artifacts) to view all previous versions.
 
 ## Getting Started
 The first step is basically to clone the repository (`git clone`). Once this is done, you have a few configuration steps to achieve.
