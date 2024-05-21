@@ -165,11 +165,18 @@ function save_seq_data_to_env() {
     echo "Seq API key saved."
 }
 
+function generate_certificate_for() {
+    echo "Generating a certificate for $1..."
+    printf "\n\n\n\n\n%s\n" "$1" | openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout nginx/certs/$1.key -out nginx/certs/$1.crt -config nginx/certs/cryptalbum.conf &> /dev/null
+    echo "Certificate generated."
+}
+
 function generate_nginx_certificates() {
     echo "Generating server certificates and registering them as trusted..."
-    printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/seq.local.key -out nginx/certs/seq.local.crt -config nginx/certs/cryptalbum.conf &> /dev/null
-    printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/minio.local.key -out nginx/certs/minio.local.crt -config nginx/certs/cryptalbum.conf &> /dev/null
-    printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/cryptalbum.local.key -out nginx/certs/cryptalbum.local.crt -config nginx/certs/cryptalbum.conf &> /dev/null
+
+    generate_certificate_for "seq.local"
+    generate_certificate_for "minio.local"
+    generate_certificate_for "cryptalbum.local"
 
     if ! command -v certutil &> /dev/null
     then
