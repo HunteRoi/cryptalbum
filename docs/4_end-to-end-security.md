@@ -123,7 +123,7 @@ le schéma de la base de données).
 ## Utilisation du reverse proxy Nginx pour TLS
 
 Les clés sont générées avec cette commande : `openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout nginx/certs/SITE.key -out nginx/certs/SITE.crt -config nginx/certs/cryptalbum.conf &> /dev/null`.
-Ces clés sont utilisée pour les sites suivants :
+Ces clés sont utilisées pour les sites suivants :
 - seq.local
 - minio.local
 - cryptalbum.local
