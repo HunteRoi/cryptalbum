@@ -171,6 +171,12 @@ function generate_certificate_for() {
     echo "Certificate generated."
 }
 
+function trust_certificate() {
+    echo "Registering the certificate as trusted..."
+    certutil -d "sql:$HOME/.pki/nssdb" -A -t "P,," -n "localhost" -i "nginx/certs/$1.crt"
+    echo "Certificate registered as trusted."
+}
+
 function generate_nginx_certificates() {
     echo "Generating server certificates and registering them as trusted..."
 
@@ -180,12 +186,20 @@ function generate_nginx_certificates() {
 
     if ! command -v certutil &> /dev/null
     then
-      echo "certutil not found. Skipping registering certificates as trusted."
-    else
-      certutil -d "sql:$HOME/.pki/nssdb" -A -t "P,," -n "localhost" -i nginx/certs/seq.local.crt
-      certutil -d "sql:$HOME/.pki/nssdb" -A -t "P,," -n "localhost" -i nginx/certs/minio.local.crt
-      certutil -d "sql:$HOME/.pki/nssdb" -A -t "P,," -n "localhost" -i nginx/certs/cryptalbum.local.crt
+        echo "certutil not found. ${Blue}Installing it...${NC}"
+
+        if ! command -v apt-get &> /dev/null
+        then
+            exit_with_message_and_error "apt-get not found. Please install certutil manually." 2
+        fi
+
+        sudo apt-get install -y libnss3-tools
     fi
+
+    trust_certificate "seq.local"
+    trust_certificate "minio.local"
+    trust_certificate "cryptalbum.local"
+
     echo "Certificates generated."
 }
 
