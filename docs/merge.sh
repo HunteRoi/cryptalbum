@@ -7,6 +7,12 @@
 # VOUS DEVEZ AVOIR DOCKER INSTALLE SUR VOTRE MACHINE, ET EVIDEMMENT CHANGER LES CHEMINS
 # VERS LES BONS FICHIERS (docs/groupe_X/main.md, docs/groupe_X/5_conclusion.md et le chemin absolu pour le volume Docker)
 
+group_number=$1
+if [ -z "$group_number" ]; then
+  echo "Please provide a group number as an argument (1-3)"
+  exit 1
+fi
+
 if [ ! -d "docs/output" ]; then
   mkdir docs/output
 fi
@@ -20,13 +26,13 @@ if [ -f docs/output/document.md ]; then
 fi
 
 # Find main markdown file and copy it to the output directory
-cp docs/groupe_2/main.md docs/output/document.md
+cp docs/groupe_$group_number/main.md docs/output/document-$group_number.md
 
 # Find and sort all markdown files in the current directory, then concatenate them into the same file
-find docs -maxdepth 1 -name "*.md" -type f | sort | xargs cat >>docs/output/document.md
+find docs -maxdepth 1 -name "*.md" -type f | sort | xargs cat >>docs/output/document-$group_number.md
 
 # Find conclusion markdown file and copy to to the output directory into the same file
-cat docs/groupe_2/5_conclusion.md >>docs/output/document.md
+cat docs/groupe_$group_number/5_conclusion.md >>docs/output/document-$group_number.md
 
 # Copy all images from the images directory to the output directory
 cp -r docs/assets docs/output
