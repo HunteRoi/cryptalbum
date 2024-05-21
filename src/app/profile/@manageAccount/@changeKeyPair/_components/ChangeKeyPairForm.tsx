@@ -16,7 +16,7 @@ import {
 import { Form } from "@cryptalbum/components/ui/form";
 import { useToast } from "@cryptalbum/components/ui/use-toast";
 import {
-	encrypt,
+	encryptFormValue,
 	exportAsymmetricalKey,
 	exportSymmetricalKey,
 	generateAsymmetricalKeyPair,
@@ -41,15 +41,15 @@ export default function ChangeKeyPairForm() {
 		const newKeyPair = await generateAsymmetricalKeyPair();
 		const [newPublicKey, encryptedSymmetricalKey] = await Promise.all([
 			exportAsymmetricalKey(newKeyPair.publicKey),
-			encrypt(
-				newKeyPair.publicKey,
+			encryptFormValue(
 				await exportSymmetricalKey(userData.symmetricalKey),
+				newKeyPair.publicKey,
 			),
 		]);
 
 		await changeDevicePublicKeyMutation.mutateAsync({
 			publicKey: newPublicKey,
-			encryptedSymmetricalKey: btoa(encryptedSymmetricalKey),
+			encryptedSymmetricalKey: encryptedSymmetricalKey,
 		});
 
 		await storeKeyPair(newKeyPair);
