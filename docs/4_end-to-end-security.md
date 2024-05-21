@@ -130,23 +130,30 @@ le schéma de la base de données).
 ## Régénération des clés
 
 Un utilisateur possède toujours la possibilité de régénérer ses clés asymétriques en cas de soucis avec la paire précédente. Pour se faire, celui-ci doit se rendre dans la section `profile` du site et doit cliquer sur le bouton :
+
 ![Bouton régénération de clefs](./assets/key-gen-button.png)
 
 Voici le processus :
+
 1) on déchiffre la clé symétrique de l'utilisateur avec la clé privée actuelle,
 2) on récupère toutes les clés partagées liées à l'appareil courant
 3) on déchiffre les clés partagées avec la clé privée actuelle
-3) on génère une nouvelle paire de clés asymétriques
-4) on chiffre la clé symétrique de l'utilisateur et toutes les clés partagées avec la nouvelle clé publique
-5) on transmet le tout à l'API, avec la nouvelle clé publique de l'appareil
+4) on génère une nouvelle paire de clés asymétriques
+5) on chiffre la clé symétrique de l'utilisateur et toutes les clés partagées avec la nouvelle clé publique
+6) on transmet le tout à l'API, avec la nouvelle clé publique de l'appareil
 
-Voici un diagramme de séquence qui explique son fonctionnement
+Voici un diagramme de séquence qui explique son fonctionnement :
+
 ![Diagramme de séquence de régénération des clés](./assets/seq-diag-reg-key.svg)
 
 ## Utilisation du reverse proxy Nginx pour TLS
 
-Les clés sont générées avec cette commande : `openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout nginx/certs/SITE.key -out nginx/certs/SITE.crt -config nginx/certs/cryptalbum.conf &> /dev/null`.
+Les clés sont générées avec cette commande :
+
+`openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout nginx/certs/SITE.key -out nginx/certs/SITE.crt -config nginx/certs/cryptalbum.conf &> /dev/null`.
+
 Ces clés sont utilisées pour les sites suivants :
+
 - seq.local
 - minio.local
 - cryptalbum.local
