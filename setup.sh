@@ -105,7 +105,7 @@ function generate_next_auth_secrets() {
 
     {
         echo "NEXTAUTH_SECRET=$(openssl rand -base64 32)"
-        echo "NEXTAUTH_URL=http://cryptalbum.local:3000"
+        echo "NEXTAUTH_URL=https://cryptalbum.local"
     } >> .env
 
     echo "Secret generated."
