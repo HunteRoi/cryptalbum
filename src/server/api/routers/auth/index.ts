@@ -6,6 +6,7 @@ import { createDevice } from "./createDevice";
 import { deleteDevice } from "./deleteDevice";
 import { deleteUser } from "./deleteUser";
 import { generateChallenge } from "./generateChallenge";
+import { getSharedKeys } from "./getSharedKeys";
 import { getUserDevices } from "./getUserDevices";
 import { listTrustedDevices } from "./listTrustedDevices";
 import { listUntrustedDevices } from "./listUntrustedDevices";
@@ -25,4 +26,5 @@ export const authRouter = createTRPCRouter({
 	checkActivity,
 	getUserDevices,
 	whoami,
+	getSharedKeys,
 });

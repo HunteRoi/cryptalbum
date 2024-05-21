@@ -16,6 +16,8 @@ import {
 import { Form } from "@cryptalbum/components/ui/form";
 import { useToast } from "@cryptalbum/components/ui/use-toast";
 import {
+	decrypt,
+	encrypt,
 	encryptFormValue,
 	exportAsymmetricalKey,
 	exportSymmetricalKey,
@@ -29,6 +31,7 @@ export default function ChangeKeyPairForm() {
 	const userData = useUserData()!;
 	const { toast } = useToast();
 	const form = useForm();
+	const trpcUtils = api.useUtils();
 	const changeDevicePublicKeyMutation =
 		api.auth.changeDevicePublicKey.useMutation();
 
@@ -38,18 +41,30 @@ export default function ChangeKeyPairForm() {
 			return;
 		}
 
+		const sharedKeys = await trpcUtils.auth.getSharedKeys.fetch();
 		const newKeyPair = await generateAsymmetricalKeyPair();
-		const [newPublicKey, encryptedSymmetricalKey] = await Promise.all([
-			exportAsymmetricalKey(newKeyPair.publicKey),
-			encryptFormValue(
-				await exportSymmetricalKey(userData.symmetricalKey),
-				newKeyPair.publicKey,
-			),
-		]);
+		const [newPublicKey, encryptedSymmetricalKey, ...updatedSharedKeys] =
+			await Promise.all([
+				exportAsymmetricalKey(newKeyPair.publicKey),
+				encryptFormValue(
+					await exportSymmetricalKey(userData.symmetricalKey),
+					newKeyPair.publicKey,
+				),
+				...sharedKeys.map(async ({ id, key }) => {
+					return {
+						id,
+						newKey: await encrypt(
+							newKeyPair.publicKey,
+							await decrypt(keyPair.privateKey, Buffer.from(key, "hex")),
+						),
+					};
+				}),
+			]);
 
 		await changeDevicePublicKeyMutation.mutateAsync({
 			publicKey: newPublicKey,
 			encryptedSymmetricalKey: encryptedSymmetricalKey,
+			updatedSharedKeys,
 		});
 
 		await storeKeyPair(newKeyPair);
