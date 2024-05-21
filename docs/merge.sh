@@ -31,4 +31,4 @@ cat docs/groupe_2/5_conclusion.md >>docs/output/document.md
 # Copy all images from the images directory to the output directory
 cp -r docs/assets docs/output
 
-docker run -v //h/git/Henallux/cryptalbum/docs/output:/data mfreeze/pandoc-iesn:mermaid-latest -p xelatex -m -l -M -e -N -I -i pdf document.md
+docker run -v //c/Users/artsl/Documents/cryptalbum/docs/output:/data mfreeze/pandoc-iesn:mermaid-latest -p xelatex -m -l -M -e -N -I -i pdf document.md

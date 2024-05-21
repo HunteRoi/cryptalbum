@@ -43,7 +43,7 @@ L'autre appareil possède donc un accès aux mêmes données que l'appareil prin
 
 Voici un schéma représentant les différents échanges:
 
-![Schéma d'échange des clés](./assets/mermaid-diagram-2024-05-21-004017.png)
+![Schéma d'échange des clés](./assets/PAKOEN~1.SVG)
 
 ## Chiffrement d'une image
 Lors de la création d'une image, une clé symétrique pour l'image est créée afin de chiffrer les informations sensibles telles que:
