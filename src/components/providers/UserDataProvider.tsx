@@ -44,8 +44,6 @@ export default function UserDataProvider({
 			const { id, email, symmetricalKey, userId, ...encryptedValues } =
 				session.user;
 
-			userId;
-
 			const decipheredSymmetricalKey = await decryptFormValue(
 				symmetricalKey,
 				keyPair.privateKey,
