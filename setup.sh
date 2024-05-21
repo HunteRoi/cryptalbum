@@ -59,8 +59,8 @@ function set_up_minio_env_vars() {
         read -r MINIO_PASSWORD
     done
 
-    echo "MINIO_USERNAME=$MINIO_USERNAME" >> .minio.env
-    echo "MINIO_PASSWORD=$MINIO_PASSWORD" >> .minio.env
+    echo "MINIO_ROOT_USER=$MINIO_USERNAME" >> .minio.env
+    echo "MINIO_ROOT_PASSWORD=$MINIO_PASSWORD" >> .minio.env
 
     echo "Minio environment variables set up."
 }
@@ -162,9 +162,9 @@ function save_seq_data_to_env() {
 
 function generate_nginx_certificates() {
     echo "Generating server certificates and registering them as trusted..."
-    printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/seq.local.key -out nginx/certs/seq.local.crt -config nginx/certs/cryptalbum.conf
-    printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/minio.local.key -out nginx/certs/minio.local.crt -config nginx/certs/cryptalbum.conf
-    printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/cryptalbum.local.key -out nginx/certs/cryptalbum.local.crt -config nginx/certs/cryptalbum.conf
+    printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/seq.local.key -out nginx/certs/seq.local.crt -config nginx/certs/cryptalbum.conf &> /dev/null
+    printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/minio.local.key -out nginx/certs/minio.local.crt -config nginx/certs/cryptalbum.conf &> /dev/null
+    printf "\n\n\n\n\n\n" | openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx/certs/cryptalbum.local.key -out nginx/certs/cryptalbum.local.crt -config nginx/certs/cryptalbum.conf &> /dev/null
 
     if ! command -v certutil &> /dev/null
     then
@@ -218,12 +218,12 @@ function finish() {
 introduction
 add_to_hosts
 clean_env_files
+generate_nginx_certificates
 set_up_minio_env_vars
 set_up_postgres_env_vars
 start_storage_services
 generate_next_auth_secrets
 save_minio_data_to_env
 save_seq_data_to_env
-generate_nginx_certificates
 start_app_container
 finish
