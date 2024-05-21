@@ -22,7 +22,7 @@ export default function AlbumSharingDialog({ album }: AlbumInProps) {
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Share ${album.name}</DialogTitle>
+					<DialogTitle>Share {album.name}</DialogTitle>
 					<DialogDescription>
 						Share your album with someone else by typing their email address.
 					</DialogDescription>
