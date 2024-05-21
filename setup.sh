@@ -186,7 +186,7 @@ function generate_nginx_certificates() {
 
     if ! command -v certutil &> /dev/null
     then
-        echo "certutil not found. ${Blue}Installing it...${NC}"
+        echo -e "certutil not found. ${Blue}Installing it...${NC}"
 
         if ! command -v apt-get &> /dev/null
         then
