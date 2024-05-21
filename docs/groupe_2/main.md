@@ -1,5 +1,5 @@
 ---
-title: "Rapport de conception de CryptAlbum"
+title: "Rapport de conception du projet de Sécurité des Applications - CryptAlbum"
 author:
   - ARTS Loïck
   - DEVRESSE Tinaël
