@@ -23,6 +23,7 @@ const nonRenderableActions = [
 	"GET_IMAGE_FILE",
 	"LIST_TRUSTED_DEVICES",
 	"GET_USER_ALBUMS",
+	"GET_ALBUM_IMAGES",
 	"DELETE_USER",
 	"DELETE_ALBUM",
 ] as const;

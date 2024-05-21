@@ -20,20 +20,13 @@ type ImageWithAtLeastOneSharedKey = Extended<
 export const getAlbumImages = protectedProcedure
 	.input(z.string())
 	.query(async ({ ctx, input: albumId }) => {
-		const logger = ctx.logWrapper.enrichWithAction("GET_USER_IMAGES").create();
+		const logger = ctx.logWrapper.enrichWithAction("GET_ALBUM_IMAGES").create();
 
 		logger.info("Fetching images from album");
 
 		const images = await ctx.db.picture.findMany({
 			where: {
 				albumId: albumId,
-				shareds: {
-					some: {
-						userId: ctx.session.userId,
-						deviceId: ctx.session.user.id,
-						albumId: albumId,
-					},
-				},
 			},
 			select: {
 				id: true,
@@ -45,8 +38,16 @@ export const getAlbumImages = protectedProcedure
 						key: true,
 					},
 					where: {
-						deviceId: ctx.session.user.id,
-						albumId: albumId,
+						album: {
+							id: albumId,
+							shareds: {
+								some: {
+									device: {
+										id: ctx.session.user.id,
+									},
+								},
+							},
+						},
 					},
 				},
 			},

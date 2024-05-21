@@ -30,15 +30,16 @@ type ImageCardState = {
 };
 
 type ImageCardProps = ImageInProps & {
-	inAlbum?: boolean;
+	albumId?: string;
 };
 
-export default function ImageCard({ image, inAlbum = false }: ImageCardProps) {
+export default function ImageCard({ image, albumId }: ImageCardProps) {
 	const [imageState, setImageState] = useState<ImageCardState | null>(null);
 	const userData = useUserData();
-	const { data: encryptedImageContent } = api.image.getImageContent.useQuery(
-		image.id,
-	);
+	const { data: encryptedImageContent } = api.image.getImageContent.useQuery({
+		imageId: image.id,
+		albumId,
+	});
 
 	const decipheredData = useCallback(async () => {
 		const keyPair = await loadKeyPair();
@@ -102,7 +103,7 @@ export default function ImageCard({ image, inAlbum = false }: ImageCardProps) {
 				{image.userId === userData?.userId && (
 					<CardDescription>
 						<ImageUpdateDialog image={image} name={imageState?.name} />{" "}
-						{!inAlbum && (
+						{!albumId && (
 							<>
 								<ImageSharingDialog
 									image={image}

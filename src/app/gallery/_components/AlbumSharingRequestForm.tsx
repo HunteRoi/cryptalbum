@@ -67,7 +67,7 @@ export default function AlbumSharingRequestForm({ album }: AlbumInProps) {
 				Buffer.from(album.encryptionKey, "hex"),
 			);
 
-			const symKeyEncryptedWithDevicesKey = await Promise.all(
+			const albumSymKeyEncryptedWithDevicesKey = await Promise.all(
 				userDevices.map(async (device) => {
 					const devicePublicKey = await importRsaPublicKey(device.publicKey);
 					const encryptedSymKey = await encrypt(
@@ -80,7 +80,7 @@ export default function AlbumSharingRequestForm({ album }: AlbumInProps) {
 
 			await shareAlbumMutation.mutateAsync({
 				albumId: album.id,
-				symmetricalKeys: symKeyEncryptedWithDevicesKey,
+				symmetricalKeys: albumSymKeyEncryptedWithDevicesKey,
 				email,
 			});
 

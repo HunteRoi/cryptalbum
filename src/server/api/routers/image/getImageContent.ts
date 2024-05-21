@@ -5,8 +5,13 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const getImageContent = protectedProcedure
-	.input(z.string())
-	.query(async ({ ctx, input: imageId }) => {
+	.input(
+		z.object({
+			imageId: z.string(),
+			albumId: z.string().optional(),
+		}),
+	)
+	.query(async ({ ctx, input: { imageId, albumId } }) => {
 		const logger = ctx.logWrapper.enrichWithAction("GET_IMAGE_FILE").create();
 
 		logger.info("Fetching image {imageId}", imageId);
@@ -14,9 +19,17 @@ export const getImageContent = protectedProcedure
 		const picture = await ctx.db.picture.findFirst({
 			where: {
 				id: imageId,
+				albumId: albumId,
 				shareds: {
 					some: {
-						userId: ctx.session.userId,
+						OR: [
+							{
+								userId: ctx.session.userId,
+							},
+							{
+								albumId: albumId,
+							},
+						],
 					},
 				},
 			},

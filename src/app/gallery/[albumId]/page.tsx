@@ -178,7 +178,7 @@ export default function AlbumPage() {
 			</CardHeader>
 			<CardContent className="flex flex-row flex-wrap">
 				{albumState?.images.map((image) => (
-					<ImageCard key={image.id} image={image} inAlbum />
+					<ImageCard key={image.id} image={image} albumId={albumId} />
 				))}
 			</CardContent>
 			{!images?.length && <CardFooter>No images found</CardFooter>}
