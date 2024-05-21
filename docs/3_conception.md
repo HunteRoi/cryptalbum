@@ -13,6 +13,7 @@ Chaque service externe représente un serveur à part, dont on a pas confiance. 
 ## Technologies
 
 Le projet a été démarré au moyen d'une stack technologique appelée "T3 App". Celle-ci inclut:
+
 - NextJS comme framework de gestion front et back ;
 - TypeScript comme language de développement ;
 - Prisma comme ORM ;
@@ -21,6 +22,7 @@ Le projet a été démarré au moyen d'une stack technologique appelée "T3 App"
 - TailWind CSS comme framework CSS.
 
 Nous employons également des services externes, comme mentionné plus tôt dans l'architecture système. Ces services sont:
+
 - Minio pour le stockage de fichiers (dans notre cas des images) ;
 - PostgreSQL pour le stockage de données (dans notre cas, l'ensemble des informations chiffrées par les clients, comme les noms d'images, d'albums, etc.) ;
 - Seq pour le stockage et l'analyse des logs.

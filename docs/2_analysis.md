@@ -21,10 +21,13 @@ Les besoins suivants sont le résultat d'une analyse approfondie des demandes cl
 - Un **utilisateur** peut **se connecter depuis différents appareils**.
 
 - Un **utilisateur** peut **créer un album** avec un nom et des métadonnées (description et partage à d'autres utilisateurs).
+
 NB: il en est considéré le propriétaire
 
 - Un **utilisateur** peut **téléverser une image** avec un nom et des métadonnées (description et partage à d'autres utilisateurs).
+
 NB: il en est considéré le propriétaire
+
 NB2: les images peuvent être téléversées dans un album si l'utilisateur en est le propriétaire, ou en "standalone" (pas dans un album)
 
 - Un **utilisateur** peut **voir les photos** dont il est **propriétaire**.
@@ -36,6 +39,7 @@ NB2: les images peuvent être téléversées dans un album si l'utilisateur en e
   - en partageant directement la photo (qu'elle soit ou non au sein d'un album).
 
 - Un **utilisateur** peut **__voir__ les photos** qui lui ont été **partagées**.
+
 NB: c'est une visibilité read-only, il n'a pas le droit de modifier ces photos.
 
 ### Besoins techniques

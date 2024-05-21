@@ -9,7 +9,8 @@ Il est important de noter que toute information qui quitte l'appareil de l'utili
 Pour rappel, nous n'avons pas confiance en celui-ci.
 
 ## Chiffrement
-Les données de l'utilisateur qui sont chiffrées sont :
+Les données de l'utilisateur qui sont chiffrées sont:
+
 - le nom de l'utilisateur, ainsi que
 - le nom de l'appareil.
 
@@ -46,16 +47,20 @@ Voici un schéma représentant les différents échanges:
 
 ## Chiffrement d'une image
 Lors de la création d'une image, une clé symétrique pour l'image est créée afin de chiffrer les informations sensibles telles que:
+
 - le nom, et
 - l'image en elle-même.
+
 Cette clé symétrique est ensuite chiffrée avec la clé publique de l'appareil.
 
 ## Chiffrement d'un album
 La création d'un album est sensiblement la même chose que lors de la création d'une image.
 
 En effet, lors de sa création, une clé symétrique est générée afin de chiffrer les informations de l'album telles que:
+
 - son nom, et
 - ses informations.
+
 Mais cette clé est aussi utilisée pour chiffrer la clé symétrique des images qu'il contient.
 
 ## Ajout d'une image dans un album
