@@ -119,3 +119,5 @@ Le résultat est un tableau de clés chiffrées qu'on ajoute comme clés partag�
 le schéma de la base de données).
 
 ## Régénération des clés
+
+## Utilisation du reverse proxy Nginx pour TLS
