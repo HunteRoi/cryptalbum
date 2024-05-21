@@ -87,7 +87,7 @@ function set_up_postgres_env_vars() {
         echo "POSTGRES_DB=cryptalbum"
     } >> .postgres.env
 
-    echo "DATABASE_URL=postgres://$POSTGRES_USERNAME:$POSTGRES_PASSWORD@host.docker.internal:5432/cryptalbum" >> .env
+    echo "DATABASE_URL=postgres://$POSTGRES_USERNAME:$POSTGRES_PASSWORD@172.17.0.1:5432/cryptalbum" >> .env
 
     echo "Postgres environment variables set up."
     #echo -e "Postgres username: ${Green}$POSTGRES_USERNAME${NC}"
@@ -135,7 +135,7 @@ function save_minio_data_to_env() {
     {
         echo "MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY"
         echo "MINIO_SECRET_KEY=$MINIO_SECRET_KEY"
-        echo "MINIO_ENDPOINT=host.docker.internal"
+        echo "MINIO_ENDPOINT=172.17.0.1"
         echo "MINIO_PORT=9000"
         echo "MINIO_BUCKET=cryptalbum"
         echo "MINIO_SECURE=false"
@@ -157,7 +157,7 @@ function save_seq_data_to_env() {
     done
 
     {
-        echo "SEQ_URL=http://host.docker.internal:5341"
+        echo "SEQ_URL=http://172.17.0.1:5341"
         echo "SEQ_API_KEY=$SEQ_API_KEY"
         echo "SERVER_LOG_SECRET_KEY=$(openssl rand -base64 64 | tr -d '\n')"
     } >> .env
