@@ -129,7 +129,8 @@ le schéma de la base de données).
 
 ## Régénération des clés
 
-Un utilisateur possède toujours la possibilité de régénérer ses clés asymétriques en cas de soucis avec la paire précédente. Pour se faire, celui-ci doit se rendre dans la section `profile` du site et doit cliquer sur le bouton :
+Un utilisateur possède toujours la possibilité de régénérer ses clés asymétriques en cas de soucis avec la paire
+précédente. Pour se faire, celui-ci doit se rendre dans la section `profile` du site et doit cliquer sur le bouton :
 
 ![Bouton régénération de clefs](./assets/key-gen-button.png)
 
@@ -150,7 +151,9 @@ Voici un diagramme de séquence qui explique son fonctionnement :
 
 Les clés sont générées avec cette commande :
 
-`openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout nginx/certs/SITE.key -out nginx/certs/SITE.crt -config nginx/certs/cryptalbum.conf &> /dev/null`.
+```shell
+openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout nginx/certs/SITE.key -out nginx/certs/SITE.crt -config nginx/certs/cryptalbum.conf &> /dev/null
+```
 
 Ces clés sont utilisées pour les sites suivants :
 
@@ -162,4 +165,7 @@ Les certificats sont en SHA-256 avec un chiffrement RSA à 4096 bits.
 
 Voici un exemple de certificat :
 
-![Certificat](./assets/cert.png)
+![Exemple de certificat généré via la commande `openssl`](./assets/cert.png)
+
+Bien sûr, ces certificats sont présentés comme étant "de production", mais dans la vie réelle, il est recommandé
+d'utiliser une autorité de certification (CA) telle que LetsEncrypt pour obtenir des certificats valides et reconnus.
