@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { protectedProcedure } from "@cryptalbum/server/api/trpc";
+import { TRPCError } from "@trpc/server";
 import type { Album, AlbumWithAtLeastOneSharedKey } from "./index";
 
 function albumHasASharedKey(
@@ -43,7 +44,10 @@ export const getAlbum = protectedProcedure
 		});
 
 		if (!album || !albumHasASharedKey(album)) {
-			return null;
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Album not found or you don't have access to it",
+			});
 		}
 
 		return {

@@ -40,7 +40,7 @@ export default function AlbumPage() {
 	const albumId = searchParams.albumId as string;
 	const userData = useUserData();
 	const [albumState, setAlbumState] = useState<AlbumState | null>(null);
-	const { data: album } = api.album.getAlbum.useQuery(albumId);
+	const getAlbumQuery = api.album.getAlbum.useQuery(albumId);
 	const { data: images } = api.image.getAlbumImages.useQuery(albumId);
 
 	const router = useRouter();
@@ -52,9 +52,18 @@ export default function AlbumPage() {
 		}
 	}, [whoAmIQuery, router]);
 
+	useEffect(() => {
+		if (
+			getAlbumQuery.isError &&
+			getAlbumQuery.error?.data?.code === "NOT_FOUND"
+		) {
+			router.push("/gallery");
+		}
+	}, [getAlbumQuery]);
+
 	const decipheredData = useCallback(async () => {
 		const keyPair = await loadKeyPair();
-
+		const { data: album } = getAlbumQuery;
 		if (!userData || !album || !keyPair) {
 			return null;
 		}
@@ -107,7 +116,7 @@ export default function AlbumPage() {
 		} catch (error) {
 			console.error(JSON.stringify(error, null, 2));
 		}
-	}, [album, images, userData]);
+	}, [getAlbumQuery, images, userData]);
 
 	useEffect(() => {
 		void decipheredData();
@@ -145,7 +154,10 @@ export default function AlbumPage() {
 									encryptionKey: albumState.encryptionKey,
 								}}
 							/>{" "}
-							<AlbumDeletionDialog albumId={album?.id} name={albumState.name} />
+							<AlbumDeletionDialog
+								albumId={getAlbumQuery.data?.id}
+								name={albumState.name}
+							/>
 						</>
 					)}
 				</div>
