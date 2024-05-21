@@ -16,6 +16,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@cryptalbum/components/ui/card";
+import { toast } from "@cryptalbum/components/ui/use-toast";
 import {
 	decrypt,
 	decryptFormValue,
@@ -63,9 +64,14 @@ export default function AlbumPage() {
 			getAlbumQuery.isError &&
 			getAlbumQuery.error?.data?.code === "NOT_FOUND"
 		) {
+			toast({
+				title: "Album not found",
+				description: "The album you are looking for does not exist.",
+				variant: "destructive",
+			});
 			router.push("/gallery");
 		}
-	}, [getAlbumQuery]);
+	}, [getAlbumQuery, toast]);
 
 	const decipheredData = useCallback(async () => {
 		const keyPair = await loadKeyPair();
