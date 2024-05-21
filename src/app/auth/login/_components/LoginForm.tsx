@@ -55,7 +55,7 @@ export function LoginForm() {
 				variant: "destructive",
 			});
 		}
-	}, [searchParams]);
+	}, [searchParams, toast]);
 
 	const validChallenge = useCallback(async () => {
 		const keyPair = await loadKeyPair();

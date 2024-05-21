@@ -48,5 +48,6 @@ yarn-error.log*
 .vscode/
 
 data/**
-
+nginx/certs/*.key
+nginx/certs/*.crt
 docs/output/

@@ -1,0 +1,17 @@
+docker-compose.storage.yml
+docker-compose.app.yml
+.env*
+.minio.env*
+.idea
+docs
+data
+node_modules
+lefthook.yml
+setup.sh
+TODO.todo
+Dockerfile
+.dockerignore
+npm-debug.log
+README.md
+.next
+.git

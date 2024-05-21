@@ -16,7 +16,7 @@ export default function Home() {
 		if (whoAmIQuery.error) {
 			router.push("/auth/custom-logout");
 		}
-	}, [whoAmIQuery]);
+	}, [whoAmIQuery, router]);
 
 	useEffect(() => {
 		if (userData) {

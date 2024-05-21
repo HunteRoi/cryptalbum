@@ -12,7 +12,7 @@ export default function ProfilePage() {
 		if (whoAmIQuery.error) {
 			router.push("/auth/custom-logout");
 		}
-	}, [whoAmIQuery]);
+	}, [whoAmIQuery, router]);
 
 	return <></>;
 }

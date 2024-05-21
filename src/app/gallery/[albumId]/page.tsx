@@ -50,7 +50,7 @@ export default function AlbumPage() {
 		if (whoAmIQuery.error) {
 			router.push("/auth/custom-logout");
 		}
-	}, [whoAmIQuery]);
+	}, [whoAmIQuery, router]);
 
 	const decipheredData = useCallback(async () => {
 		const keyPair = await loadKeyPair();

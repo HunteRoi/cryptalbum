@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
 import { CardStackIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import {
@@ -12,15 +12,13 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@cryptalbum/components/ui/card";
+import { toast } from "@cryptalbum/components/ui/use-toast";
 import {
 	decrypt,
 	decryptFormValue,
 	importSymmetricalKey,
 	loadKeyPair,
 } from "@cryptalbum/crypto";
-import { useRouter } from "next/navigation";
-import { toast } from "@cryptalbum/components/ui/use-toast";
-import { signOut } from "next-auth/react";
 
 type AlbumCardProps = {
 	album: {

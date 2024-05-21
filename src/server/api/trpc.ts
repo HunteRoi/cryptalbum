@@ -71,7 +71,7 @@ export const protectedProcedure = ratelimitedProcedure.use(
 	async ({ ctx, next }) => {
 		const defaultLogger = ctx.logWrapper.create();
 
-		if (!ctx.session?.user || !ctx.session?.user.id) {
+		if (!ctx.session?.user?.id) {
 			defaultLogger.error("Unauthorized request to protected procedure");
 			throw new TRPCError({ code: "UNAUTHORIZED" });
 		}

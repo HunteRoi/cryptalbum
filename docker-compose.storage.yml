@@ -6,7 +6,9 @@ services:
     container_name: minio
     command: server /data --console-address ":9001"
     environment:
-      - "MINIO_SITE_REGION=eu-west-1"
+      MINIO_SITE_REGION: eu-west-1
+      VIRTUAL_HOST: minio.local
+      VIRTUAL_PORT: 9001
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -15,6 +17,11 @@ services:
     depends_on:
       seqgelf:
         condition: service_started
+    healthcheck:
+      test: [ "CMD-SHELL", "mc alias set myminio http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} && mc admin info myminio" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     logging:
       driver: "gelf"
       options:
@@ -33,6 +40,11 @@ services:
     depends_on:
       seqgelf:
         condition: service_started
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     logging:
       driver: "gelf"
       options:
@@ -46,6 +58,7 @@ services:
       - "5341:5341"
       - "8081:80"
     environment:
+      VIRTUAL_HOST: seq.local
       ACCEPT_EULA: Y
     volumes:
       - ./data/seq:/data
