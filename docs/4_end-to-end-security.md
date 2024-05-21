@@ -117,3 +117,5 @@ déchiffrer la clé symétrique de l'album avec sa clé privée et accéder à l
 
 Le résultat est un tableau de clés chiffrées qu'on ajoute comme clés partagées liée à l'album (colonne `sharedKeys` dans
 le schéma de la base de données).
+
+## Régénération des clés
