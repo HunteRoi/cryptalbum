@@ -19,7 +19,7 @@ export function Navigation() {
 	const userData = useUserData();
 
 	return (
-		<NavigationMenu className="mx-auto">
+		<NavigationMenu className="mx-auto p-1">
 			<NavigationMenuList>
 				<NavigationMenuItem>
 					{userData && (
@@ -55,6 +55,7 @@ export function Navigation() {
 				{userData && (
 					<NavigationMenuItem>
 						<Button
+							className="my-1"
 							onClick={() => {
 								void signOut({ callbackUrl: "/auth/login" });
 							}}

@@ -6,10 +6,12 @@ import { createDevice } from "./createDevice";
 import { deleteDevice } from "./deleteDevice";
 import { deleteUser } from "./deleteUser";
 import { generateChallenge } from "./generateChallenge";
+import { getSharedKeys } from "./getSharedKeys";
+import { getUserDevices } from "./getUserDevices";
 import { listTrustedDevices } from "./listTrustedDevices";
 import { listUntrustedDevices } from "./listUntrustedDevices";
 import { trustDevice } from "./trustDevice";
-import { getUserDevices } from "./getUserDevices";
+import { whoami } from "./whoami";
 
 export const authRouter = createTRPCRouter({
 	createAccount,
@@ -23,4 +25,6 @@ export const authRouter = createTRPCRouter({
 	deleteUser,
 	checkActivity,
 	getUserDevices,
+	whoami,
+	getSharedKeys,
 });

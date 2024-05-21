@@ -72,7 +72,7 @@ export default function CreateAlbumForm() {
 			const [encryptedAlbumName, ...symmetricalKeysWithDevice] =
 				await Promise.all([
 					encryptFormValue(data.name, cryptoKey),
-					...(userDevices || []).map(async (device) => {
+					...(userDevices ?? []).map(async (device) => {
 						const publicKey = await importRsaPublicKey(device.publicKey);
 						const encryptedSymmetricalKey = await encrypt(
 							publicKey,

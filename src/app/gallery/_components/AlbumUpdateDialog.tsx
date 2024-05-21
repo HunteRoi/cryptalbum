@@ -33,6 +33,7 @@ import {
 	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/utils/api";
+import { PenLine } from "lucide-react";
 
 type AlbumUpdateDialogProps = {
 	album: {
@@ -134,11 +135,14 @@ export default function AlbumUpdateDialog({ album }: AlbumUpdateDialogProps) {
 	return (
 		<Dialog>
 			<DialogTrigger>
-				<Button variant="secondary">Update</Button>
+				<Button className="ml-2" title={`Update ${album.name}`}>
+					{" "}
+					<PenLine />
+				</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Update album "{album.name}"</DialogTitle>
+					<DialogTitle>Update album &quot;{album.name}&quot;</DialogTitle>
 					<DialogDescription>
 						Update the album name and description
 					</DialogDescription>

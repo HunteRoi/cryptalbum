@@ -2,8 +2,8 @@
 
 import { CardFooter } from "@cryptalbum/components/ui/card";
 import { api } from "@cryptalbum/utils/api";
-import ImageCard from "./ImageCard";
 import AlbumCard from "./AlbumCard";
+import ImageCard from "./ImageCard";
 
 export default function Gallery() {
 	const { data: albums } = api.album.getAlbums.useQuery();

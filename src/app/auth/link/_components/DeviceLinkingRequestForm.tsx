@@ -16,7 +16,8 @@ import {
 	FormMessage,
 } from "@cryptalbum/components/ui/form";
 import { Input } from "@cryptalbum/components/ui/input";
-import { toast } from "@cryptalbum/components/ui/use-toast";
+import { ToastAction } from "@cryptalbum/components/ui/toast";
+import { useToast } from "@cryptalbum/components/ui/use-toast";
 import {
 	exportAsymmetricalKey,
 	generateAsymmetricalKeyPair,
@@ -24,7 +25,6 @@ import {
 	storeKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/utils/api";
-import { ToastAction } from "@cryptalbum/components/ui/toast";
 
 const formSchema = z.object({
 	email: z.string().email("Invalid email address"),
@@ -32,6 +32,7 @@ const formSchema = z.object({
 
 export default function DeviceLinkingRequestForm() {
 	const router = useRouter();
+	const { toast } = useToast();
 	const linkDeviceMutation = api.auth.createDevice.useMutation();
 
 	const form = useForm<z.infer<typeof formSchema>>({

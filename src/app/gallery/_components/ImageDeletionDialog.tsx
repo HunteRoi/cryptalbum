@@ -62,8 +62,8 @@ export default function ImageDeletionDialog({
 				<DialogHeader>
 					<DialogTitle>Delete Image</DialogTitle>
 					<DialogDescription>
-						Are you sure you want to delete the image "{name}"? You won't be
-						able to recover it afterwards.
+						Are you sure you want to delete the image &quot;{name}&quot;? You
+						won&apos;t be able to recover it afterwards.
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter>

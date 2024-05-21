@@ -31,6 +31,7 @@ import {
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/utils/api";
 import { arrayBufferToHex, fileSchemaFront } from "@cryptalbum/utils/file";
+import Image from "next/image";
 import DropDownList from "./DropDownList";
 import FileSkeleton from "./FileSkeleton";
 import { useUserData } from "./providers/UserDataProvider";
@@ -106,6 +107,7 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 	}, [decipheredAlbumList]);
 
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
+		form.reset();
 		const keyPair = await loadKeyPair();
 		if (!userData || !keyPair) {
 			toast({
@@ -153,7 +155,7 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 			const [encryptedFileName, ...symmetricalKeysWithDevice] =
 				await Promise.all([
 					encryptFormValue(data.fileName, cryptoKey),
-					...(userDevices || []).map(async (device) => {
+					...(userDevices ?? []).map(async (device) => {
 						const publicKey = await importRsaPublicKey(device.publicKey);
 						const encryptedSymmetricalKey = await encrypt(
 							publicKey,
@@ -174,13 +176,11 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 					deviceId: string;
 				}[];
 				imageName: string;
-				requestDate: Date;
 				album?: { id: string; symmetricalKey: string };
 			} = {
 				image: arrayBufferToHex(encryptedFile),
 				symmetricalKeysWithDevice,
 				imageName: encryptedFileName,
-				requestDate: new Date(),
 			};
 
 			const album = albumList?.find((album) => album.id === selectedAlbumId);
@@ -205,11 +205,11 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 			await uploadMutation.mutateAsync({
 				metadata: {
 					requestSize: JSON.stringify(payload).length,
+					requestDate: new Date(),
 				},
 				payload,
 			});
 			setFile(null);
-			form.reset();
 			toast({
 				title: "File uploaded",
 				action: <ToastAction altText="Dismiss">Dismiss</ToastAction>,
@@ -257,7 +257,7 @@ export default function FileUploadForm({ albumId }: FileUploadFormProps) {
 								/>
 							</FormControl>
 							{preview ? (
-								<img
+								<Image
 									src={preview}
 									alt="preview"
 									height={240}

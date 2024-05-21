@@ -1,0 +1,19 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build
+
+convert_to_pdf:
+  stage: build
+  script:
+    - sh ./docs/merge.sh ${GROUP_NAME}
+    - mv ./docs/output/document.pdf ./rapport_${GROUP_NAME}.pdf
+  artifacts:
+    name: "Rapport_${GROUP_NAME}"
+    expose_as: 'Rapport'
+    paths:
+      - ./rapport_${GROUP_NAME}.pdf
+    expire_in: 30 days

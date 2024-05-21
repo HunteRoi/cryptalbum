@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+"use client";
+
 import { getCsrfToken } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
 import { Button } from "@cryptalbum/components/ui/button";
 import { Input } from "@cryptalbum/components/ui/input";
 import { Label } from "@cryptalbum/components/ui/label";
-import { toast } from "@cryptalbum/components/ui/use-toast";
+import { useToast } from "@cryptalbum/components/ui/use-toast";
 import {
 	clearKeyPair,
 	decrypt,
@@ -25,9 +27,15 @@ type State = {
 		| undefined;
 };
 
+const knownErrorsByCode: Record<string, string> = {
+	CredentialsSignin: "Invalid credentials",
+};
+
 export function LoginForm() {
+	const searchParams = useSearchParams();
 	const challengeMutation = api.auth.challenge.useMutation();
 	const router = useRouter();
+	const { toast } = useToast();
 	const [state, setState] = useState<State>();
 	const userData = useUserData();
 
@@ -37,7 +45,19 @@ export function LoginForm() {
 		}
 	}, [userData, router]);
 
-	async function validChallenge() {
+	useEffect(() => {
+		const error = searchParams.get("error");
+		if (error) {
+			const message = knownErrorsByCode[error] ?? "An error occurred";
+			toast({
+				title: "Error",
+				description: message,
+				variant: "destructive",
+			});
+		}
+	}, [searchParams, toast]);
+
+	const validChallenge = useCallback(async () => {
 		const keyPair = await loadKeyPair();
 		if (!keyPair) {
 			return;
@@ -52,7 +72,6 @@ export function LoginForm() {
 						//if 404
 						if (error.data?.code === "NOT_FOUND") {
 							clearKeyPair();
-							router.push("/auth/register");
 						} else {
 							toast({
 								title: "Error",
@@ -80,14 +99,20 @@ export function LoginForm() {
 				},
 			});
 		} catch (error) {
-			console.error(error);
-		}
-	}
+			const message =
+				error instanceof Error ? error.message : "An error occurred";
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: This is a one-time effect
+			toast({
+				title: "Error",
+				description: message,
+				variant: "destructive",
+			});
+		}
+	}, []);
+
 	useEffect(() => {
 		void validChallenge();
-	}, []);
+	}, [validChallenge]);
 
 	return (
 		<form method="post" action="/api/auth/callback/credentials">

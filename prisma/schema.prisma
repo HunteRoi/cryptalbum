@@ -115,6 +115,9 @@ model SharedKey {
   album     Album?     @relation(fields: [albumId], references: [id], onDelete: Cascade)
   userId    String?
   User      User?      @relation(fields: [userId], references: [id])
+
+  // It cause a bug in picture moving
+  // @@unique([deviceId, photoId, albumId, userId])
 }
 
 model Album {

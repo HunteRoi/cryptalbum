@@ -1,0 +1,32 @@
+services:
+  app:
+    image: cryptalbum:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: ${DATABASE_URL:?err}
+    container_name: cryptalbum
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?err}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?err}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:?err}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:?err}
+      MINIO_PORT: ${MINIO_PORT:?err}
+      MINIO_BUCKET: ${MINIO_BUCKET:?err}
+      MINIO_SECURE: ${MINIO_SECURE:?err}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:?err}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:?err}
+      SEQ_URL: ${SEQ_URL:?err}
+      SEQ_API_KEY: ${SEQ_API_KEY:?err}
+      SERVER_LOG_SECRET_KEY: ${SERVER_LOG_SECRET_KEY:?err}
+      VIRTUAL_HOST: cryptalbum.local
+    ports:
+      - "3000:3000"
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "cryptalbum"

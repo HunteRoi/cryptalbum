@@ -38,6 +38,18 @@ export const sharePicture = protectedProcedure
 			where: {
 				id: input.imageId,
 			},
+			select: {
+				id: true,
+				userId: true,
+				albumId: true,
+				shareds: {
+					select: {
+						userId: true,
+						deviceId: true,
+						albumId: true,
+					},
+				},
+			},
 		});
 
 		if (!image) {
@@ -51,6 +63,28 @@ export const sharePicture = protectedProcedure
 			throw new TRPCError({
 				code: "FORBIDDEN",
 				message: "You are not allowed to share this image",
+			});
+		}
+
+		if (image.userId === user.id) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "You are not allowed to share an image with yourself",
+			});
+		}
+
+		if (image.albumId) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message:
+					"You are not allowed to share an image that belongs to an album",
+			});
+		}
+
+		if (image.shareds.some((shared) => shared.userId === user.id)) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "Image is already shared with this user",
 			});
 		}
 

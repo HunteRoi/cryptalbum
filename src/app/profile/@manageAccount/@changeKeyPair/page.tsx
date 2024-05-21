@@ -17,7 +17,7 @@ export default function ChangeKeyPairPage() {
 			<CardHeader>
 				<CardTitle>Device key pair</CardTitle>
 				<CardDescription>
-					Here you can ask to change current device's key pair
+					Here you can ask to change current device&apos;s key pair
 				</CardDescription>
 			</CardHeader>
 			<CardContent>

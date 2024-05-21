@@ -104,7 +104,7 @@ function NavigationCommandGroup({ setOpen }: NavigationCommandGroupProps) {
 		<CommandGroup heading="Navigation">
 			<CommandItem
 				onSelect={() => {
-					router.push("/");
+					router.push("/gallery");
 					setOpen(false);
 				}}
 			>
@@ -112,11 +112,11 @@ function NavigationCommandGroup({ setOpen }: NavigationCommandGroupProps) {
 			</CommandItem>
 			<CommandItem
 				onSelect={() => {
-					router.push("/gallery");
+					router.push("/profile");
 					setOpen(false);
 				}}
 			>
-				Gallery
+				Profile
 			</CommandItem>
 		</CommandGroup>
 		
@@ -132,9 +132,8 @@ function CommandKey() {
 	return (
 		<kbd className="pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
 			<span className="text-xs">
-				{isClient && navigator.userAgent.includes("Mac OS X") ? "⌘" : "Ctrl"}
+				{isClient && navigator.userAgent.includes("Mac OS X") ? "⌘ k" : "Ctrl k"}
 			</span>
-			k
 		</kbd>
 	);
 }

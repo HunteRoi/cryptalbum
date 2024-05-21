@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   minio:
     image: quay.io/minio/minio
@@ -8,7 +6,9 @@ services:
     container_name: minio
     command: server /data --console-address ":9001"
     environment:
-      - "MINIO_SITE_REGION=eu-west-1"
+      MINIO_SITE_REGION: eu-west-1
+      VIRTUAL_HOST: minio.local
+      VIRTUAL_PORT: 9001
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -17,6 +17,11 @@ services:
     depends_on:
       seqgelf:
         condition: service_started
+    healthcheck:
+      test: [ "CMD-SHELL", "mc alias set myminio http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} && mc admin info myminio" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     logging:
       driver: "gelf"
       options:
@@ -35,27 +40,16 @@ services:
     depends_on:
       seqgelf:
         condition: service_started
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     logging:
       driver: "gelf"
       options:
         gelf-address: "udp://host.docker.internal:12201"
         tag: "postgres"
-
-  valkey:
-    image: valkey/valkey:7.2
-    container_name: valkey_7.2
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./data/valkey:/data
-    depends_on:
-      seqgelf:
-        condition: service_started
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://host.docker.internal:12201"
-        tag: "valkey"
 
   seq:
     image: datalust/seq:latest
@@ -64,6 +58,7 @@ services:
       - "5341:5341"
       - "8081:80"
     environment:
+      VIRTUAL_HOST: seq.local
       ACCEPT_EULA: Y
     volumes:
       - ./data/seq:/data
@@ -78,3 +73,13 @@ services:
     depends_on:
       seq:
         condition: service_started
+
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./nginx/certs/:/etc/nginx/certs
+      - ./nginx/conf.d/cryptalbum.local.conf:/etc/nginx/vhost.d/cryptalbum.local:ro

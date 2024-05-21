@@ -23,7 +23,7 @@ const fileSchemaBack = z
 
 			return !!fileExtension && validExtensions.includes(fileExtension);
 		},
-		{ message: `Valid types: ${validExtensions}` },
+		{ message: `Valid types: ${JSON.stringify(validExtensions)}` },
 	)
 	.refine(
 		(file) => {
@@ -54,7 +54,7 @@ const fileSchemaFront = z
 
 			return !!fileExtension && validExtensions.includes(fileExtension);
 		},
-		{ message: `Valid types: ${validExtensions}` },
+		{ message: `Valid types: ${JSON.stringify(validExtensions)}` },
 	)
 	.refine(
 		(file) => {

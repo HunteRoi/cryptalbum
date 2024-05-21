@@ -19,8 +19,8 @@ type UploadFileDialogProps = {
 export function UploadFileDialog({ albumId }: UploadFileDialogProps) {
 	return (
 		<Dialog>
-			<DialogTrigger asChild>
-				<Button size="sm" className="ml-auto gap-1">
+			<DialogTrigger>
+				<Button className="ml-2">
 					Upload file
 				</Button>
 			</DialogTrigger>

@@ -4,8 +4,8 @@ import { create } from "./create";
 import { deleteAlbum } from "./deleteAlbum";
 import { getAlbum } from "./getAlbum";
 import { getAlbums } from "./getAlbums";
-import { updateAlbum } from "./updateAlbum";
 import { shareAlbum } from "./shareAlbum";
+import { updateAlbum } from "./updateAlbum";
 
 export type SharedKey = {
 	key: string;
@@ -15,6 +15,7 @@ export type Album = {
 	name: string;
 	description: string | null;
 	shareds: SharedKey[];
+	userId: string;
 };
 export type AlbumWithAtLeastOneSharedKey = Extended<
 	Album,

@@ -2,6 +2,8 @@ import { protectedProcedure } from "@cryptalbum/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+import type { AlbumSharedKeys } from ".";
+
 // in the case of moving an image to another album, we differentiate between moving it to an album and moving it outside of any album
 // so we use value for newAlbum :
 // - album object if we want to move the image to an album
@@ -13,10 +15,13 @@ export const imageUpdate = protectedProcedure
 		z.object({
 			imageId: z.string(),
 			newName: z.string().optional(),
-			newAlbum: z.object({
-				id: z.string(),
-				key: z.string(),
-			}).or(z.null()).optional(),
+			newAlbum: z
+				.object({
+					id: z.string(),
+					key: z.string(),
+				})
+				.or(z.null())
+				.optional(),
 		}),
 	)
 	.mutation(async ({ ctx, input: { imageId, newName, newAlbum } }) => {
@@ -77,7 +82,10 @@ export const imageUpdate = protectedProcedure
 				}
 
 				if (album.userId !== ctx.session.userId) {
-					logger.error("User is not the owner of the album {newAlbum.id}", newAlbum);
+					logger.error(
+						"User is not the owner of the album {newAlbum.id}",
+						newAlbum,
+					);
 					throw new TRPCError({
 						code: "FORBIDDEN",
 						message: "You cannot update an image to an album you don't own!",
@@ -85,29 +93,60 @@ export const imageUpdate = protectedProcedure
 				}
 
 				await ctx.db.$transaction(async (database) => {
-					await ctx.db.picture.update({
-						where: {
-							id: imageId,
-						},
-						data: {
-							albumId: newAlbum.id,
-						},
-					});
-					await ctx.db.sharedKey.updateMany({
-						where: {
-							photoId: imageId,
-							albumId: { not: null },
-						},
-						data: {
-							albumId: newAlbum.id,
-							key: newAlbum.key,
-						},
-					});
+					if (image.albumId) {
+						// move the image from an album to an other album
+						await database.picture.update({
+							where: {
+								id: imageId,
+							},
+							data: {
+								albumId: newAlbum.id,
+							},
+						});
+						await database.sharedKey.updateMany({
+							where: {
+								photoId: imageId,
+								albumId: { not: null },
+							},
+							data: {
+								albumId: newAlbum.id,
+								key: newAlbum.key,
+							},
+						});
+					} else {
+						// move the image from outside of any album to an album
+						const userDevices = await ctx.db.userDevice.findMany({
+							where: {
+								userId: ctx.session.userId,
+							},
+						});
+						const albumSharedKeys = userDevices.map((userDevice) => {
+							return {
+								key: newAlbum.key,
+								userId: ctx.session.userId,
+								deviceId: userDevice.id,
+								albumId: newAlbum.id,
+							};
+						}) as AlbumSharedKeys;
+						await database.picture.update({
+							where: {
+								id: imageId,
+							},
+							data: {
+								albumId: newAlbum.id,
+								shareds: {
+									createMany: {
+										data: albumSharedKeys,
+									},
+								}
+							},
+						});
+					}
 				});
 			} else {
 				// move the image outside of any album
 				await ctx.db.$transaction(async (database) => {
-					await ctx.db.picture.update({
+					await database.picture.update({
 						where: {
 							id: imageId,
 						},
@@ -115,7 +154,7 @@ export const imageUpdate = protectedProcedure
 							albumId: null,
 						},
 					});
-					await ctx.db.sharedKey.deleteMany({
+					await database.sharedKey.deleteMany({
 						where: {
 							photoId: imageId,
 							albumId: { not: null },

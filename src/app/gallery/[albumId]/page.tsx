@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import AlbumDeletionDialog from "../_components/AlbumDeletionDialog";
-import AlbumSharingDialog from "../_components/AlbumSharingDialog";
 import AlbumUpdateDialog from "@cryptalbum/app/gallery/_components/AlbumUpdateDialog";
 import { UploadFileDialog } from "@cryptalbum/components/UploadFileDialog";
 import { useUserData } from "@cryptalbum/components/providers/UserDataProvider";
@@ -18,6 +16,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@cryptalbum/components/ui/card";
+import { toast } from "@cryptalbum/components/ui/use-toast";
 import {
 	decrypt,
 	decryptFormValue,
@@ -26,13 +25,21 @@ import {
 	loadKeyPair,
 } from "@cryptalbum/crypto";
 import { api } from "@cryptalbum/utils/api";
+import AlbumDeletionDialog from "../_components/AlbumDeletionDialog";
+import AlbumSharingDialog from "../_components/AlbumSharingDialog";
 import ImageCard from "../_components/ImageCard";
 
 type AlbumState = {
 	name: string;
+	userId: string;
 	description?: string;
 	encryptionKey: string;
-	images: Array<{ id: string; name: string; encryptionKey: string }>;
+	images: Array<{
+		id: string;
+		name: string;
+		encryptionKey: string;
+		userId: string;
+	}>;
 };
 
 export default function AlbumPage() {
@@ -40,12 +47,35 @@ export default function AlbumPage() {
 	const albumId = searchParams.albumId as string;
 	const userData = useUserData();
 	const [albumState, setAlbumState] = useState<AlbumState | null>(null);
-	const { data: album } = api.album.getAlbum.useQuery(albumId);
+	const getAlbumQuery = api.album.getAlbum.useQuery(albumId);
 	const { data: images } = api.image.getAlbumImages.useQuery(albumId);
+
+	const router = useRouter();
+	const whoAmIQuery = api.auth.whoami.useQuery();
+
+	useEffect(() => {
+		if (whoAmIQuery.error) {
+			router.push("/auth/custom-logout");
+		}
+	}, [whoAmIQuery, router]);
+
+	useEffect(() => {
+		if (
+			getAlbumQuery.isError &&
+			getAlbumQuery.error?.data?.code === "NOT_FOUND"
+		) {
+			toast({
+				title: "Album not found",
+				description: "The album you are looking for does not exist.",
+				variant: "destructive",
+			});
+			router.push("/gallery");
+		}
+	}, [getAlbumQuery, toast]);
 
 	const decipheredData = useCallback(async () => {
 		const keyPair = await loadKeyPair();
-
+		const { data: album } = getAlbumQuery;
 		if (!userData || !album || !keyPair) {
 			return null;
 		}
@@ -55,6 +85,7 @@ export default function AlbumPage() {
 				keyPair.privateKey,
 				Buffer.from(album.encryptionKey, "hex"),
 			);
+
 			const albumSymmetricalKey = await importSymmetricalKey(
 				decipheredAlbumSymmetricalKey,
 			);
@@ -84,18 +115,22 @@ export default function AlbumPage() {
 							keyPair.publicKey,
 							decipheredImageSymKey,
 						),
+						userId: image.userId,
 					};
 				}),
 			);
 
 			setAlbumState({
+				userId: album.userId,
 				name: decipheredName,
 				description: decipheredDescription,
 				encryptionKey: album.encryptionKey,
 				images: decipheredImages,
 			});
-		} catch (error) {}
-	}, [album, images, userData]);
+		} catch (error) {
+			console.error(JSON.stringify(error, null, 2));
+		}
+	}, [getAlbumQuery, images, userData]);
 
 	useEffect(() => {
 		void decipheredData();
@@ -115,9 +150,17 @@ export default function AlbumPage() {
 					</CardDescription>
 				</div>
 				<div className="ml-auto flex flex-row items-center">
-					<UploadFileDialog albumId={albumId} />{" "}
-					{albumState && (
+					{albumState && albumState.userId === userData?.userId && (
 						<>
+							<UploadFileDialog albumId={albumId} />
+							<AlbumUpdateDialog
+								album={{
+									id: albumId,
+									name: albumState.name,
+									description: albumState.description,
+									encryptionKey: albumState.encryptionKey,
+								}}
+							/>{" "}
 							<AlbumSharingDialog
 								album={{
 									id: albumId,
@@ -125,22 +168,17 @@ export default function AlbumPage() {
 									encryptionKey: albumState.encryptionKey,
 								}}
 							/>{" "}
-              <AlbumUpdateDialog
-                album={{
-                  id: albumId,
-                  name: albumState.name,
-                  description: albumState.description,
-                  encryptionKey: albumState.encryptionKey,
-                }}
-              />{" "}
-							<AlbumDeletionDialog albumId={album?.id} name={albumState.name} />
+							<AlbumDeletionDialog
+								albumId={getAlbumQuery.data?.id}
+								name={albumState.name}
+							/>
 						</>
 					)}
 				</div>
 			</CardHeader>
 			<CardContent className="flex flex-row flex-wrap">
 				{albumState?.images.map((image) => (
-					<ImageCard key={image.id} image={image} />
+					<ImageCard key={image.id} image={image} albumId={albumId} />
 				))}
 			</CardContent>
 			{!images?.length && <CardFooter>No images found</CardFooter>}

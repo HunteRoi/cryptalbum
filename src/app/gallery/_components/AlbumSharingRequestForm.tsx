@@ -30,7 +30,7 @@ const formSchema = z.object({
 	email: z.string().email("Invalid email address"),
 });
 
-export default function ImageSharingRequestForm({ album }: AlbumInProps) {
+export default function AlbumSharingRequestForm({ album }: AlbumInProps) {
 	const { toast } = useToast();
 	const trpcUtils = api.useUtils();
 	const shareAlbumMutation = api.album.shareAlbum.useMutation();
@@ -43,6 +43,7 @@ export default function ImageSharingRequestForm({ album }: AlbumInProps) {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		form.reset();
 		const keyPair = await loadKeyPair();
 		if (!keyPair) {
 			return;
@@ -66,7 +67,7 @@ export default function ImageSharingRequestForm({ album }: AlbumInProps) {
 				Buffer.from(album.encryptionKey, "hex"),
 			);
 
-			const symKeyEncryptedWithDevicesKey = await Promise.all(
+			const albumSymKeyEncryptedWithDevicesKey = await Promise.all(
 				userDevices.map(async (device) => {
 					const devicePublicKey = await importRsaPublicKey(device.publicKey);
 					const encryptedSymKey = await encrypt(
@@ -79,7 +80,7 @@ export default function ImageSharingRequestForm({ album }: AlbumInProps) {
 
 			await shareAlbumMutation.mutateAsync({
 				albumId: album.id,
-				symmetricalKeys: symKeyEncryptedWithDevicesKey,
+				symmetricalKeys: albumSymKeyEncryptedWithDevicesKey,
 				email,
 			});
 

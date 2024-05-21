@@ -7,6 +7,13 @@ import { getImages } from "./getImages";
 import { upload } from "./upload";
 import { sharePicture } from "./sharePicture";
 
+export type AlbumSharedKeys = Array<{
+	key: string;
+	userId: string;
+	deviceId: string;
+	albumId: string;
+}>;
+
 export const imageRouter = createTRPCRouter({
 	upload,
 	getImages,
